@@ -5,61 +5,109 @@
 
 <mapper namespace="com.hrm.dao.SalaryDao">
 
-    <!-- 모든 급여 조회 (HR 전용) -->
-    <select id="getAllSalaries" resultType="com.hrm.dto.SalaryDto">
-        SELECT 
-            s.*, 
-            e.EmployeeID AS employeeId, 
-            e.Name AS employeeName, 
-            e.DepartmentID AS departmentId, 
-            e.Position AS position
-        FROM Salary s
-        JOIN Employee e ON s.EmployeeID = e.EmployeeID
-    </select>
+	<resultMap id="SalaryResultMap" type="com.hrm.dto.SalaryDto">
+		<!-- SalaryDto 필드 매핑 -->
+		<id property="salaryId" column="SalaryID" />
+		<result property="employeeId" column="EmployeeID" />
+		<result property="baseSalary" column="BaseSalary" />
+		<result property="overtimePay" column="OvertimePay" />
+		<result property="totalSalary" column="TotalSalary" />
+		<result property="incomeTax" column="IncomeTax" />
+		<result property="localIncomeTax" column="LocalIncomeTax" />
+		<result property="nationalPension" column="NationalPension" />
+		<result property="healthInsurance" column="HealthInsurance" />
+		<result property="employmentInsurance"
+			column="EmploymentInsurance" />
+		<result property="longTermCareInsurance"
+			column="LongTermCareInsurance" />
+		<result property="mealAllowance" column="MealAllowance" />
+		<result property="positionAllowance" column="PositionAllowance" />
+		<result property="paymentDate" column="PaymentDate" />
 
-    <!-- 특정 사원의 급여 조회 -->
-    <select id="getSalaryByEmployeeId" parameterType="int" resultType="com.hrm.dto.SalaryDto">
-        SELECT 
-            s.*, 
-            e.EmployeeID AS employeeId, 
-            e.Name AS employeeName, 
-            e.DepartmentID AS departmentId, 
-            e.Position AS position
-        FROM Salary s
-        JOIN Employee e ON s.EmployeeID = e.EmployeeID
-        WHERE s.EmployeeID = #{employeeId}
-    </select>
+		<!-- EmployeeDto 필드 매핑 -->
+		<association property="employee"
+			javaType="com.hrm.dto.EmployeeDto">
+			<id property="employeeId" column="EmployeeID" />
+			<result property="name" column="employeeName" />
+			<result property="departmentId" column="departmentId" />
+			<result property="position" column="position" />
+		</association>
+	</resultMap>
 
-    <!-- 급여 데이터 추가 -->
-    <insert id="addSalary" parameterType="com.hrm.dto.SalaryDto">
-        INSERT INTO Salary 
-        (EmployeeID, BaseSalary, OvertimePay, TotalSalary, PaymentDate, IncomeTax, LocalIncomeTax, NationalPension, HealthInsurance, EmploymentInsurance, LongTermCareInsurance, MealAllowance, PositionAllowance)
-        VALUES 
-        (#{employeeId}, #{baseSalary}, #{overtimePay}, #{totalSalary}, #{paymentDate}, #{incomeTax}, #{loaclIncomeTax}, #{nationlPension}, #{healthInsurance}, #{employmentInsurance}, #{longTermCareInsurance}, #{mealAllowance}, #{positionAllowance})
-    </insert>
 
-    <!-- 급여 데이터 수정 -->
-    <update id="updateSalary" parameterType="com.hrm.dto.SalaryDto">
-        UPDATE Salary
-        SET 
-            BaseSalary = #{baseSalary},
-            OvertimePay = #{overtimePay},
-            TotalSalary = #{totalSalary},
-            PaymentDate = #{paymentDate},
-            IncomeTax = #{incomeTax},
-            LocalIncomeTax = #{loaclIncomeTax},
-            NationalPension = #{nationlPension},
-            HealthInsurance = #{healthInsurance},
-            EmploymentInsurance = #{employmentInsurance},
-            LongTermCareInsurance = #{longTermCareInsurance},
-            MealAllowance = #{mealAllowance},
-            PositionAllowance = #{positionAllowance}
-        WHERE SalaryID = #{salaryId}
-    </update>
+	<!-- 모든 급여 조회 (HR 전용) -->
+	<select id="getAllSalaries" resultMap="SalaryResultMap">
+		SELECT
+		s.*,
+		e.EmployeeID AS
+		employeeId,
+		e.Name AS employeeName,
+		e.DepartmentID AS departmentId,
+		e.Position AS position
+		FROM Salary s
+		JOIN Employee e ON s.EmployeeID =
+		e.EmployeeID
+	</select>
 
-    <!-- 급여 데이터 삭제 -->
-    <delete id="deleteSalary" parameterType="int">
-        DELETE FROM Salary WHERE SalaryID = #{salaryId}
-    </delete>
+	<!-- 특정 사원의 급여 조회 -->
+	<select id="getSalaryByEmployeeId" parameterType="int"
+		resultMap="SalaryResultMap">
+		SELECT
+		s.*,
+		e.EmployeeID AS employeeId,
+		e.Name AS employeeName,
+		e.DepartmentID AS departmentId,
+		e.Position AS position
+		FROM Salary s
+		JOIN Employee e ON s.EmployeeID = e.EmployeeID
+		WHERE s.EmployeeID = #{employeeId}
+	</select>
+
+	<!-- 급여 데이터 추가 -->
+	<insert id="addSalary" parameterType="com.hrm.dto.SalaryDto">
+		INSERT INTO Salary
+		(EmployeeID, BaseSalary, OvertimePay, TotalSalary, PaymentDate,
+		IncomeTax,
+		LocalIncomeTax, NationalPension, HealthInsurance,
+		EmploymentInsurance,
+		LongTermCareInsurance, MealAllowance,
+		PositionAllowance)
+		VALUES
+		(#{employeeId}, #{baseSalary}, #{overtimePay},
+		#{totalSalary}, #{paymentDate},
+		#{incomeTax}, #{loaclIncomeTax},
+		#{nationlPension},
+		#{healthInsurance}, #{employmentInsurance},
+		#{longTermCareInsurance},
+		#{mealAllowance}, #{positionAllowance})
+	</insert>
+
+	<!-- 급여 데이터 수정 -->
+	<update id="updateSalary" parameterType="com.hrm.dto.SalaryDto">
+		UPDATE Salary
+		SET
+		BaseSalary = #{baseSalary},
+		OvertimePay = #{overtimePay},
+		TotalSalary =
+		#{totalSalary},
+		PaymentDate = #{paymentDate},
+		IncomeTax = #{incomeTax},
+		LocalIncomeTax = #{loaclIncomeTax},
+		NationalPension =
+		#{nationlPension},
+		HealthInsurance = #{healthInsurance},
+		EmploymentInsurance = #{employmentInsurance},
+		LongTermCareInsurance =
+		#{longTermCareInsurance},
+		MealAllowance = #{mealAllowance},
+		PositionAllowance = #{positionAllowance}
+		WHERE SalaryID = #{salaryId}
+	</update>
+
+	<!-- 급여 데이터 삭제 -->
+	<delete id="deleteSalary" parameterType="int">
+		DELETE FROM Salary WHERE
+		SalaryID = #{salaryId}
+	</delete>
 
 </mapper>

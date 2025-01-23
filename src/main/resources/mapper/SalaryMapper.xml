@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hrm.dao.SalaryDao">
+
+    <!-- 모든 급여 조회 (HR 전용) -->
+    <select id="getAllSalaries" resultType="com.hrm.dto.SalaryDto">
+        SELECT 
+            s.*, 
+            e.EmployeeID AS employeeId, 
+            e.Name AS employeeName, 
+            e.DepartmentID AS departmentId, 
+            e.Position AS position
+        FROM Salary s
+        JOIN Employee e ON s.EmployeeID = e.EmployeeID
+    </select>
+
+    <!-- 특정 사원의 급여 조회 -->
+    <select id="getSalaryByEmployeeId" parameterType="int" resultType="com.hrm.dto.SalaryDto">
+        SELECT 
+            s.*, 
+            e.EmployeeID AS employeeId, 
+            e.Name AS employeeName, 
+            e.DepartmentID AS departmentId, 
+            e.Position AS position
+        FROM Salary s
+        JOIN Employee e ON s.EmployeeID = e.EmployeeID
+        WHERE s.EmployeeID = #{employeeId}
+    </select>
+
+    <!-- 급여 데이터 추가 -->
+    <insert id="addSalary" parameterType="com.hrm.dto.SalaryDto">
+        INSERT INTO Salary 
+        (EmployeeID, BaseSalary, OvertimePay, TotalSalary, PaymentDate, IncomeTax, LocalIncomeTax, NationalPension, HealthInsurance, EmploymentInsurance, LongTermCareInsurance, MealAllowance, PositionAllowance)
+        VALUES 
+        (#{employeeId}, #{baseSalary}, #{overtimePay}, #{totalSalary}, #{paymentDate}, #{incomeTax}, #{loaclIncomeTax}, #{nationlPension}, #{healthInsurance}, #{employmentInsurance}, #{longTermCareInsurance}, #{mealAllowance}, #{positionAllowance})
+    </insert>
+
+    <!-- 급여 데이터 수정 -->
+    <update id="updateSalary" parameterType="com.hrm.dto.SalaryDto">
+        UPDATE Salary
+        SET 
+            BaseSalary = #{baseSalary},
+            OvertimePay = #{overtimePay},
+            TotalSalary = #{totalSalary},
+            PaymentDate = #{paymentDate},
+            IncomeTax = #{incomeTax},
+            LocalIncomeTax = #{loaclIncomeTax},
+            NationalPension = #{nationlPension},
+            HealthInsurance = #{healthInsurance},
+            EmploymentInsurance = #{employmentInsurance},
+            LongTermCareInsurance = #{longTermCareInsurance},
+            MealAllowance = #{mealAllowance},
+            PositionAllowance = #{positionAllowance}
+        WHERE SalaryID = #{salaryId}
+    </update>
+
+    <!-- 급여 데이터 삭제 -->
+    <delete id="deleteSalary" parameterType="int">
+        DELETE FROM Salary WHERE SalaryID = #{salaryId}
+    </delete>
+
+</mapper>

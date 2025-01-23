@@ -1,0 +1,85 @@
+<!-- view.html - 개인 급여 조회 페이지 -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>급여 조회</title>
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" th:href="@{/css/salary.css}">
+</head>
+<body>
+    <div class="container">
+        <h2>급여 상세 내역</h2>
+        
+        <div class="salary-detail">
+            <div class="employee-info">
+                <table>
+                    <tr>
+                        <th>사원번호</th>
+                        <td th:text="${salary.employee.employeeId}"></td>
+                        <th>성명</th>
+                        <td th:text="${salary.employee.name}"></td>
+                    </tr>
+                    <tr>
+                        <th>부서</th>
+                        <td th:text="${salary.employee.departmentName}"></td>
+                        <th>직급</th>
+                        <td th:text="${salary.employee.position}"></td>
+                    </tr>
+                </table>
+            </div>
+            
+            <div class="salary-info">
+                <div class="salary-section">
+                    <h3>지급 내역</h3>
+                    <table>
+                        <tr>
+                            <th>기본급</th>
+                            <td th:text="${#numbers.formatCurrency(salary.baseSalary)}"></td>
+                        </tr>
+                        <tr>
+                            <th>직책수당</th>
+                            <td th:text="${#numbers.formatCurrency(salary.positionAllowance)}"></td>
+                        </tr>
+                        <tr>
+                            <th>식대</th>
+                            <td th:text="${#numbers.formatCurrency(salary.mealAllowance)}"></td>
+                        </tr>
+                        <tr>
+                            <th>초과근무수당</th>
+                            <td th:text="${#numbers.formatCurrency(salary.overtimePay)}"></td>
+                        </tr>
+                    </table>
+                </div>
+                
+                <div class="salary-section">
+                    <h3>공제 내역</h3>
+                    <table>
+                        <tr>
+                            <th>소득세</th>
+                            <td th:text="${#numbers.formatCurrency(salary.incomeTax)}"></td>
+                        </tr>
+                        <tr>
+                            <th>국민연금</th>
+                            <td th:text="${#numbers.formatCurrency(salary.nationlPension)}"></td>
+                        </tr>
+                        <tr>
+                            <th>건강보험</th>
+                            <td th:text="${#numbers.formatCurrency(salary.healthInsurance)}"></td>
+                        </tr>
+                        <tr>
+                            <th>고용보험</th>
+                            <td th:text="${#numbers.formatCurrency(salary.employmentInsurance)}"></td>
+                        </tr>
+                    </table>
+                </div>
+            </div>
+            
+            <div class="total-salary">
+                <h3>실수령액</h3>
+                <p th:text="${#numbers.formatCurrency(salary.totalSalary)}"></p>
+            </div>
+        </div>
+    </div>
+    <script th:src="@{/js/salary.js}"></script>
+</body>
+</html>

@@ -17,7 +17,7 @@ public class SalaryDto {
 	private BigDecimal totalSalary; // 총급여
 	private BigDecimal incomeTax; // 소득세
 	private BigDecimal localIncomeTax; // 지방소득세
-	private BigDecimal nationlPension; // 국민연금
+	private BigDecimal nationalPension; // 국민연금
 	private BigDecimal healthInsurance; // 건강보험
 	private BigDecimal employmentInsurance; // 고용보험
 	private BigDecimal longTermCareInsurance; // 장기요양보험

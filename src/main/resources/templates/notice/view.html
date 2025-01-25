@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>공지사항 상세</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { display: flex; min-height: 100vh; }
+        
+        .sidebar {
+            width: 200px;
+            background-color: #333;
+            padding: 20px;
+        }
+        
+        .sidebar .logo {
+            width: 100px;
+            height: 100px;
+            background-color: #666;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+        }
+        
+        .sidebar .menu-item {
+            padding: 10px 0;
+            color: white;
+            text-decoration: none;
+            display: block;
+        }
+        
+        .main-content {
+            flex: 1;
+            padding: 20px;
+        }
+
+        .notice-header {
+            display: flex;
+            justify-content: space-between;
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+            margin-bottom: 20px;
+        }
+
+        .notice-content {
+            min-height: 300px;
+            padding: 20px;
+            border-bottom: 1px solid #dee2e6;
+            margin-bottom: 20px;
+        }
+
+        .button-group {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+        }
+
+        .btn {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+            color: white;
+        }
+
+        .btn-modify { background-color: #007bff; }
+        .btn-delete { background-color: #dc3545; }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo"></div>
+	    <a href="/dashboard" class="menu-item">DashBoard</a>
+	    <a href="/profile" class="menu-item">내 정보</a>
+	    <a href="/management" class="menu-item">일정관리</a>
+	    <a href="/notices" class="menu-item">공지사항</a>
+	    <a href="/attendance" class="menu-item">급여 조회</a>
+	    <a href="/hrInquiry" class="menu-item">문의하기</a>
+	    <a href="/approval" class="menu-item">업무공유</a>
+    </div>
+
+    <div class="main-content">
+        <div class="notice-header">
+            <div>
+                <strong>제목: </strong><span th:text="${notice.title}"></span>
+            </div>
+            <div>
+                <span>작성자: </span><span th:text="${notice.authorName}"></span>
+                <span> | </span>
+                <span>작성일: </span><span th:text="${#temporals.format(notice.createdDate, 'yyyy-MM-dd HH:mm:ss')}"></span>
+            </div>
+        </div>
+
+        <div class="notice-content" th:text="${notice.content}"></div>
+        
+        <div class="button-group">
+            <a th:href="@{/notices/{id}/edit(id=${notice.noticeId})}" class="btn btn-modify">수정</a>
+            <form th:action="@{/notices/{id}/delete(id=${notice.noticeId})}" method="post" style="display: inline;">
+                <button type="submit" class="btn btn-delete" onclick="return confirm('정말 삭제하시겠습니까?')">삭제</button>
+            </form>
+        </div>
+
+    </div>
+</body>
+</html>

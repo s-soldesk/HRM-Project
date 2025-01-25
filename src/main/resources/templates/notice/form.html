@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+   <title>공지사항 작성/수정</title>
+   <style>
+       * { margin: 0; padding: 0; box-sizing: border-box; }
+       body { display: flex; min-height: 100vh; }
+
+       .sidebar {
+           width: 200px;
+           background-color: #333;
+           padding: 20px;
+       }
+
+       .sidebar .logo {
+           width: 100px;
+           height: 100px;
+           background-color: #666;
+           border-radius: 50%;
+           margin: 0 auto 20px;
+       }
+
+       .sidebar .menu-item {
+           padding: 10px 0;
+           color: white;
+           text-decoration: none;
+           display: block;
+       }
+
+       .main-content {
+           flex: 1;
+           padding: 20px;
+       }
+
+       .form-group {
+           margin-bottom: 20px;
+       }
+
+       .form-group label {
+           display: block;
+           margin-bottom: 5px;
+       }
+
+       .form-group input[type="text"],
+       .form-group textarea {
+           width: 100%;
+           padding: 8px;
+           border: 1px solid #ddd;
+           border-radius: 4px;
+       }
+
+       .form-group textarea {
+           height: 300px;
+           resize: vertical;
+       }
+
+       .button-group {
+           display: flex;
+           gap: 10px;
+           justify-content: center;
+       }
+
+       .btn {
+           padding: 8px 20px;
+           border: none;
+           border-radius: 4px;
+           cursor: pointer;
+           color: white;
+           text-decoration: none;
+       }
+
+       .btn-submit { background-color: #007bff; }
+       .btn-cancel { background-color: #6c757d; }
+   </style>
+</head>
+<body>
+	<div class="sidebar">
+	    <div class="logo"></div>
+	    <a href="/dashboard" class="menu-item">DashBoard</a>
+	    <a href="/profile" class="menu-item">내 정보</a>
+	    <a href="/management" class="menu-item">일정관리</a>
+	    <a href="/notices" class="menu-item">공지사항</a>
+	    <a href="/attendance" class="menu-item">급여 조회</a>
+	    <a href="/hrInquiry" class="menu-item">문의하기</a>
+	    <a href="/approval" class="menu-item">업무공유</a>
+	</div>
+
+   <div class="main-content">
+       <h1 th:text="${notice != null ? '공지사항 수정' : '공지사항 작성'}"></h1>
+
+       <form th:action="${notice != null ? '/notices/' + notice.noticeId : '/notices'}" method="post">
+           <div class="form-group">
+               <label>제목</label>
+               <input type="text" name="title" th:value="${notice != null ? notice.title : ''}" required>
+           </div>
+
+           <div class="form-group">
+               <label>내용</label>
+               <textarea name="content" required th:text="${notice != null ? notice.content : ''}"></textarea>
+           </div>
+           
+            <div class="form-group">
+                <label>첨부파일</label>
+                <input type="file" name="file">
+            </div>
+
+           <div class="button-group">
+               <button type="submit" class="btn btn-submit" th:text="${notice != null ? '수정' : '작성'}"></button>
+               <a href="/notices" class="btn btn-cancel">취소</a>
+           </div>
+       </form>
+   </div>
+</body>
+</html>

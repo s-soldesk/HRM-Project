@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>공지사항</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { display: flex; min-height: 100vh; }
+
+        .sidebar {
+            width: 200px;
+            background-color: #333;
+            padding: 20px;
+        }
+
+        .sidebar .logo {
+            width: 100px;
+            height: 100px;
+            background-color: #666;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+            overflow: hidden;
+        }
+
+        .sidebar .menu-item {
+            padding: 10px 0;
+            color: white;
+            text-decoration: none;
+            display: block;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 20px;
+            position: relative;
+            min-height: 100vh;
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .search-bar {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-bottom: 20px;
+        }
+
+        .search-bar select {
+            padding: 5px;
+            width: 100px;
+        }
+
+        .search-bar input {
+            padding: 5px;
+            width: 200px;
+        }
+
+        .search-bar button {
+            padding: 5px 15px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+            border-bottom: 1px solid #ddd;
+        }
+
+        th {
+            background-color: #f5f5f5;
+        }
+
+        .write-btn {
+            position: absolute;
+            bottom: 20px;
+            right: 20px;
+            padding: 8px 20px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            text-decoration: none;
+            color: black;
+        }
+    </style>
+</head>
+<body>
+<div class="sidebar">
+    <div class="logo"></div>
+    <a href="/dashboard" class="menu-item">DashBoard</a>
+    <a href="/profile" class="menu-item">내 정보</a>
+    <a href="/management" class="menu-item">일정관리</a>
+    <a href="/notices" class="menu-item">공지사항</a>
+    <a href="/attendance" class="menu-item">급여 조회</a>
+    <a href="/hrInquiry" class="menu-item">문의하기</a>
+    <a href="/approval" class="menu-item">업무공유</a>
+</div>
+
+<div class="main-content">
+    <h1>공지사항</h1>
+    <form th:action="@{//search}" method="get" class="search-bar">
+        <select name="searchType">
+            <option value="title">제목</option>
+            <option value="author">작성자</option>
+        </select>
+        <input type="text" name="keyword" placeholder="검색어를 입력하세요">
+        <button type="submit">검색</button>
+    </form>
+
+    <table>
+        <thead>
+            <tr>
+                <th>번호</th>
+                <th>제목</th>
+                <th>작성자</th>
+                <th>작성일</th>
+                <th>조회수</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="notice : ${notices}">
+                <td th:text="${notice.noticeId}"></td>
+                <td><a th:href="@{/notices/{id}(id=${notice.noticeId})}" th:text="${notice.title}"></a></td>
+                <td th:text="${notice.authorName}"></td>
+                <td th:text="${#temporals.format(notice.createdDate, 'yyyy-MM-dd')}"></td>
+                <td>0</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <a href="/notices/new" class="write-btn">작성</a>
+</div>
+</body>
+</html>

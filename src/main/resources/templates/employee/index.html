@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>인사 관리 페이지</title>
+    <style>
+        .container-flex {
+            display: flex;
+            width: 100%;
+        }
+        .employee-list-container, .employee-info-container {
+            width: 50%;
+            padding: 10px;
+            border: 1px solid #ddd;
+        }
+        .expanded {
+            width: 100%;
+        }
+        .hidden {
+            display: none;
+        }
+        /* 모달 스타일 */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+        }
+        .modal-content {
+            position: relative;
+            background-color: #fefefe;
+            margin: 15% auto;
+            padding: 20px;
+            border: 1px solid #888;
+            width: 60%;
+            max-width: 500px;
+        }
+        .close {
+            position: absolute;
+            right: 10px;
+            top: 5px;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        /* 입력 폼 스타일 */
+        .form-group {
+            margin-bottom: 15px;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+        .form-group input, .form-group select {
+            width: 100%;
+            padding: 8px;
+            box-sizing: border-box;
+        }
+        .btn-container {
+            text-align: right;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container-fluid">
+    <h1>사원 관리</h1>
+    <!-- 버튼 그룹 -->
+    <div style="margin-bottom: 20px;">
+        <button id="toggleExpandBtn">사원 리스트 확장/축소</button>
+        <button id="addEmployeeBtn">사원 추가</button>
+    </div>
+
+    <!-- 기존 컨테이너 코드 유지 -->
+    <div class="container-flex">
+        <!-- 사원 리스트 컨테이너 -->
+        <div id="employeeListContainer" class="employee-list-container">
+            <h2>사원 리스트</h2>
+            <table id="employeeTable" border="1">
+                <thead>
+                    <tr>
+                        <th>사원 ID</th>
+                        <th>이름</th>
+                        <th>부서</th>
+                    </tr>
+                </thead>
+                <tbody id="employeeTableBody">
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 사원 정보 컨테이너 -->
+        <div id="employeeInfoContainer" class="employee-info-container">
+            <h2>사원 정보</h2>
+            <div id="employeeDetails">
+                <p>이름: <span id="empName"></span></p>
+                <p>생년월일: <span id="empDob"></span></p>
+                <p>성별: <span id="empGender"></span></p>
+                <p>부서: <span id="empDepartment"></span></p>
+                <p>직급: <span id="empPosition"></span></p>
+                <p>입사일: <span id="empHireDate"></span></p>
+                <p>상태: <span id="empStatus"></span></p>
+                <p>연락처: <span id="empPhoneNumber"></span></p>
+                <p>이메일: <span id="empEmail"></span></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- 사원 추가 모달 -->
+    <div id="addEmployeeModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>신규 사원 등록</h2>
+            <form id="addEmployeeForm">
+                <div class="form-group">
+                    <label for="name">이름</label>
+                    <input type="text" id="name" name="name" required>
+                </div>
+                <div class="form-group">
+                    <label for="dateBirth">생년월일</label>
+                    <input type="date" id="dateBirth" name="dateBirth" required>
+                </div>
+                <div class="form-group">
+                    <label for="gender">성별</label>
+                    <select id="gender" name="gender" required>
+                        <option value="남성">남성</option>
+                        <option value="여성">여성</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="departmentId">부서</label>
+                    <select id="departmentId" name="departmentId" required>
+                        <!-- 부서 목록은 JavaScript로 동적 추가 -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="position">직급</label>
+                    <input type="text" id="position" name="position" required>
+                </div>
+                <div class="form-group">
+                    <label for="hiredate">입사일</label>
+                    <input type="date" id="hiredate" name="hiredate" required>
+                </div>
+                <div class="form-group">
+                    <label for="status">재직상태</label>
+                    <select id="status" name="status" required>
+                        <option value="재직">재직</option>
+                        <option value="휴직">휴직</option>
+                        <option value="퇴사">퇴사</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="phonenumber">연락처</label>
+                    <input type="tel" id="phonenumber" name="phonenumber" required>
+                </div>
+                <div class="form-group">
+                    <label for="email">이메일</label>
+                    <input type="email" id="email" name="email" required>
+                </div>
+                <div class="btn-container">
+                    <button type="submit">등록</button>
+                    <button type="button" onclick="closeModal()">취소</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+// 페이지 로딩 시, 전체 사원 목록을 불러와 테이블에 뿌리는 로직
+window.addEventListener('DOMContentLoaded', () => {
+    fetchEmployeesList();
+});
+
+// 1) 사원 리스트 가져오기
+function fetchEmployeesList() {
+    fetch('/employee/list') // REST API 호출
+        .then(response => response.json())
+        .then(data => {
+            // data는 List<EmployeeDto>
+            buildEmployeeTable(data);
+        })
+        .catch(error => {
+            console.error('Error fetching employee list:', error);
+        });
+}
+
+// 2) 사원 테이블에 데이터 채우기
+function buildEmployeeTable(employees) {
+    const tbody = document.getElementById('employeeTableBody');
+    tbody.innerHTML = ""; // 초기화
+
+    employees.forEach(emp => {
+        const tr = document.createElement('tr');
+        // tr에 data-id 속성 부여 (클릭 시 사용)
+        tr.setAttribute('data-id', emp.employeeId);
+
+        // 각 td 생성
+        const tdId = document.createElement('td');
+        tdId.textContent = emp.employeeId ?? '';
+        const tdName = document.createElement('td');
+        tdName.textContent = emp.name ?? '';
+        // 부서, 직급은 간단히 표시 (department.departmentname 없으면 departmentId 등)
+        const tdDept = document.createElement('td');
+        // 만약 emp.department != null && emp.department.departmentname != null 이면
+        // 실제 코드에서는 emp.department.departmentname 쓰거나, 
+        // 현재 DAO/DTO에 따라 emp.departmentId, emp.department.departmentname 등이 달라질 수 있음
+        tdDept.textContent = emp.department?.departmentname ?? '(부서정보없음)';
+
+        // tr에 td들 append
+        tr.append(tdId, tdName, tdDept);
+
+        // 클릭 시 selectEmployee 호출
+        tr.addEventListener('click', () => {
+            selectEmployee(emp.employeeId);
+        });
+
+        // tbody에 추가
+        tbody.appendChild(tr);
+    });
+}
+
+// 3) 사원 선택 시 Ajax 호출
+function selectEmployee(employeeId) {
+    fetch('/employee/' + employeeId)
+        .then(response => response.json())
+        .then(data => {
+            updateEmployeeDetail(data);
+        })
+        .catch(error => {
+            console.error('Error fetching employee detail:', error);
+        });
+}
+
+// 4) 상세 정보 영역 업데이트
+function updateEmployeeDetail(emp) {
+    document.getElementById('empName').textContent = emp.name ?? '';
+    document.getElementById('empDob').textContent = emp.dateBirth ?? '';
+    document.getElementById('empGender').textContent = emp.gender ?? '';
+    document.getElementById('empDepartment').textContent = emp.department?.departmentname ?? '(부서정보없음)';
+    document.getElementById('empPosition').textContent = emp.position ?? '';
+    document.getElementById('empHireDate').textContent = emp.hiredate ?? '';
+    document.getElementById('empStatus').textContent = emp.status ?? '';
+    document.getElementById('empPhoneNumber').textContent = emp.phonenumber ?? '';
+    document.getElementById('empEmail').textContent = emp.email ?? '';
+}
+
+// 리스트 확장/축소 버튼
+const toggleBtn = document.getElementById('toggleExpandBtn');
+const listContainer = document.getElementById('employeeListContainer');
+const infoContainer = document.getElementById('employeeInfoContainer');
+
+toggleBtn.addEventListener('click', function() {
+    if (listContainer.classList.contains('expanded')) {
+        listContainer.classList.remove('expanded');
+        infoContainer.classList.remove('hidden');
+    } else {
+        listContainer.classList.add('expanded');
+        infoContainer.classList.add('hidden');
+    }
+});
+</script>
+</body>
+</html>

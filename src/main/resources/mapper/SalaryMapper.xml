@@ -6,7 +6,7 @@
 <mapper namespace="com.hrm.dao.SalaryDao">
 
 	<resultMap id="SalaryResultMap" type="com.hrm.dto.SalaryDto">
-		<!-- SalaryDto 필드 매핑 -->
+		<!-- SalaryDto 매핑 -->
 		<id property="salaryId" column="SalaryID" />
 		<result property="employeeId" column="EmployeeID" />
 		<result property="baseSalary" column="BaseSalary" />
@@ -24,15 +24,17 @@
 		<result property="positionAllowance" column="PositionAllowance" />
 		<result property="paymentDate" column="PaymentDate" />
 
-		<!-- EmployeeDto 필드 매핑 -->
+		<!-- EmployeeDto 매핑 -->
 		<association property="employee"
 			javaType="com.hrm.dto.EmployeeDto">
 			<id property="employeeId" column="EmployeeID" />
 			<result property="name" column="employeeName" />
-			<result property="departmentId" column="departmentId" />
-			<result property="position" column="position" />
+			<result property="departmentId" column="DepartmentID" />
+			<result property="position" column="Position" />
+			<result property="departmentName" column="DepartmentName" />
 		</association>
 	</resultMap>
+
 
 
 	<!-- 모든 급여 조회 (HR 전용) -->
@@ -47,6 +49,7 @@
 		FROM Salary s
 		JOIN Employee e ON s.EmployeeID =
 		e.EmployeeID
+		JOIN Department d ON e.DepartmentID = d.DepartmentID
 	</select>
 
 	<!-- 특정 사원의 급여 조회 -->
@@ -58,9 +61,14 @@
 		e.Name AS employeeName,
 		e.DepartmentID AS departmentId,
 		e.Position AS position
+		d.DepartmentName
+		AS departmentName
 		FROM Salary s
-		JOIN Employee e ON s.EmployeeID = e.EmployeeID
-		WHERE s.EmployeeID = #{employeeId}
+		JOIN Employee e ON s.EmployeeID =
+		e.EmployeeID
+		JOIN Department d ON e.DepartmentID = d.DepartmentID
+		WHERE
+		s.EmployeeID = #{employeeId}
 	</select>
 
 	<!-- 급여 데이터 추가 -->
@@ -110,4 +118,22 @@
 		SalaryID = #{salaryId}
 	</delete>
 
+	<select id="getSalariesByEmployeeId" parameterType="int"
+		resultMap="SalaryResultMap">
+		SELECT s.*, e.*, d.DepartmentName
+		FROM Salary s
+		JOIN Employee e ON s.EmployeeID = e.EmployeeID
+		JOIN Department d ON e.DepartmentID = d.DepartmentID
+		WHERE s.EmployeeID = #{employeeId}
+		ORDER BY s.PaymentDate DESC
+	</select>
+
+	<select id="getSalaryById" parameterType="int"
+		resultMap="SalaryResultMap">
+		SELECT s.*, e.*, d.DepartmentName
+		FROM Salary s
+		JOIN Employee e ON s.EmployeeID = e.EmployeeID
+		JOIN Department d ON e.DepartmentID = d.DepartmentID
+		WHERE s.SalaryID = #{salaryId}
+	</select>
 </mapper>

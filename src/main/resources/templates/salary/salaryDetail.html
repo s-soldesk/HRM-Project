@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>급여명세서</title>
+    <link rel="stylesheet" th:href="@{/css/salary.css}">
+</head>
+<body>
+    <div class="payslip-container">
+        <h2>
+            <span th:text="${#temporals.format(salary.paymentDate, 'yyyy/MM')}"></span> 
+            급여명세서
+        </h2>
+
+        <div class="employee-info">
+            <table>
+                <tr>
+                    <th>사원번호</th>
+                    <td th:text="${salary.employee.employeeId}"></td>
+                    <th>성명</th>
+                    <td th:text="${salary.employee.name}"></td>
+                </tr>
+                <tr>
+                    <th>부서</th>
+                    <td th:text="${salary.employee.departmentName}"></td>
+                    <th>직급</th>
+                    <td th:text="${salary.employee.position}"></td>
+                </tr>
+            </table>
+        </div>
+
+        <div class="salary-details">
+            <div class="payment-section">
+                <h3>지급내역</h3>
+                <table>
+                    <tr>
+                        <th>기본급</th>
+                        <td th:text="${#numbers.formatDecimal(salary.baseSalary, 0, 'COMMA', 0, 'POINT')}"></td>
+                    </tr>
+                    <tr>
+                        <th>식대</th>
+                        <td th:text="${#numbers.formatDecimal(salary.mealAllowance, 0, 'COMMA', 0, 'POINT')}"></td>
+                    </tr>
+                    <tr>
+                        <th>직책수당</th>
+                        <td th:text="${#numbers.formatDecimal(salary.positionAllowance, 0, 'COMMA', 0, 'POINT')}"></td>
+                    </tr>
+                    <tr>
+                        <th>지급총액</th>
+                        <td th:text="${#numbers.formatDecimal(salary.totalSalary, 0, 'COMMA', 0, 'POINT')}"></td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="deduction-section">
+                <h3>공제내역</h3>
+                <table>
+                    <tr>
+                        <th>국민연금</th>
+                        <td th:text="${#numbers.formatDecimal(salary.nationalPension, 0, 'COMMA', 0, 'POINT')}"></td>
+                    </tr>
+                    <tr>
+                        <th>건강보험</th>
+                        <td th:text="${#numbers.formatDecimal(salary.healthInsurance, 0, 'COMMA', 0, 'POINT')}"></td>
+                    </tr>
+                    <tr>
+                        <th>고용보험</th>
+                        <td th:text="${#numbers.formatDecimal(salary.employmentInsurance, 0, 'COMMA', 0, 'POINT')}"></td>
+                    </tr>
+                    <tr>
+                        <th>장기요양보험</th>
+                        <td th:text="${#numbers.formatDecimal(salary.longTermCareInsurance, 0, 'COMMA', 0, 'POINT')}"></td>
+                    </tr>
+                    <tr>
+                        <th>소득세</th>
+                        <td th:text="${#numbers.formatDecimal(salary.incomeTax, 0, 'COMMA', 0, 'POINT')}"></td>
+                    </tr>
+                    <tr>
+                        <th>지방소득세</th>
+                        <td th:text="${#numbers.formatDecimal(salary.localIncomeTax, 0, 'COMMA', 0, 'POINT')}"></td>
+                    </tr>
+                    <tr>
+                        <th>공제총액</th>
+                        <td th:text="${#numbers.formatDecimal(salary.deductionTotal, 0, 'COMMA', 0, 'POINT')}"></td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="total-section">
+                <h3>실지급액</h3>
+                <p th:text="${#numbers.formatDecimal(salary.netPay, 0, 'COMMA', 0, 'POINT')}"></p>
+            </div>
+        </div>
+
+        <div class="button-section">
+            <button onclick="window.history.back()">목록으로</button>
+            <button onclick="window.print()">인쇄하기</button>
+        </div>
+    </div>
+</body>
+</html>

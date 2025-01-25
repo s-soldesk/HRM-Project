@@ -12,4 +12,6 @@ public interface SalaryDao {
     int addSalary(SalaryDto salaryDto);
     int updateSalary(SalaryDto salaryDto);
     int deleteSalary(Integer salaryId);
+	List<SalaryDto> getSalariesByEmployeeId(Integer employeeId);
+	SalaryDto getSalaryById(Integer salaryId);
 }

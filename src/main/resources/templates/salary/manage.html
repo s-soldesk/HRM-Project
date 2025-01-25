@@ -1,56 +1,68 @@
-<!-- manage.html - 인사팀용 급여 관리 페이지 -->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>급여 관리</title>
-    <link rel="stylesheet" th:href="@{/css/common.css}">
-    <link rel="stylesheet" th:href="@{/css/salary.css}">
+   <meta charset="UTF-8">
+   <link rel="stylesheet" th:href="@{/css/salary.css}">
+   <title>급여관리</title>
 </head>
 <body>
-    <div class="container">
-        <h2>급여 관리</h2>
-        <div class="action-buttons">
-            <a th:href="@{/salary/add}" class="btn btn-primary">새 급여 등록</a>
-        </div>
-        
-        <div class="salary-list">
-            <table>
-                <thead>
-                    <tr>
-                        <th>사원번호</th>
-                        <th>이름</th>
-                        <th>부서</th>
-                        <th>직급</th>
-                        <th>기본급</th>
-                        <th>수당</th>
-                        <th>공제액</th>
-                        <th>실수령액</th>
-                        <th>지급일</th>
-                        <th>관리</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr th:each="salary : ${salaries}">
-                        <td th:text="${salary.employee.employeeId}"></td>
-                        <td th:text="${salary.employee.name}"></td>
-                        <td th:text="${salary.employee.departmentName}"></td>
-                        <td th:text="${salary.employee.position}"></td>
-                        <td th:text="${#numbers.formatCurrency(salary.baseSalary)}"></td>
-                        <td th:text="${#numbers.formatCurrency(salary.totalAllowance)}"></td>
-                        <td th:text="${#numbers.formatCurrency(salary.totalDeduction)}"></td>
-                        <td th:text="${#numbers.formatCurrency(salary.totalSalary)}"></td>
-                        <td th:text="${#temporals.format(salary.paymentDate, 'yyyy-MM-dd')}"></td>
-                        <td>
-                            <a th:href="@{/salary/edit/{id}(id=${salary.salaryId})}" class="btn btn-sm btn-edit">수정</a>
-                            <a th:href="@{/salary/delete/{id}(id=${salary.salaryId})}" 
-                               class="btn btn-sm btn-delete"
-                               onclick="return confirm('정말 삭제하시겠습니까?')">삭제</a>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
-    <script th:src="@{/js/salary.js}"></script>
+   <div class="header">
+       <div class="title">사원별급여조회</div>
+       <div class="header-right">
+           <div class="search-box">
+               <input type="text" placeholder="입력 후 [Enter]">
+           </div>
+       </div>
+   </div>
+
+   <div class="main-content">
+       <div class="salary-grid">
+           <table>
+               <thead>
+                   <tr>
+                       <th><input type="checkbox"></th>
+                       <th>신고귀속</th>
+                       <th>사원번호</th>
+                       <th>사원명</th>
+                       <th>구분</th>
+                       <th>지급총액</th>
+                       <th>식대</th>
+                       <th>소득세</th>
+                       <th>주민세</th>
+                       <th>국민연금</th>
+                       <th>건강보험</th>
+                       <th>고용보험</th>
+                       <th>장기요양</th>
+                       <th>공제총액</th>
+                       <th>실지급액</th>
+                   </tr>
+               </thead>
+               <tbody>
+                   <tr th:each="salary : ${salaries}">
+                       <td><input type="checkbox"></td>
+                       <td th:text="${#temporals.format(salary.paymentDate, 'yyyy/MM')}"></td>
+                       <td th:text="${salary.employee.employeeId}"></td>
+                       <td th:text="${salary.employee.name}"></td>
+                       <td>급여</td>
+                       <td th:text="${#numbers.formatDecimal(salary.totalSalary, 0, 'COMMA', 0, 'POINT')}"></td>
+                       <td th:text="${#numbers.formatDecimal(salary.mealAllowance, 0, 'COMMA', 0, 'POINT')}"></td>
+                       <td th:text="${#numbers.formatDecimal(salary.incomeTax, 0, 'COMMA', 0, 'POINT')}"></td>
+                       <td th:text="${#numbers.formatDecimal(salary.localIncomeTax, 0, 'COMMA', 0, 'POINT')}"></td>
+                       <td th:text="${#numbers.formatDecimal(salary.nationalPension, 0, 'COMMA', 0, 'POINT')}"></td>
+                       <td th:text="${#numbers.formatDecimal(salary.healthInsurance, 0, 'COMMA', 0, 'POINT')}"></td>
+                       <td th:text="${#numbers.formatDecimal(salary.employmentInsurance, 0, 'COMMA', 0, 'POINT')}"></td>
+                       <td th:text="${#numbers.formatDecimal(salary.longTermCareInsurance, 0, 'COMMA', 0, 'POINT')}"></td>
+                       <td th:text="${#numbers.formatDecimal(salary.incomeTax + salary.localIncomeTax + salary.nationalPension + salary.healthInsurance + salary.employmentInsurance + salary.longTermCareInsurance, 0, 'COMMA', 0, 'POINT')}"></td>
+                       <td th:text="${#numbers.formatDecimal(salary.totalSalary - (salary.incomeTax + salary.localIncomeTax + salary.nationalPension + salary.healthInsurance + salary.employmentInsurance + salary.longTermCareInsurance), 0, 'COMMA', 0, 'POINT')}"></td>
+                   </tr>
+               </tbody>
+           </table>
+       </div>
+   </div>
+
+   <div class="button-group">
+       <button class="btn-primary" onclick="location.href='/salary/add'">추가</button>
+       <button class="btn-secondary">삭제</button>
+   </div>
 </body>
 </html>

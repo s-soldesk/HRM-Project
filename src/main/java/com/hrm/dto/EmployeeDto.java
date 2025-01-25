@@ -18,5 +18,7 @@ public class EmployeeDto {
 	private String status; // 재직상태
 	private Integer phonenumber; // 핸드폰
 	private String email; // 이메일
+	private String departmentName; // 부서 이름
+	
 	private DepartmentDto department; // 부서정보 매핑
 }

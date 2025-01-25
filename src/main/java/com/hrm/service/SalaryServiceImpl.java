@@ -39,5 +39,14 @@ public class SalaryServiceImpl implements SalaryService {
     public boolean deleteSalary(Integer salaryId) {
         return salaryMapper.deleteSalary(salaryId) > 0;
     }
+    
+    @Override
+    public List<SalaryDto> getSalariesByEmployeeId(Integer employeeId) {
+        return salaryMapper.getSalariesByEmployeeId(employeeId);
+    }
 
+    @Override
+    public SalaryDto getSalaryById(Integer salaryId) {
+        return salaryMapper.getSalaryById(salaryId);
+    }
 }

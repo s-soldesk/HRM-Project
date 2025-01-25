@@ -11,14 +11,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.Authentication;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import com.hrm.dto.EmployeeDto;
 import com.hrm.dto.SalaryDto;
-import com.hrm.security.CustomUserDetails;
 import com.hrm.service.SalaryService;
 
 @Controller
@@ -82,40 +77,19 @@ public class SalaryController {
 	}
 	
 	@GetMapping("/list")
-    public String getMonthlySalaryList(@RequestParam(required = false) Integer employeeId, 
-                                     Model m) {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        boolean isHR = auth.getAuthorities().stream()
-                .anyMatch(r -> r.getAuthority().equals("ROLE_HR"));
-        
-        if (employeeId == null && !isHR) {
-            UserDetails userDetails = (UserDetails) auth.getPrincipal();
-            employeeId = ((CustomUserDetails) userDetails).getEmployeeId();
-        }
-        
-        List<SalaryDto> salaries = salaryService.getSalariesByEmployeeId(employeeId);
-        m.addAttribute("salariesByMonth", salaryService.getSalariesByEmployeeId(employeeId));
-        return "salary/monthlySalaryList";
-    }
-    
-    @GetMapping("/detail/{salaryId}")
-    public String getSalaryDetail(@PathVariable Integer salaryId, Model model) {
-        SalaryDto salary = salaryService.getSalaryById(salaryId);
-        
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-        boolean isHR = auth.getAuthorities().stream()
-                .anyMatch(r -> r.getAuthority().equals("ROLE_HR"));
-        
-        if (!isHR) {
-            UserDetails userDetails = (UserDetails) auth.getPrincipal();
-            Integer currentEmployeeId = ((CustomUserDetails) userDetails).getEmployeeId();
-            
-            if (!salary.getEmployeeId().equals(currentEmployeeId)) {
-                throw new AccessDeniedException("접근 권한이 없습니다.");
-            }
-        }
-        
-        model.addAttribute("salary", salary);
-        return "salary/salaryDetail";
-    }
+	public String getMonthlySalaryList(@RequestParam(value = "employeeId", required = false) Integer employeeId, Model model) {
+	    if (employeeId == null) {
+	        employeeId = 1;
+	    }
+	    List<SalaryDto> salaries = salaryService.getSalariesByEmployeeId(employeeId);
+	    model.addAttribute("salaries", salaries);
+	    return "salary/monthlySalaryList";
+	}
+
+	@GetMapping("/detail/{salaryId}")
+	public String getSalaryDetail(@PathVariable("salaryId") Integer salaryId, Model model) {
+	    SalaryDto salary = salaryService.getSalaryById(salaryId);
+	    model.addAttribute("salary", salary);
+	    return "salary/salaryDetail";
+	}
 }

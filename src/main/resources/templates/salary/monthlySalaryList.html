@@ -1,56 +1,53 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <meta charset="UTF-8">
-    <title>급여내역</title>
-    <link rel="stylesheet" th:href="@{/css/salary.css}">
+   <meta charset="UTF-8">
+   <title>급여내역</title>
+   <link rel="stylesheet" th:href="@{/css/salary.css}">
 </head>
 <body>
-    <!-- 인사부서 전용 검색창 -->
-    <div class="search-section" th:if="${#authorization.expression('hasRole(''HR'')')}">
-        <input type="text" id="employeeSearch" placeholder="사원번호 입력">
-        <button onclick="searchEmployee()">검색</button>
-    </div>
+   <div class="search-section">
+       <input type="text" id="employeeSearch" placeholder="사원번호 입력">
+       <button onclick="searchEmployee()">검색</button>
+   </div>
 
-    <!-- 사원 정보 -->
-    <div class="employee-info">
-        <table>
-            <tr>
-                <th>사원번호</th>
-                <td th:text="${employee.employeeId}"></td>
-                <th>성명</th>
-                <td th:text="${employee.name}"></td>
-            </tr>
-            <tr>
-                <th>부서</th>
-                <td th:text="${employee.departmentName}"></td>
-                <th>직급</th>
-                <td th:text="${employee.position}"></td>
-            </tr>
-        </table>
-    </div>
+   <div class="employee-info">
+       <table>
+           <tr>
+               <th>사원번호</th>
+               <td th:text="${employee.employeeId}"></td>
+               <th>성명</th>
+               <td th:text="${employee.name}"></td>
+           </tr>
+           <tr>
+               <th>부서</th>
+               <td th:text="${employee.departmentName}"></td>
+               <th>직급</th>
+               <td th:text="${employee.position}"></td>
+           </tr>
+       </table>
+   </div>
 
-    <!-- 월별 급여 목록 -->
-    <div class="salary-list">
-        <table>
-            <thead>
-                <tr>
-                    <th>귀속연월</th>
-                    <th>지급총액</th>
-                    <th>공제총액</th>
-                    <th>실지급액</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="salary : ${salaries}" 
-                    th:onclick="'location.href=\'/salary/detail/' + ${salary.salaryId} + '\''">
-                    <td th:text="${#temporals.format(salary.paymentDate, 'yyyy/MM')}"></td>
-                    <td th:text="${#numbers.formatDecimal(salary.totalSalary, 0, 'COMMA', 0, 'POINT')}"></td>
-                    <td th:text="${#numbers.formatDecimal(salary.deductionTotal, 0, 'COMMA', 0, 'POINT')}"></td>
-                    <td th:text="${#numbers.formatDecimal(salary.netPay, 0, 'COMMA', 0, 'POINT')}"></td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
+   <div class="salary-list">
+       <table>
+           <thead>
+               <tr>
+                   <th>귀속연월</th>
+                   <th>지급총액</th>
+                   <th>공제총액</th>
+                   <th>실지급액</th>
+               </tr>
+           </thead>
+           <tbody>
+               <tr th:each="salary : ${salaries}"
+                   th:onclick="'location.href=\'/salary/detail/' + ${salary.salaryId} + '\''">
+                   <td th:text="${#temporals.format(salary.paymentDate, 'yyyy/MM')}"></td>
+                   <td th:text="${#numbers.formatDecimal(salary.totalSalary, 0, 'COMMA', 0, 'POINT')}"></td>
+                   <td th:text="${#numbers.formatDecimal(salary.deductionTotal, 0, 'COMMA', 0, 'POINT')}"></td>
+                   <td th:text="${#numbers.formatDecimal(salary.netPay, 0, 'COMMA', 0, 'POINT')}"></td>
+               </tr>
+           </tbody>
+       </table>
+   </div>
 </body>
 </html>

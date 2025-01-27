@@ -25,9 +25,14 @@ public class SalaryController {
 
 	// 인사 전용 - 모든 사원 급여 조회
 	@GetMapping("/manage")
-	public String manageSalaries(Model m) {
-		List<SalaryDto> salaries = salaryService.getAllSalaries();
-		m.addAttribute("salaries", salaries);
+	public String manageSalaries(@RequestParam(required = false) String searchType,
+			@RequestParam(required = false) String keyword, Model model) {
+
+		if (searchType != null && keyword != null && !keyword.trim().isEmpty()) {
+			List<SalaryDto> searchResults = salaryService.searchSalaries(searchType, keyword);
+			model.addAttribute("salaries", searchResults);
+		}
+
 		return "salary/manage";
 	}
 
@@ -81,9 +86,9 @@ public class SalaryController {
 		if (employeeId == null) {
 			employeeId = 1; // 테스트용 기본 ID
 		}
-		
+
 		Integer employeeId1 = 1001; // 테스트용 사원번호
-		
+
 		List<SalaryDto> salaries = salaryService.getSalariesByEmployeeId(employeeId1);
 
 		if (!salaries.isEmpty()) {

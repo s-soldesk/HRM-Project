@@ -1,68 +1,79 @@
+<!-- manage.html -->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-   <meta charset="UTF-8">
-   <link rel="stylesheet" th:href="@{/css/salary.css}">
-   <title>급여관리</title>
+    <meta charset="UTF-8">
+    <title>인사팀의 사원 급여 조회 페이지</title>
+    <link rel="stylesheet" th:href="@{/css/salary.css}">
 </head>
 <body>
-   <div class="header">
-       <div class="title">사원별급여조회</div>
-       <div class="header-right">
-           <div class="search-box">
-               <input type="text" placeholder="입력 후 [Enter]">
-           </div>
-       </div>
-   </div>
+    <div class="container">
+        <h2>사원별급여조회</h2>
+        
+        <!-- 검색 영역 -->
+        <div class="search-section">
+            <form id="searchForm" action="/salary/manage" method="get">
+                <select name="searchType" class="search-select">
+                    <option value="">검색 조건 선택</option>
+                    <option value="employeeId">사원번호</option>
+                    <option value="name">이름</option>
+                    <option value="position">직급</option>
+                    <option value="department">부서</option>
+                </select>
+                <input type="text" name="keyword" class="search-input" placeholder="검색어를 입력하세요">
+                <button type="submit" class="search-button">검색</button>
+            </form>
+        </div>
 
-   <div class="main-content">
-       <div class="salary-grid">
-           <table>
-               <thead>
-                   <tr>
-                       <th><input type="checkbox"></th>
-                       <th>신고귀속</th>
-                       <th>사원번호</th>
-                       <th>사원명</th>
-                       <th>구분</th>
-                       <th>지급총액</th>
-                       <th>식대</th>
-                       <th>소득세</th>
-                       <th>주민세</th>
-                       <th>국민연금</th>
-                       <th>건강보험</th>
-                       <th>고용보험</th>
-                       <th>장기요양</th>
-                       <th>공제총액</th>
-                       <th>실지급액</th>
-                   </tr>
-               </thead>
-               <tbody>
-                   <tr th:each="salary : ${salaries}">
-                       <td><input type="checkbox"></td>
-                       <td th:text="${#temporals.format(salary.paymentDate, 'yyyy/MM')}"></td>
-                       <td th:text="${salary.employee.employeeId}"></td>
-                       <td th:text="${salary.employee.name}"></td>
-                       <td>급여</td>
-                       <td th:text="${#numbers.formatDecimal(salary.totalSalary, 0, 'COMMA', 0, 'POINT')}"></td>
-                       <td th:text="${#numbers.formatDecimal(salary.mealAllowance, 0, 'COMMA', 0, 'POINT')}"></td>
-                       <td th:text="${#numbers.formatDecimal(salary.incomeTax, 0, 'COMMA', 0, 'POINT')}"></td>
-                       <td th:text="${#numbers.formatDecimal(salary.localIncomeTax, 0, 'COMMA', 0, 'POINT')}"></td>
-                       <td th:text="${#numbers.formatDecimal(salary.nationalPension, 0, 'COMMA', 0, 'POINT')}"></td>
-                       <td th:text="${#numbers.formatDecimal(salary.healthInsurance, 0, 'COMMA', 0, 'POINT')}"></td>
-                       <td th:text="${#numbers.formatDecimal(salary.employmentInsurance, 0, 'COMMA', 0, 'POINT')}"></td>
-                       <td th:text="${#numbers.formatDecimal(salary.longTermCareInsurance, 0, 'COMMA', 0, 'POINT')}"></td>
-                       <td th:text="${#numbers.formatDecimal(salary.incomeTax + salary.localIncomeTax + salary.nationalPension + salary.healthInsurance + salary.employmentInsurance + salary.longTermCareInsurance, 0, 'COMMA', 0, 'POINT')}"></td>
-                       <td th:text="${#numbers.formatDecimal(salary.totalSalary - (salary.incomeTax + salary.localIncomeTax + salary.nationalPension + salary.healthInsurance + salary.employmentInsurance + salary.longTermCareInsurance), 0, 'COMMA', 0, 'POINT')}"></td>
-                   </tr>
-               </tbody>
-           </table>
-       </div>
-   </div>
+        <!-- 검색 결과 테이블 -->
+        <div class="salary-list" th:if="${!#lists.isEmpty(salaries)}">
+            <table>
+                <thead>
+                    <tr>
+                        <th><input type="checkbox" id="selectAll"></th>
+                        <th>신고귀속</th>
+                        <th>사원번호</th>
+                        <th>사원명</th>
+                        <th>구분</th>
+                        <th>지급총액</th>
+                        <th>식대</th>
+                        <th>소득세</th>
+                        <th>주민세</th>
+                        <th>국민연금</th>
+                        <th>건강보험</th>
+                        <th>고용보험</th>
+                        <th>장기요양</th>
+                        <th>공제총액</th>
+                        <th>실지급액</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="salary : ${salaries}">
+                        <td><input type="checkbox" name="salaryCheck"></td>
+                        <td th:text="${#temporals.format(salary.paymentDate, 'yyyy/MM')}"></td>
+                        <td th:text="${salary.employeeId}"></td>
+                        <td th:text="${salary.employee.name}"></td>
+                        <td>급여</td>
+                        <td th:text="${#numbers.formatInteger(salary.totalSalary, 0, 'COMMA')}"></td>
+                        <td th:text="${#numbers.formatInteger(salary.mealAllowance, 0, 'COMMA')}"></td>
+                        <td th:text="${#numbers.formatInteger(salary.incomeTax, 0, 'COMMA')}"></td>
+                        <td th:text="${#numbers.formatInteger(salary.localIncomeTax, 0, 'COMMA')}"></td>
+                        <td th:text="${#numbers.formatInteger(salary.nationalPension, 0, 'COMMA')}"></td>
+                        <td th:text="${#numbers.formatInteger(salary.healthInsurance, 0, 'COMMA')}"></td>
+                        <td th:text="${#numbers.formatInteger(salary.employmentInsurance, 0, 'COMMA')}"></td>
+                        <td th:text="${#numbers.formatInteger(salary.longTermCareInsurance, 0, 'COMMA')}"></td>
+                        <td th:text="${#numbers.formatInteger(salary.deductionTotal, 0, 'COMMA')}"></td>
+                        <td th:text="${#numbers.formatInteger(salary.netPay, 0, 'COMMA')}"></td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
 
-   <div class="button-group">
-       <button class="btn-primary" onclick="location.href='/salary/add'">추가</button>
-       <button class="btn-secondary">삭제</button>
-   </div>
+        <!-- 버튼 영역 -->
+        <div class="button-group">
+            <button class="btn-primary">추가</button>
+            <button class="btn-danger">삭제</button>
+        </div>
+    </div>
 </body>
 </html>

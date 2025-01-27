@@ -14,4 +14,9 @@ public interface SalaryDao {
     int deleteSalary(Integer salaryId);
 	List<SalaryDto> getSalariesByEmployeeId(Integer employeeId);
 	SalaryDto getSalaryById(Integer salaryId);
+	
+	// 검색 카테고리에서 선택 별 사원 정보를 얻기 위한
+	List<SalaryDto> getSalariesByEmployeeName(String name);
+    List<SalaryDto> getSalariesByPosition(String position);
+    List<SalaryDto> getSalariesByDepartment(String department);
 }

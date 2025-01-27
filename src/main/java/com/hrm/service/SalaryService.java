@@ -10,6 +10,9 @@ public interface SalaryService {
     // 특정 사원의 급여 조회 (일반 직원용) (employeeId로 검색)
     List<SalaryDto> getSalariesByEmployeeId(Integer employeeId);
     
+    // 특성 사원 검색 (인사 전용)
+    List<SalaryDto> searchSalaries(String searchType, String keyword);
+    
     SalaryDto getSalaryById(Integer salaryId);
     
     // 급여 데이터 추가 (인사 전용)

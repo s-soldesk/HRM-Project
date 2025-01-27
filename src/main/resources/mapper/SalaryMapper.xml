@@ -38,14 +38,16 @@
 	<select id="getAllSalaries" resultMap="SalaryResultMap">
 		SELECT
 		s.*,
-		e.EmployeeID AS employeeId,
+		e.EmployeeID AS
+		employeeId,
 		e.Name AS employeeName,
 		e.DepartmentID AS departmentId,
 		e.Position AS position,
 		d.DepartmentName AS departmentName
 		FROM Salary s
 		JOIN Employee e ON s.EmployeeID = e.EmployeeID
-		JOIN Department d ON e.DepartmentID = d.DepartmentID
+		JOIN Department d ON
+		e.DepartmentID = d.DepartmentID
 	</select>
 
 	<!-- 특정 직원의 모든 급여 기록 조회 -->
@@ -59,10 +61,13 @@
 		e.Position AS position,
 		d.DepartmentName AS departmentName
 		FROM Salary s
-		JOIN Employee e ON s.EmployeeID = e.EmployeeID
-		JOIN Department d ON e.DepartmentID = d.DepartmentID
+		JOIN Employee e ON
+		s.EmployeeID = e.EmployeeID
+		JOIN Department d ON e.DepartmentID =
+		d.DepartmentID
 		WHERE s.EmployeeID = #{employeeId}
-		ORDER BY s.PaymentDate DESC
+		ORDER BY s.PaymentDate
+		DESC
 	</select>
 
 	<!-- 급여 상세 조회 -->
@@ -76,8 +81,10 @@
 		e.Position AS position,
 		d.DepartmentName AS departmentName
 		FROM Salary s
-		JOIN Employee e ON s.EmployeeID = e.EmployeeID
-		JOIN Department d ON e.DepartmentID = d.DepartmentID
+		JOIN Employee e ON
+		s.EmployeeID = e.EmployeeID
+		JOIN Department d ON e.DepartmentID =
+		d.DepartmentID
 		WHERE s.SalaryID = #{salaryId}
 	</select>
 
@@ -89,10 +96,13 @@
 		EmploymentInsurance, LongTermCareInsurance, MealAllowance,
 		PositionAllowance
 		) VALUES (
-		#{employeeId}, #{baseSalary}, #{overtimePay}, #{totalSalary}, #{paymentDate},
-		#{incomeTax}, #{localIncomeTax}, #{nationalPension},
+		#{employeeId}, #{baseSalary},
+		#{overtimePay}, #{totalSalary}, #{paymentDate},
+		#{incomeTax},
+		#{localIncomeTax}, #{nationalPension},
 		#{healthInsurance},
-		#{employmentInsurance}, #{longTermCareInsurance}, #{mealAllowance}, #{positionAllowance}
+		#{employmentInsurance}, #{longTermCareInsurance}, #{mealAllowance},
+		#{positionAllowance}
 		)
 	</insert>
 
@@ -102,14 +112,17 @@
 		SET
 		BaseSalary = #{baseSalary},
 		OvertimePay = #{overtimePay},
-		TotalSalary = #{totalSalary},
+		TotalSalary =
+		#{totalSalary},
 		PaymentDate = #{paymentDate},
 		IncomeTax = #{incomeTax},
 		LocalIncomeTax = #{localIncomeTax},
-		NationalPension = #{nationalPension},
+		NationalPension =
+		#{nationalPension},
 		HealthInsurance = #{healthInsurance},
 		EmploymentInsurance = #{employmentInsurance},
-		LongTermCareInsurance = #{longTermCareInsurance},
+		LongTermCareInsurance =
+		#{longTermCareInsurance},
 		MealAllowance = #{mealAllowance},
 		PositionAllowance = #{positionAllowance}
 		WHERE SalaryID = #{salaryId}
@@ -117,6 +130,55 @@
 
 	<!-- 급여 데이터 삭제 -->
 	<delete id="deleteSalary" parameterType="int">
-		DELETE FROM Salary WHERE SalaryID = #{salaryId}
+		DELETE FROM Salary WHERE
+		SalaryID = #{salaryId}
 	</delete>
+	
+	<!--  검색 사원이름  -->
+	<select id="getSalariesByEmployeeName" parameterType="string"
+		resultMap="SalaryResultMap">
+		SELECT
+		s.*,
+		e.EmployeeID AS employeeId,
+		e.Name AS employeeName,
+		e.DepartmentID AS departmentId,
+		e.Position AS position,
+		d.DepartmentName AS departmentName
+		FROM Salary s
+		JOIN Employee e ON s.EmployeeID = e.EmployeeID
+		JOIN Department d ON e.DepartmentID = d.DepartmentID
+		WHERE e.Name LIKE CONCAT('%', #{name}, '%')
+	</select>
+	
+	<!--  검색 사원 직급 -->
+	<select id="getSalariesByPosition" parameterType="string"
+		resultMap="SalaryResultMap">
+		SELECT
+		s.*,
+		e.EmployeeID AS employeeId,
+		e.Name AS employeeName,
+		e.DepartmentID AS departmentId,
+		e.Position AS position,
+		d.DepartmentName AS departmentName
+		FROM Salary s
+		JOIN Employee e ON s.EmployeeID = e.EmployeeID
+		JOIN Department d ON e.DepartmentID = d.DepartmentID
+		WHERE e.Position LIKE CONCAT('%', #{position}, '%')
+	</select>
+	
+	<!-- 검색 부서 -->
+	<select id="getSalariesByDepartment" parameterType="string"
+		resultMap="SalaryResultMap">
+		SELECT
+		s.*,
+		e.EmployeeID AS employeeId,
+		e.Name AS employeeName,
+		e.DepartmentID AS departmentId,
+		e.Position AS position,
+		d.DepartmentName AS departmentName
+		FROM Salary s
+		JOIN Employee e ON s.EmployeeID = e.EmployeeID
+		JOIN Department d ON e.DepartmentID = d.DepartmentID
+		WHERE d.DepartmentName LIKE CONCAT('%', #{department}, '%')
+	</select>
 </mapper>

@@ -25,8 +25,8 @@ public class SalaryController {
 
 	// 인사 전용 - 모든 사원 급여 조회
 	@GetMapping("/manage")
-	public String manageSalaries(@RequestParam(required = false) String searchType,
-			@RequestParam(required = false) String keyword, Model model) {
+	public String manageSalaries(@RequestParam(name = "searchType", required = false) String searchType,
+			@RequestParam(name = "keyword", required = false) String keyword, Model model) {
 
 		if (searchType != null && keyword != null && !keyword.trim().isEmpty()) {
 			List<SalaryDto> searchResults = salaryService.searchSalaries(searchType, keyword);
@@ -70,13 +70,6 @@ public class SalaryController {
 	@PostMapping("/add")
 	public String addSalary(@ModelAttribute SalaryDto salaryDto) {
 		salaryService.addSalary(salaryDto);
-		return "redirect:/salary/manage";
-	}
-
-	// 인사 전용 - 급여 관련 삭제 처리
-	@GetMapping("/delete/{employeeId}")
-	public String deleteSalary(@PathVariable("employeeId") Integer employeeId) {
-		salaryService.deleteSalary(employeeId);
 		return "redirect:/salary/manage";
 	}
 

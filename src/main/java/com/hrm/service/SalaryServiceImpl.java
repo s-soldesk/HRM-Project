@@ -21,11 +21,6 @@ public class SalaryServiceImpl implements SalaryService {
     }
 
     @Override
-    public SalaryDto getSalaryByEmployeeId(Integer employeeId) {
-        return salaryMapper.getSalaryByEmployeeId(employeeId);
-    }
-
-    @Override
     public boolean addSalary(SalaryDto salaryDto) {
         return salaryMapper.addSalary(salaryDto) > 0;
     }

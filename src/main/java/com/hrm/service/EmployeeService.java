@@ -10,9 +10,9 @@ import lombok.RequiredArgsConstructor;
 @Service
 @RequiredArgsConstructor
 public class EmployeeService {
-   private final EmployeeMapper employeeMapper;
-   
-   public EmployeeDto getEmployeeByEmail(String email) {
-       return employeeMapper.getEmployeeByEmail(email);
-   }
+    private final EmployeeMapper employeeMapper;
+    
+    public EmployeeDto getEmployeeById(String employeeId) {  // 메서드명 변경
+        return employeeMapper.getEmployeeById(employeeId);
+    }
 }

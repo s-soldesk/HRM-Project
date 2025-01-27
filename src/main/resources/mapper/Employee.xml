@@ -1,10 +1,21 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.hrm.mapper.EmployeeMapper">
-    <select id="getEmployeeByEmail" resultType="com.hrm.dto.EmployeeDto">
-        SELECT e.*, d.DepartmentName
-        FROM Employee e
-        LEFT JOIN Department d ON e.DepartmentID = d.DepartmentID
-        WHERE e.Email = #{email}
-    </select>
+<select id="getEmployeeById" resultType="com.hrm.dto.EmployeeDto">
+    SELECT 
+        e.EmployeeID as employeeId,
+        e.Name as name,
+        e.DateOfBirth as dateOfBirth,
+        e.Gender as gender,
+        e.DepartmentID as departmentId,
+        e.Position as position,
+        e.HireDate as hiredate,
+        e.Status as status,
+        e.PhoneNumber as phoneNumber,
+        e.Email as email,
+        d.DepartmentName as departmentName
+    FROM Employee e
+    LEFT JOIN Department d ON e.DepartmentID = d.DepartmentID
+    WHERE e.EmployeeID = #{employeeId}
+</select>
 </mapper>

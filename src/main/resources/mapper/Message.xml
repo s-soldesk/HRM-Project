@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hrm.mapper.MessageMapper">
+    <insert id="sendMessage" parameterType="com.hrm.dto.MessageDto">
+        INSERT INTO Messages (SenderId, ReceiverId, Content, SentTime, IsRead)
+        VALUES (#{senderId}, #{receiverId}, #{content}, #{sentTime}, #{isRead})
+    </insert>
+    
+    <select id="getReceivedMessages" resultType="com.hrm.dto.MessageDto">
+        SELECT m.*, 
+               s.Name as senderName,
+               r.Name as receiverName
+        FROM Messages m
+        JOIN Employee s ON m.SenderId = s.EmployeeID
+        JOIN Employee r ON m.ReceiverId = r.EmployeeID
+        WHERE m.ReceiverId = #{receiverId}
+        ORDER BY m.SentTime DESC
+    </select>
+    
+    <select id="getSentMessages" resultType="com.hrm.dto.MessageDto">
+        SELECT m.*, 
+               s.Name as senderName,
+               r.Name as receiverName
+        FROM Messages m
+        JOIN Employee s ON m.SenderId = s.EmployeeID
+        JOIN Employee r ON m.ReceiverId = r.EmployeeID
+        WHERE m.SenderId = #{senderId}
+        ORDER BY m.SentTime DESC
+    </select>
+    
+    <update id="markAsRead">
+        UPDATE Messages 
+        SET IsRead = true 
+        WHERE MessageId = #{messageId}
+    </update>
+    
+    <select id="getAllEmployees" resultType="com.hrm.dto.EmployeeDto">
+        SELECT * FROM Employee
+    </select>
+    
+    <select id="getMessage" resultType="com.hrm.dto.MessageDto">
+    SELECT m.*, 
+           s.Name as senderName,
+           r.Name as receiverName
+    FROM Messages m
+    JOIN Employee s ON m.SenderId = s.EmployeeID
+    JOIN Employee r ON m.ReceiverId = r.EmployeeID
+    WHERE m.MessageId = #{messageId}
+</select>
+</mapper>

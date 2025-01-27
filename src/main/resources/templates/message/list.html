@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>메시지함</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { display: flex; min-height: 100vh; }
+        
+        .sidebar {
+            width: 200px;
+            background-color: #333;
+            padding: 20px;
+        }
+        
+        .sidebar .logo {
+            width: 100px;
+            height: 100px;
+            background-color: #666;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+        }
+        
+        .sidebar .menu-item {
+            padding: 10px 0;
+            color: white;
+            text-decoration: none;
+            display: block;
+        }
+        
+        .main-content {
+            flex: 1;
+            padding: 20px;
+        }
+
+        .message-container {
+            display: flex;
+            gap: 20px;
+        }
+
+        .message-list {
+            flex: 2;
+        }
+
+        .compose-form {
+            flex: 1;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        th, td {
+            padding: 10px;
+            border-bottom: 1px solid #ddd;
+        }
+
+        .unread {
+            font-weight: bold;
+            background-color: #f8f9fa;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+        }
+
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+
+        .form-group textarea {
+            height: 150px;
+            resize: vertical;
+        }
+
+        .btn {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 4px;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+<div class="sidebar">
+    <div class="logo"></div>
+    <a href="/dashboard" class="menu-item">DashBoard</a>
+    <a href="/profile" class="menu-item">내 정보</a>
+    <a href="/management" class="menu-item">일정관리</a>
+    <a href="/notices" class="menu-item">공지사항</a>
+    <a href="/messages" class="menu-item">메시지함</a>
+    <a href="/attendance" class="menu-item">급여 조회</a>
+    <a href="/hrInquiry" class="menu-item">문의하기</a>
+    <a href="/approval" class="menu-item">업무공유</a>
+</div>
+
+    <div class="main-content">
+        <h2>메시지함</h2>
+        
+        <div class="message-container">
+            <div class="message-list">
+                <h3>받은 메시지</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>보낸 사람</th>
+                            <th>내용</th>
+                            <th>받은 시간</th>
+                            <th>상태</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="message : ${receivedMessages}" 
+                            th:class="${!message.isRead} ? 'unread' : ''">
+                            <td th:text="${message.senderName}"></td>
+                            <td>
+                                <a th:href="@{/messages/{id}(id=${message.messageId})}" 
+                                   th:text="${message.content}"></a>
+                            </td>
+                            <td th:text="${#temporals.format(message.sentTime, 'yyyy-MM-dd HH:mm')}"></td>
+                            <td th:text="${message.isRead ? '읽음' : '안읽음'}"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="compose-form">
+                <h3>메시지 보내기</h3>
+                <form th:action="@{/messages/send}" method="post">
+                    <div class="form-group">
+                        <label>받는 사람</label>
+                        <select name="receiverId" required>
+                            <option value="">선택하세요</option>
+                            <option th:each="emp : ${employees}" 
+                                    th:value="${emp.employeeId}" 
+                                    th:text="${emp.name}"></option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label>내용</label>
+                        <textarea name="content" required></textarea>
+                    </div>
+                    <button type="submit" class="btn">보내기</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -8,6 +8,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 
 import com.hrm.dto.EmployeeDto;
 import com.hrm.service.EmployeeService;
+
+import jakarta.servlet.http.HttpSession;
+
 import org.springframework.ui.Model;
 
 import lombok.RequiredArgsConstructor;
@@ -18,9 +21,12 @@ public class EmployeeController {
     private final EmployeeService employeeService;
 
     @GetMapping("/profile")
-    public String getProfile(Principal principal, Model model) {
-        EmployeeDto employee = employeeService.getEmployeeByEmail(principal.getName());
-        model.addAttribute("employee", employee);
+    public String getProfile(HttpSession session, Model model) {
+        String employeeId = (String) session.getAttribute("loggedInEmail");
+        if (employeeId != null) {
+            EmployeeDto employee = employeeService.getEmployeeById(employeeId);
+            model.addAttribute("employee", employee);
+        }
         return "employee/profile";
     }
 }

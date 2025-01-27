@@ -102,6 +102,7 @@
     <a href="/profile" class="menu-item">내 정보</a>
     <a href="/management" class="menu-item">일정관리</a>
     <a href="/notices" class="menu-item">공지사항</a>
+    <a href="/messages" class="menu-item">메시지함</a>
     <a href="/attendance" class="menu-item">급여 조회</a>
     <a href="/hrInquiry" class="menu-item">문의하기</a>
     <a href="/approval" class="menu-item">업무공유</a>
@@ -109,7 +110,7 @@
 
 <div class="main-content">
     <h1>공지사항</h1>
-    <form th:action="@{//search}" method="get" class="search-bar">
+   <form th:action="@{/notices/search}" method="get" class="search-bar">
         <select name="searchType">
             <option value="title">제목</option>
             <option value="author">작성자</option>

@@ -1,133 +1,133 @@
-<!-- profile.html -->
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>내 정보</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { display: flex; min-height: 100vh; }
-        
-        .sidebar {
-            width: 200px;
-            background-color: #333;
-            padding: 20px;
-        }
-        
-        .sidebar .logo {
-            width: 100px;
-            height: 100px;
-            background-color: #666;
-            border-radius: 50%;
-            margin: 0 auto 20px;
-        }
-        
-        .sidebar .menu-item {
-            padding: 10px 0;
-            color: white;
-            text-decoration: none;
-            display: block;
-        }
-        
-        .main-content {
-            flex: 1;
-            padding: 20px;
-        }
+   <title>내 정보</title>
+   <style>
+       * { margin: 0; padding: 0; box-sizing: border-box; }
+       body { display: flex; min-height: 100vh; }
+       
+       .sidebar {
+           width: 200px;
+           background-color: #333;
+           padding: 20px;
+       }
+       
+       .sidebar .logo {
+           width: 100px;
+           height: 100px;
+           background-color: #666;
+           border-radius: 50%;
+           margin: 0 auto 20px;
+       }
+       
+       .sidebar .menu-item {
+           padding: 10px 0;
+           color: white;
+           text-decoration: none;
+           display: block;
+       }
+       
+       .main-content {
+           flex: 1;
+           padding: 20px;
+       }
 
-        .profile-box {
-            border: 1px solid #ddd;
-            padding: 20px;
-            max-width: 600px;
-            margin: 0 auto;
-        }
+       .profile-box {
+           border: 1px solid #ddd;
+           padding: 20px;
+           max-width: 600px;
+           margin: 0 auto;
+       }
 
-        .profile-header {
-            display: flex;
-            gap: 20px;
-            margin-bottom: 30px;
-        }
+       .profile-header {
+           display: flex;
+           gap: 20px;
+           margin-bottom: 30px;
+       }
 
-        .profile-image {
-            width: 150px;
-            height: 200px;
-            background-color: #f0f0f0;
-        }
+       .profile-image {
+           width: 150px;
+           height: 200px;
+           background-color: #f0f0f0;
+       }
 
-        .profile-info {
-            flex: 1;
-        }
+       .profile-info {
+           flex: 1;
+       }
 
-        .info-row {
-            display: flex;
-            margin-bottom: 10px;
-            border-bottom: 1px solid #eee;
-            padding: 5px 0;
-        }
+       .info-row {
+           display: flex;
+           margin-bottom: 10px;
+           border-bottom: 1px solid #eee;
+           padding: 5px 0;
+       }
 
-        .info-label {
-            width: 100px;
-            font-weight: bold;
-        }
+       .info-label {
+           width: 100px;
+           font-weight: bold;
+       }
 
-        .info-value {
-            flex: 1;
-        }
-    </style>
+       .info-value {
+           flex: 1;
+       }
+   </style>
 </head>
 <body>
-		<div class="sidebar">
-		    <div class="logo"></div>
-		    <a href="/dashboard" class="menu-item">DashBoard</a>
-		    <a href="/profile" class="menu-item">내 정보</a>
-		    <a href="/management" class="menu-item">일정관리</a>
-		    <a href="/notices" class="menu-item">공지사항</a>
-		    <a href="/attendance" class="menu-item">급여 조회</a>
-		    <a href="/hrInquiry" class="menu-item">문의하기</a>
-		    <a href="/approval" class="menu-item">업무공유</a>
-		</div>
+	<div class="sidebar">
+	    <div class="logo"></div>
+	    <a href="/dashboard" class="menu-item">DashBoard</a>
+	    <a href="/profile" class="menu-item">내 정보</a>
+	    <a href="/management" class="menu-item">일정관리</a>
+	    <a href="/notices" class="menu-item">공지사항</a>
+	    <a href="/messages" class="menu-item">메시지함</a>
+	    <a href="/attendance" class="menu-item">급여 조회</a>
+	    <a href="/hrInquiry" class="menu-item">문의하기</a>
+	    <a href="/approval" class="menu-item">업무공유</a>
+	</div>
 
-    <div class="main-content">
-        <h2>[ SOLDESK ]</h2>
-        
-        <div class="profile-box">
-            <div class="profile-header">
-                <div class="profile-image"></div>
-                <div class="profile-info">
-                    <div class="info-row">
-                        <div class="info-label">회사명:</div>
-                        <div class="info-value">(주) Soldesk</div>
-                    </div>
-                    <div class="info-row">
-                        <div class="info-label">부서:</div>
-                        <div class="info-value">영업 1팀</div>
-                    </div>
-                    <div class="info-row">
-                        <div class="info-label">전화번호:</div>
-                        <div class="info-value" th:text="${employee.phone}">010-9876-5432</div>
-                    </div>
-                </div>
-            </div>
+   <div class="main-content">
+       <h2>[ SOLDESK ]</h2>
+       
+       <div class="profile-box">
+           <div class="profile-header">
+               <div class="profile-image"></div>
+               <div class="profile-info">
+                   <div class="info-row">
+                       <div class="info-label">회사명:</div>
+                       <div class="info-value">(주) Soldesk</div>
+                   </div>
+                   <div class="info-row">
+                       <div class="info-label">부서:</div>
+                       <div class="info-value" th:text="${employee?.departmentName}"></div>
+                   </div>
+                   <div class="info-row">
+                       <div class="info-label">전화번호:</div>
+                       <div class="info-value" th:text="${employee?.phoneNumber}"></div>
+                   </div>
+               </div>
+           </div>
 
-            <div class="info-row">
-                <div class="info-label">이름:</div>
-                <div class="info-value" th:text="${employee.name}">OOO</div>
-            </div>
-            <div class="info-row">
-                <div class="info-label">나이:</div>
-                <div class="info-value" th:text="${employee.age}">26</div>
-            </div>
-            <div class="info-row">
-                <div class="info-label">주소:</div>
-                <div class="info-value" th:text="${employee.address}">중로 3가</div>
-            </div>
-            <div class="info-row">
-                <div class="info-label">직책:</div>
-                <div class="info-value" th:text="${employee.position}">과장</div>
-            </div>
-            <div class="info-row">
-                <div class="info-label">이메일:</div>
-                <div class="info-value" th:text="${employee.email}">ooo@gmail.com</div>
-            </div>
-        </div>
-    </div>
+           <div class="info-row">
+               <div class="info-label">이름:</div>
+               <div class="info-value" th:text="${employee?.name}"></div>
+           </div>
+           <div class="info-row">
+               <div class="info-label">생년월일:</div>
+               <div class="info-value" th:text="${employee?.dateOfBirth}"></div>
+           </div>
+           <div class="info-row">
+               <div class="info-label">직책:</div>
+               <div class="info-value" th:text="${employee?.position}"></div>
+           </div>
+           <div class="info-row">
+               <div class="info-label">상태:</div>
+               <div class="info-value" th:text="${employee?.status}"></div>
+           </div>
+           <div class="info-row">
+               <div class="info-label">이메일:</div>
+               <div class="info-value" th:text="${employee?.email}"></div>
+           </div>
+       </div>
+   </div>
 </body>
 </html>

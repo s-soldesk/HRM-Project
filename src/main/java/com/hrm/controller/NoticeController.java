@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import com.hrm.dto.HrInquiryDto;
 import com.hrm.dto.NoticeDto;
 import com.hrm.dto.UserAccountDto;
 import com.hrm.dto.UserAccounts;
@@ -25,18 +26,37 @@ import com.hrm.mapper.UserAccountsMapper;
 import com.hrm.service.NoticeService;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 @Controller
 @RequiredArgsConstructor
+@Slf4j
 public class NoticeController {
     private final NoticeService noticeService;
     private final UserAccountsMapper userAccountsMapper;
     
-    @GetMapping("/notices")
-    public String listNotices(Model model) {
-        model.addAttribute("notices", noticeService.getAllNotices());
-        return "notice/list";
-    }
+	/*
+	 * @GetMapping("/notices") public String listNotices(Model model) { try {
+	 * List<NoticeDto> notices = noticeService.getAllNotices();
+	 * 
+	 * // 로깅 추가 log.info("공지사항 조회 - 총 {} 개의 공지사항 발견", notices.size());
+	 * 
+	 * // 데이터가 비어있을 경우 로그 추가 if (notices.isEmpty()) { log.warn("공지사항이 존재하지 않습니다.");
+	 * }
+	 * 
+	 * model.addAttribute("notices", notices); return "notice/list"; } catch
+	 * (Exception e) { // 예외 처리 로깅 log.error("공지사항 조회 중 오류 발생", e);
+	 * model.addAttribute("errorMessage", "공지사항을 불러오는 중 오류가 발생했습니다."); return
+	 * "error"; // 에러 페이지로 리다이렉트 } }
+	 */
+    
+    
+	   @GetMapping("/notices")
+	   public String listNotices(Model model) {
+	       List<NoticeDto> notices = noticeService.getAllNotices();
+	       model.addAttribute("notices", notices);
+	       return "notice/list";
+	   }
     
     @GetMapping("/notices/{id}")
     public String viewNotice(@PathVariable("id") int noticeId, Model model) {

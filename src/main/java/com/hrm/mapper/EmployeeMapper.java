@@ -7,9 +7,5 @@ import com.hrm.dto.EmployeeDto;
 
 @Mapper
 public interface EmployeeMapper {
-   @Select("SELECT e.*, d.DepartmentName" +
-           " FROM Employee e" +
-           " LEFT JOIN Department d ON e.DepartmentID = d.DepartmentID" +
-           " WHERE e.Email = #{email}")
-   EmployeeDto getEmployeeByEmail(String email);
+    EmployeeDto getEmployeeById(String employeeId);  // 메서드명 변경
 }

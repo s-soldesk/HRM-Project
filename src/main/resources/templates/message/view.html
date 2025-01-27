@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>공지사항 상세</title>
+    <title>메시지 상세보기</title>
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { display: flex; min-height: 100vh; }
@@ -32,39 +32,38 @@
             padding: 20px;
         }
 
-        .notice-header {
-            display: flex;
-            justify-content: space-between;
-            padding: 15px;
+        .message-header {
             background-color: #f8f9fa;
-            border-bottom: 1px solid #dee2e6;
-            margin-bottom: 20px;
-        }
-
-        .notice-content {
-            min-height: 300px;
             padding: 20px;
-            border-bottom: 1px solid #dee2e6;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+
+        .message-content {
+            padding: 20px;
+            min-height: 200px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
             margin-bottom: 20px;
         }
 
-        .button-group {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
+        .message-info {
+            margin-bottom: 10px;
         }
 
         .btn {
             padding: 8px 20px;
             border: none;
             border-radius: 4px;
-            cursor: pointer;
-            text-decoration: none;
+            background-color: #007bff;
             color: white;
+            text-decoration: none;
+            display: inline-block;
         }
 
-        .btn-modify { background-color: #007bff; }
-        .btn-delete { background-color: #dc3545; }
+        .btn-reply {
+            background-color: #28a745;
+        }
     </style>
 </head>
 <body>
@@ -81,26 +80,28 @@
 	</div>
 
     <div class="main-content">
-        <div class="notice-header">
-            <div>
-                <strong>제목: </strong><span th:text="${notice.title}"></span>
-            </div>
-            <div>
-                <span>작성자: </span><span th:text="${notice.authorName}"></span>
-                <span> | </span>
-                <span>작성일: </span><span th:text="${#temporals.format(notice.createdDate, 'yyyy-MM-dd HH:mm:ss')}"></span>
-            </div>
-        </div>
-
-        <div class="notice-content" th:text="${notice.content}"></div>
+        <h2>메시지 상세보기</h2>
         
-        <div class="button-group">
-            <a th:href="@{/notices/{id}/edit(id=${notice.noticeId})}" class="btn btn-modify">수정</a>
-            <form th:action="@{/notices/{id}/delete(id=${notice.noticeId})}" method="post" style="display: inline;">
-                <button type="submit" class="btn btn-delete" onclick="return confirm('정말 삭제하시겠습니까?')">삭제</button>
-            </form>
+        <div class="message-header">
+            <div class="message-info">
+                <strong>보낸 사람:</strong> <span th:text="${message.senderName}"></span>
+            </div>
+            <div class="message-info">
+                <strong>받는 사람:</strong> <span th:text="${message.receiverName}"></span>
+            </div>
+            <div class="message-info">
+                <strong>보낸 시간:</strong> 
+                <span th:text="${#temporals.format(message.sentTime, 'yyyy-MM-dd HH:mm:ss')}"></span>
+            </div>
         </div>
 
+        <div class="message-content" th:text="${message.content}">
+        </div>
+
+        <div>
+            <a href="/messages" class="btn">목록으로</a>
+            <a th:href="@{/messages/reply/{id}(id=${message.messageId})}" class="btn btn-reply">답장하기</a>
+        </div>
     </div>
 </body>
 </html>

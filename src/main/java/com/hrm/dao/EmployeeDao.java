@@ -2,11 +2,14 @@ package com.hrm.dao;
 
 import java.util.List;
 
+import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Result;
 import org.apache.ibatis.annotations.Results;
 import org.apache.ibatis.annotations.Select;
 
+import com.hrm.dto.DepartmentDto;
 import com.hrm.dto.EmployeeDto;
 
 @Mapper
@@ -51,4 +54,46 @@ public interface EmployeeDao {
 		@Result(property = "department.location", column = "Location"),
 	})
 	EmployeeDto employeesDetail(int EmployeeID);
+	
+
+	/*
+	 * 부서 리스트 조회
+	 * 사원을 추가하는 모달에서 사용
+	 */
+	@Select({
+		"SELECT * FROM Department ORDER BY DepartmentID"
+	})
+	List<DepartmentDto> departmentList();
+	
+	/*
+	 * 사원 추가
+	 */
+	@Insert({ """
+			INSERT INTO Employee(
+				Name,
+				DateOfBirth,
+				Gender,
+				DepartmentID,
+				Position,
+				HireDate,
+				Status,
+				PhoneNumber,
+				Email
+			)
+			VALUES(
+				#{name},
+	            #{dateBirth},
+	            #{gender},
+	            #{departmentId},
+	            #{position},
+	            #{hiredate},
+	            #{status},
+	            #{phonenumber},
+	            #{email}
+			)
+			"""
+	})
+	// INSERT 후에 생성된 EmployeeID 값을 자동으로 EmployeeDto 객체의 employeeId 필드에 설정
+	@Options(useGeneratedKeys = true, keyProperty =  "employeeId")
+	int addEmployee(EmployeeDto employeeDto);
 }

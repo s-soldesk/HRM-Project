@@ -4,9 +4,12 @@ import java.util.List;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.hrm.dto.DepartmentDto;
 import com.hrm.dto.EmployeeDto;
 import com.hrm.service.EmployeeService;
 
@@ -36,6 +39,20 @@ public class EmployeeManagementController {
 		} else {
 			return null;
 		}
+	}
+
+	/*
+	 * 부서 목록 반환 사원을 추가할 때 필요함
+	 */
+	@GetMapping("/department/list")
+	public List<DepartmentDto> getDepartmentList() {
+		return eService.departmentsList();
+	}
+
+	// 사원 추가
+	@PostMapping("add")
+	public EmployeeDto addEmployee(@RequestBody EmployeeDto employeeDto) {
+		return eService.addEmployee(employeeDto);
 	}
 
 }

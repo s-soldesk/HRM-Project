@@ -1,69 +1,52 @@
+<!-- templates/salary/manage.html -->
+<!-- 인사부서의 모든 사원 검색으로 부서 조회 -->
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
 <head>
-    <meta charset="UTF-8">
-    <title>인사팀의 사원 급여 조회 페이지</title>
-    <link rel="stylesheet" th:href="@{/css/salary.css}">
+    <title>급여 조회</title>
 </head>
 <body>
-    <div class="container">
-        <h2>사원별급여조회</h2>
-        
-        <!-- 검색 영역 -->
-        <div class="search-section">
-            <form id="searchForm" action="/salary/manage" method="get">
-                <select name="searchType" class="search-select">
-                    <option value="">검색 조건 선택</option>
-                    <option value="employeeId">사원번호</option>
-                    <option value="name">이름</option>
-                    <option value="position">직급</option>
-                    <option value="department">부서</option>
-                </select>
-                <input type="text" name="keyword" class="search-input" placeholder="검색어를 입력하세요">
-                <button type="submit" class="search-button">검색</button>
-            </form>
-        </div>
+    <div layout:fragment="content">
+        <div class="salary-container">
+            <div class="search-section">
+                <form id="searchForm" method="get" th:action="@{/salary/manage}">
+                    <select name="searchType" class="search-select">
+                        <option value="">검색 조건 선택</option>
+                        <option value="employeeId">사원번호</option>
+                        <option value="name">이름</option>
+                        <option value="position">직급</option>
+                    </select>
+                    <input type="text" name="keyword" class="search-input" placeholder="검색어를 입력하세요">
+                    <button type="submit" class="search-button">검색</button>
+                </form>
+            </div>
 
-        <!-- 검색 결과 테이블 -->
-        <div class="salary-list" th:if="${!#lists.isEmpty(salaries)}">
-            <table>
+            <table class="salary-table">
                 <thead>
                     <tr>
-                        <th>신고귀속</th>
+                        <th>귀속월</th>
                         <th>사원번호</th>
                         <th>사원명</th>
-                        <th>구분</th>
                         <th>지급총액</th>
-                        <th>식대</th>
-                        <th>소득세</th>
-                        <th>주민세</th>
-                        <th>국민연금</th>
-                        <th>건강보험</th>
-                        <th>고용보험</th>
-                        <th>장기요양</th>
                         <th>공제총액</th>
                         <th>실지급액</th>
-                        <th>상세보기</th>
+                        <th>확인</th>
+                        <th></th>
                     </tr>
                 </thead>
                 <tbody>
                     <tr th:each="salary : ${salaries}">
-                        <td th:text="${#temporals.format(salary.paymentDate, 'yyyy/MM')}"></td>
+                        <td th:text="${#temporals.format(salary.paymentDate, 'yyyy-MM-dd')}"></td>
                         <td th:text="${salary.employeeId}"></td>
                         <td th:text="${salary.employee.name}"></td>
-                        <td>급여</td>
                         <td th:text="${#numbers.formatInteger(salary.totalSalary, 0, 'COMMA')}"></td>
-                        <td th:text="${#numbers.formatInteger(salary.mealAllowance, 0, 'COMMA')}"></td>
-                        <td th:text="${#numbers.formatInteger(salary.incomeTax, 0, 'COMMA')}"></td>
-                        <td th:text="${#numbers.formatInteger(salary.localIncomeTax, 0, 'COMMA')}"></td>
-                        <td th:text="${#numbers.formatInteger(salary.nationalPension, 0, 'COMMA')}"></td>
-                        <td th:text="${#numbers.formatInteger(salary.healthInsurance, 0, 'COMMA')}"></td>
-                        <td th:text="${#numbers.formatInteger(salary.employmentInsurance, 0, 'COMMA')}"></td>
-                        <td th:text="${#numbers.formatInteger(salary.longTermCareInsurance, 0, 'COMMA')}"></td>
                         <td th:text="${#numbers.formatInteger(salary.deductionTotal, 0, 'COMMA')}"></td>
                         <td th:text="${#numbers.formatInteger(salary.netPay, 0, 'COMMA')}"></td>
+                        <td>✓</td>
                         <td>
-                            <button class="detail-button" th:onclick="'location.href=\'/salary/detail/' + ${salary.salaryId} + '\''">상세보기</button>
+                            <button class="arrow-btn" th:onclick="'location.href=\'/salary/detail/' + ${salary.salaryId} + '\''">→</button>
                         </td>
                     </tr>
                 </tbody>

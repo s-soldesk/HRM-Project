@@ -1,5 +1,6 @@
 package com.hrm.controller;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,24 +17,39 @@ import com.hrm.dto.EmployeeDto;
 import com.hrm.dto.SalaryDto;
 import com.hrm.service.SalaryService;
 
+import jakarta.servlet.http.HttpSession;
+
 @Controller
 @RequestMapping("/salary")
 public class SalaryController {
 
 	@Autowired
 	SalaryService salaryService;
-
+	
+	// security 구현 안 해서 임시방편
+	@GetMapping("/salary")
+	public String redirectToSalaryPage(@RequestParam(required = false) Boolean isHR) {
+	    if (Boolean.TRUE.equals(isHR)) {
+	        return "redirect:/salary/manage";  // 인사부서용 페이지
+	    }
+	    return "redirect:/salary/employee";  // 일반사원용 페이지
+	}
+	
 	// 인사 전용 - 모든 사원 급여 조회
 	@GetMapping("/manage")
-	public String manageSalaries(@RequestParam(name = "searchType", required = false) String searchType,
-			@RequestParam(name = "keyword", required = false) String keyword, Model model) {
-
-		if (searchType != null && keyword != null && !keyword.trim().isEmpty()) {
-			List<SalaryDto> searchResults = salaryService.searchSalaries(searchType, keyword);
-			model.addAttribute("salaries", searchResults);
-		}
-
-		return "salary/manage";
+	public String manageSalaries(
+	        @RequestParam(name = "searchType", required = false) String searchType,
+	        @RequestParam(name = "keyword", required = false) String keyword,
+	        Model model) {
+	    
+	    List<SalaryDto> salaries = new ArrayList<>();
+	    
+	    if (searchType != null && keyword != null && !keyword.trim().isEmpty()) {
+	        salaries = salaryService.searchSalaries(searchType, keyword);
+	    }
+	    
+	    model.addAttribute("salaries", salaries);
+	    return "salary/manage";
 	}
 
 	// 사원 전용 - 개인 사원 급여 조회
@@ -72,7 +88,8 @@ public class SalaryController {
 		salaryService.addSalary(salaryDto);
 		return "redirect:/salary/manage";
 	}
-
+	
+	// 일반 사원 급여 조회
 	@GetMapping("/list")
 	public String getMonthlySalaryList(@RequestParam(value = "employeeId", required = false) Integer employeeId,
 			Model model) {
@@ -93,7 +110,8 @@ public class SalaryController {
 
 		return "salary/monthlySalaryList";
 	}
-
+	
+	// 급여 명세서
 	@GetMapping("/detail/{salaryId}")
 	public String getSalaryDetail(@PathVariable("salaryId") Integer salaryId, Model model) {
 		SalaryDto salary = salaryService.getSalaryById(salaryId);

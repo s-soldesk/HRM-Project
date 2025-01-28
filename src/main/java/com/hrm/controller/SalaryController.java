@@ -51,64 +51,25 @@ public class SalaryController {
 	    model.addAttribute("salaries", salaries);
 	    return "salary/manage";
 	}
-
-	// 사원 전용 - 개인 사원 급여 조회
-	@GetMapping("/view/{employeeId}")
-	public String viewSalary(@PathVariable("employeeId") Integer employeeId, Model m) {
-		List<SalaryDto> salary = salaryService.getSalariesByEmployeeId(employeeId);
-		m.addAttribute("salary", salary);
-		return "salary/view";
-	}
-
-	// 인사 전용 - 급여 수정 페이지
-	@GetMapping("/edit/{employeeId}")
-	public String editSalary(@PathVariable("employeeId") Integer employeeId, Model m) {
-		List<SalaryDto> salary = salaryService.getSalariesByEmployeeId(employeeId);
-		m.addAttribute("salary", salary);
-		return "salary/edit";
-	}
-
-	// 인사 전용 - 급여 수정 처리
-	@PostMapping("/edit")
-	public String updateSalary(@ModelAttribute SalaryDto salaryDto) {
-		salaryService.updateSalary(salaryDto);
-		return "redirect:/salary/manage";
-	}
-
-	// 인사 전용 - 새로운 급여 추가 페이지
-	@GetMapping("/add")
-	public String addSalaryForm(Model m) {
-		m.addAttribute("salary", new SalaryDto());
-		return "salary/add";
-	}
-
-	// 인사 전용 - 새로운 급여 추가 처리
-	@PostMapping("/add")
-	public String addSalary(@ModelAttribute SalaryDto salaryDto) {
-		salaryService.addSalary(salaryDto);
-		return "redirect:/salary/manage";
-	}
 	
-	// 일반 사원 급여 조회
-	@GetMapping("/list")
-	public String getMonthlySalaryList(@RequestParam(value = "employeeId", required = false) Integer employeeId,
-			Model model) {
-		if (employeeId == null) {
-			employeeId = 1; // 테스트용 기본 ID
-		}
-
-		Integer employeeId1 = 1001; // 테스트용 사원번호
-
-		List<SalaryDto> salaries = salaryService.getSalariesByEmployeeId(employeeId1);
-
-		if (!salaries.isEmpty()) {
-			SalaryDto firstSalary = salaries.get(0);
-			model.addAttribute("employee", firstSalary.getEmployee());
-		}
-
-		model.addAttribute("salaries", salaries);
-
-		return "salary/monthlySalaryList";
+	// 사원 전용 - 개인 사원 급여 조회
+	@GetMapping("/employee")
+	public String viewEmployeeSalary(
+	        @RequestParam(name = "employeeId", required = false) Integer employeeId,
+	        Model model) {
+	    
+	    // 임시로 직원 ID 설정 (나중에 로그인 정보에서 가져올 예정)
+	    if (employeeId == null) {
+	        employeeId = 1001; // 테스트용 ID
+	    }
+	    
+	    List<SalaryDto> salaries = salaryService.getSalariesByEmployeeId(employeeId);
+	    if (!salaries.isEmpty()) {
+	        model.addAttribute("employee", salaries.get(0).getEmployee());
+	    }
+	    model.addAttribute("salaries", salaries);
+	    
+	    return "salary/employee";
 	}
 	
 	// 급여 명세서

@@ -29,14 +29,19 @@
             background-color: rgba(0,0,0,0.5);
         }
         .modal-content {
-            position: relative;
-            background-color: #fefefe;
-            margin: 15% auto;
-            padding: 20px;
-            border: 1px solid #888;
-            width: 60%;
-            max-width: 500px;
-        }
+		    position: fixed;
+		    background-color: #fefefe;
+		    padding: 20px;
+		    border: 1px solid #888;
+		    width: 60%;
+		    max-width: 500px;
+		    /* 중앙 정렬을 위한 속성 추가 */
+		    top: 50%;
+		    left: 50%;
+		    transform: translate(-50%, -50%);
+		    max-height: 90vh; /* 화면 높이의 90%로 제한 */
+		    overflow-y: auto; /* 내용이 넘치면 스크롤 표시 */
+		}
         .close {
             position: absolute;
             right: 10px;
@@ -126,8 +131,8 @@
                 <div class="form-group">
                     <label for="gender">성별</label>
                     <select id="gender" name="gender" required>
-                        <option value="남성">남성</option>
-                        <option value="여성">여성</option>
+                        <option value="M">남성</option>
+                        <option value="F">여성</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -147,9 +152,9 @@
                 <div class="form-group">
                     <label for="status">재직상태</label>
                     <select id="status" name="status" required>
-                        <option value="재직">재직</option>
-                        <option value="휴직">휴직</option>
-                        <option value="퇴사">퇴사</option>
+                        <option value="Active">재직</option>
+                        <option value="Inactive">휴직</option>
+                        <option value="Retirement">퇴사</option>
                     </select>
                 </div>
                 <div class="form-group">
@@ -170,6 +175,96 @@
 </div>
 
 <script>
+
+// 모달 관련
+const modal = document.getElementById('addEmployeeModal');
+const addEmployeeBtn = document.getElementById('addEmployeeBtn');
+const closeBtn = document.getElementsByClassName('close')[0];
+const addEmployeeForm = document.getElementById('addEmployeeForm');
+
+//부서 정보 가져오기
+function fetchDepartments() {
+    fetch('/employee/department/list')
+        .then(response => response.json())
+        .then(departments => {
+            const departmentSelect = document.getElementById('departmentId');
+            departmentSelect.innerHTML = ''; // 초기화
+            departments.forEach(dept => {
+                const option = document.createElement('option');
+                option.value = dept.departmentId;
+                option.textContent = dept.departmentname;
+                departmentSelect.appendChild(option);
+            });
+        })
+        .catch(error => {
+            console.error('Error fetching departments:', error);
+        });
+}
+
+// 모달 열기
+addEmployeeBtn.onclick = function() {
+    modal.style.display = 'block';
+    fetchDepartments(); // 부서 목록 가져오기
+}
+
+// 모달 닫기
+function closeModal() {
+    modal.style.display = 'none';
+    addEmployeeForm.reset(); // 폼 초기화
+}
+
+closeBtn.onclick = closeModal;
+
+// 모달 외부 클릭시 닫기
+window.onclick = function(event) {
+    if (event.target == modal) {
+        closeModal();
+    }
+}
+
+// 폼 제출 처리
+addEmployeeForm.onsubmit = function(e) {
+    e.preventDefault();
+    
+    const genderSelect = document.getElementById('gender');
+    const selectedGender = genderSelect.value; // 선택된 value 값 직접 가져오기
+    
+    console.log('선택된 성별 값:', selectedGender); // 확인용 로그
+    
+    // 폼 데이터 수집
+    const formData = {
+        name: document.getElementById('name').value,
+        dateBirth: document.getElementById('dateBirth').value,
+        gender: document.getElementById('gender').value,
+        departmentId: parseInt(document.getElementById('departmentId').value),
+        position: document.getElementById('position').value,
+        hiredate: document.getElementById('hiredate').value,
+        status: document.getElementById('status').value,
+        phonenumber: document.getElementById('phonenumber').value,
+        email: document.getElementById('email').value
+    };
+    console.log('전체 전송 데이터:', formData);
+
+    // API 호출
+    fetch('/employee/add', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(formData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert('사원이 성공적으로 등록되었습니다.');
+        closeModal();
+        fetchEmployeesList(); // 사원 목록 새로고침
+    })
+    .catch(error => {
+        console.error('Error adding employee:', error);
+        alert('사원 등록 중 오류가 발생했습니다.');
+    });
+};
+
 // 페이지 로딩 시, 전체 사원 목록을 불러와 테이블에 뿌리는 로직
 window.addEventListener('DOMContentLoaded', () => {
     fetchEmployeesList();

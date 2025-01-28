@@ -25,6 +25,7 @@ import com.hrm.dto.UserAccounts;
 import com.hrm.mapper.UserAccountsMapper;
 import com.hrm.service.NoticeService;
 
+import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -32,81 +33,185 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 @Slf4j
 public class NoticeController {
-    private final NoticeService noticeService;
-    private final UserAccountsMapper userAccountsMapper;
-    
-	/*
-	 * @GetMapping("/notices") public String listNotices(Model model) { try {
-	 * List<NoticeDto> notices = noticeService.getAllNotices();
-	 * 
-	 * // 로깅 추가 log.info("공지사항 조회 - 총 {} 개의 공지사항 발견", notices.size());
-	 * 
-	 * // 데이터가 비어있을 경우 로그 추가 if (notices.isEmpty()) { log.warn("공지사항이 존재하지 않습니다.");
-	 * }
-	 * 
-	 * model.addAttribute("notices", notices); return "notice/list"; } catch
-	 * (Exception e) { // 예외 처리 로깅 log.error("공지사항 조회 중 오류 발생", e);
-	 * model.addAttribute("errorMessage", "공지사항을 불러오는 중 오류가 발생했습니다."); return
-	 * "error"; // 에러 페이지로 리다이렉트 } }
-	 */
-    
-    
-	   @GetMapping("/notices")
-	   public String listNotices(Model model) {
-	       List<NoticeDto> notices = noticeService.getAllNotices();
-	       model.addAttribute("notices", notices);
-	       return "notice/list";
-	   }
-    
-    @GetMapping("/notices/{id}")
-    public String viewNotice(@PathVariable("id") int noticeId, Model model) {
-        model.addAttribute("notice", noticeService.getNoticeById(noticeId));
-        return "notice/view";
-    }
-    
-    @GetMapping("/notices/new")
-    public String newNoticeForm() {
-        return "notice/form";
-    }
-    
-    @PostMapping("/notices")
-    public String createNotice(@ModelAttribute NoticeDto notice) {
-        notice.setCreatedDate(LocalDateTime.now());
-        noticeService.createNotice(notice);
-        return "redirect:/notices";
-    }
-    
-    @GetMapping("/notices/{id}/edit")
-    public String editNoticeForm(@PathVariable("id") int noticeId, Model model) {
-        model.addAttribute("notice", noticeService.getNoticeById(noticeId));
-        return "notice/form";
-    }
-    
-    @PostMapping("/notices/{id}")
-    public String updateNotice(@PathVariable("id") int noticeId, @ModelAttribute NoticeDto notice) {
-        notice.setNoticeId(noticeId);
-        noticeService.updateNotice(notice);
-        return "redirect:/notices";
-    }
-    
-    @PostMapping("/notices/{id}/delete")
-    public String deleteNotice(@PathVariable("id") int noticeId) {
-        noticeService.deleteNotice(noticeId);
-        return "redirect:/notices";
-    }
-    
-    @GetMapping("/notices/search")
-    public String searchNotices(
-        @RequestParam(value = "searchType", required = false) String searchType,
-        @RequestParam(value = "keyword", required = false) String keyword, 
-        Model model) {
-        List<NoticeDto> notices;
-        if (keyword != null && !keyword.trim().isEmpty()) {
-            notices = noticeService.searchNotices(searchType, keyword);
-        } else {
-            notices = noticeService.getAllNotices();
-        }
-        model.addAttribute("notices", notices);
-        return "notice/list";
-    }
- }
+   private final NoticeService noticeService;
+   private final UserAccountsMapper userAccountsMapper;
+   
+   @GetMapping("/notices")
+   public String listNotices(Model model, HttpSession session) {
+       try {
+           // 세션에서 사용자 정보와 역할 가져오기
+           UserAccountDto user = (UserAccountDto) session.getAttribute("loggedInUser");
+           String userRole = (String) session.getAttribute("userRole");
+           
+           if (user == null) {
+               return "redirect:/login";
+           }
+
+           List<NoticeDto> notices = noticeService.getAllNotices();
+           
+           model.addAttribute("notices", notices);
+           model.addAttribute("userRole", userRole);
+           log.info("Loaded {} notices for user role: {}", notices.size(), userRole);
+           
+           return "notice/list";
+       } catch (Exception e) {
+           log.error("Error in listNotices: ", e);
+           return "error";
+       }
+   }
+   
+   @GetMapping("/notices/{id}")
+   public String viewNotice(@PathVariable("id") int noticeId, Model model, HttpSession session) {
+       try {
+           // 조회수를 증가시키고 공지사항 정보를 가져옴
+           NoticeDto notice = noticeService.getNoticeWithIncreasedReadCount(noticeId);
+           
+           if (notice != null) {
+               model.addAttribute("notice", notice);
+               model.addAttribute("userRole", session.getAttribute("userRole"));
+               return "notice/view";
+           }
+           
+           return "redirect:/notices";
+       } catch (Exception e) {
+           log.error("Error in viewNotice: ", e);
+           return "error";
+       }
+   }
+   
+   @GetMapping("/notices/new")
+   public String newNoticeForm(HttpSession session) {
+       try {
+           UserAccountDto user = (UserAccountDto) session.getAttribute("loggedInUser");
+           String userRole = (String) session.getAttribute("userRole");
+           
+           if (user == null) {
+               return "redirect:/login";
+           }
+           
+           // ADMIN만 공지사항 작성 가능
+           if (!"ADMIN".equals(userRole)) {
+               return "redirect:/notices";
+           }
+           
+           return "notice/form";
+       } catch (Exception e) {
+           log.error("Error in newNoticeForm: ", e);
+           return "error";
+       }
+   }
+   
+   @PostMapping("/notices")
+   public String createNotice(@ModelAttribute NoticeDto notice, HttpSession session) {
+       try {
+           UserAccountDto user = (UserAccountDto) session.getAttribute("loggedInUser");
+           String userRole = (String) session.getAttribute("userRole");
+           
+           if (user == null || !"ADMIN".equals(userRole)) {
+               return "redirect:/notices";
+           }
+           
+           notice.setCreatedDate(LocalDateTime.now());
+           notice.setAuthorId(user.getEmployeeId());
+           noticeService.createNotice(notice);
+           
+           log.info("Notice created by user: {}", user.getEmployeeId());
+           return "redirect:/notices";
+       } catch (Exception e) {
+           log.error("Error in createNotice: ", e);
+           return "error";
+       }
+   }
+   
+   @GetMapping("/notices/{id}/edit")
+   public String editNoticeForm(@PathVariable("id") int noticeId, Model model, HttpSession session) {
+       try {
+           UserAccountDto user = (UserAccountDto) session.getAttribute("loggedInUser");
+           String userRole = (String) session.getAttribute("userRole");
+           
+           if (user == null || !"ADMIN".equals(userRole)) {
+               return "redirect:/notices";
+           }
+           
+           model.addAttribute("notice", noticeService.getNoticeById(noticeId));
+           return "notice/form";
+       } catch (Exception e) {
+           log.error("Error in editNoticeForm: ", e);
+           return "error";
+       }
+   }
+   
+   @PostMapping("/notices/{id}")
+   public String updateNotice(@PathVariable("id") int noticeId, 
+                            @ModelAttribute NoticeDto notice,
+                            HttpSession session) {
+       try {
+           UserAccountDto user = (UserAccountDto) session.getAttribute("loggedInUser");
+           String userRole = (String) session.getAttribute("userRole");
+           
+           if (user == null || !"ADMIN".equals(userRole)) {
+               return "redirect:/notices";
+           }
+           
+           notice.setNoticeId(noticeId);
+           noticeService.updateNotice(notice);
+           
+           log.info("Notice {} updated by user: {}", noticeId, user.getEmployeeId());
+           return "redirect:/notices";
+       } catch (Exception e) {
+           log.error("Error in updateNotice: ", e);
+           return "error";
+       }
+   }
+   
+   @PostMapping("/notices/{id}/delete")
+   public String deleteNotice(@PathVariable("id") int noticeId, HttpSession session) {
+       try {
+           UserAccountDto user = (UserAccountDto) session.getAttribute("loggedInUser");
+           String userRole = (String) session.getAttribute("userRole");
+           
+           if (user == null || !"ADMIN".equals(userRole)) {
+               return "redirect:/notices";
+           }
+           
+           noticeService.deleteNotice(noticeId);
+           
+           log.info("Notice {} deleted by user: {}", noticeId, user.getEmployeeId());
+           return "redirect:/notices";
+       } catch (Exception e) {
+           log.error("Error in deleteNotice: ", e);
+           return "error";
+       }
+   }
+   
+   @GetMapping("/notices/search")
+   public String searchNotices(
+           @RequestParam(value = "searchType", required = false) String searchType,
+           @RequestParam(value = "keyword", required = false) String keyword, 
+           Model model,
+           HttpSession session) {
+       try {
+           UserAccountDto user = (UserAccountDto) session.getAttribute("loggedInUser");
+           String userRole = (String) session.getAttribute("userRole");
+           
+           if (user == null) {
+               return "redirect:/login";
+           }
+
+           List<NoticeDto> notices;
+           if (keyword != null && !keyword.trim().isEmpty()) {
+               notices = noticeService.searchNotices(searchType, keyword);
+           } else {
+               notices = noticeService.getAllNotices();
+           }
+           
+           model.addAttribute("notices", notices);
+           model.addAttribute("userRole", userRole);
+           
+           return "notice/list";
+       } catch (Exception e) {
+           log.error("Error in searchNotices: ", e);
+           return "error";
+       }
+   }
+}

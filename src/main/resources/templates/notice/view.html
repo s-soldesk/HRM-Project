@@ -1,106 +1,157 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>공지사항 상세</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { display: flex; min-height: 100vh; }
-        
-        .sidebar {
-            width: 200px;
-            background-color: #333;
-            padding: 20px;
-        }
-        
-        .sidebar .logo {
-            width: 100px;
-            height: 100px;
-            background-color: #666;
-            border-radius: 50%;
-            margin: 0 auto 20px;
-        }
-        
-        .sidebar .menu-item {
-            padding: 10px 0;
-            color: white;
-            text-decoration: none;
-            display: block;
-        }
-        
-        .main-content {
-            flex: 1;
-            padding: 20px;
-        }
+   <title>공지사항 상세</title>
+   <style>
+       * { margin: 0; padding: 0; box-sizing: border-box; }
+       body { display: flex; min-height: 100vh; }
 
-        .notice-header {
-            display: flex;
-            justify-content: space-between;
-            padding: 15px;
-            background-color: #f8f9fa;
-            border-bottom: 1px solid #dee2e6;
-            margin-bottom: 20px;
-        }
+       .sidebar {
+           width: 200px;
+           background-color: #333;
+           padding: 20px;
+           height: 100vh;
+           position: fixed;
+       }
 
-        .notice-content {
-            min-height: 300px;
-            padding: 20px;
-            border-bottom: 1px solid #dee2e6;
-            margin-bottom: 20px;
-        }
+       .sidebar .logo {
+           width: 100px;
+           height: 100px;
+           border-radius: 50%;
+           margin: 0 auto 20px;
+           overflow: hidden;
+       }
 
-        .button-group {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-        }
+       .sidebar .menu-item {
+           padding: 12px 15px;
+           color: white;
+           text-decoration: none;
+           display: block;
+           margin-bottom: 5px;
+           border-radius: 5px;
+           transition: background-color 0.3s;
+       }
 
-        .btn {
-            padding: 8px 20px;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-            text-decoration: none;
-            color: white;
-        }
+       .sidebar .menu-item:hover {
+           background-color: #444;
+       }
 
-        .btn-modify { background-color: #007bff; }
-        .btn-delete { background-color: #dc3545; }
-    </style>
+       .main-content {
+           flex: 1;
+           margin-left: 200px;
+           padding: 20px;
+       }
+
+       .notice-header {
+           display: flex;
+           justify-content: space-between;
+           padding: 20px;
+           background-color: #f8f9fa;
+           border-radius: 8px;
+           margin-bottom: 20px;
+           box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+       }
+
+       .notice-info span {
+           color: #666;
+           margin-right: 10px;
+       }
+
+       .notice-title {
+           font-size: 1.5rem;
+           margin-bottom: 10px;
+       }
+
+       .notice-content {
+           min-height: 300px;
+           padding: 30px;
+           background-color: white;
+           border-radius: 8px;
+           box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+           margin-bottom: 30px;
+           line-height: 1.6;
+       }
+
+       .button-group {
+           display: flex;
+           justify-content: flex-end;
+           gap: 10px;
+           margin-bottom: 20px;
+       }
+
+       .btn {
+           padding: 8px 20px;
+           border: none;
+           border-radius: 4px;
+           cursor: pointer;
+           text-decoration: none;
+           color: white;
+           transition: all 0.3s ease;
+       }
+
+       .btn-list {
+           background-color: #6c757d;
+       }
+
+       .btn-modify { 
+           background-color: #007bff; 
+       }
+
+       .btn-delete { 
+           background-color: #dc3545; 
+       }
+
+       .btn:hover {
+           opacity: 0.9;
+           transform: translateY(-1px);
+       }
+   </style>
 </head>
 <body>
-	<div class="sidebar">
-	    <div class="logo"></div>
-	    <a href="/dashboard" class="menu-item">DashBoard</a>
-	    <a href="/profile" class="menu-item">내 정보</a>
-	    <a href="/management" class="menu-item">일정관리</a>
-	    <a href="/notices" class="menu-item">공지사항</a>
-	    <a href="/messages" class="menu-item">메시지함</a>
-	    <a href="/attendance" class="menu-item">급여 조회</a>
-	    <a href="/hrInquiry" class="menu-item">문의하기</a>
-	    <a href="/approval" class="menu-item">업무공유</a>
-	</div>
+   <div class="sidebar">
+       <div class="logo"></div>
+       <!-- 공통 메뉴 -->
+       <a href="/dashboard" class="menu-item">DashBoard</a>
+       <a href="/profile" class="menu-item">내 정보</a>
+       <a href="/management" class="menu-item">일정관리</a>
+       <a href="/notices" class="menu-item">공지사항</a>
+       <a href="/attendance" class="menu-item">급여 조회</a>
+       <a href="/messages" class="menu-item">메시지</a>
+       <a href="/approval" class="menu-item">업무공유</a>
 
-    <div class="main-content">
-        <div class="notice-header">
-            <div>
-                <strong>제목: </strong><span th:text="${notice.title}"></span>
-            </div>
-            <div>
-                <span>작성자: </span><span th:text="${notice.authorName}"></span>
-                <span> | </span>
-                <span>작성일: </span><span th:text="${#temporals.format(notice.createdDate, 'yyyy-MM-dd HH:mm:ss')}"></span>
-            </div>
-        </div>
+       <!-- 관리자 전용 메뉴 -->
+       <div th:if="${session.userRole == 'ADMIN' || session.userRole == 'HR'}">
+           <a href="/attendance/manage" class="menu-item">근퇴 관리</a>
+           <a href="/employee/manage" class="menu-item">인사 관리</a>
+       </div>
+   </div>
 
-        <div class="notice-content" th:text="${notice.content}"></div>
-        
-        <div class="button-group">
-            <a th:href="@{/notices/{id}/edit(id=${notice.noticeId})}" class="btn btn-modify">수정</a>
-            <form th:action="@{/notices/{id}/delete(id=${notice.noticeId})}" method="post" style="display: inline;">
-                <button type="submit" class="btn btn-delete" onclick="return confirm('정말 삭제하시겠습니까?')">삭제</button>
-            </form>
-        </div>
+   <div class="main-content">
+       <div class="notice-header">
+           <div>
+               <div class="notice-title" th:text="${notice.title}"></div>
+               <div class="notice-info">
+                   <span>작성자: </span><span th:text="${notice.authorName}"></span>
+                   <span>|</span>
+                   <span>작성일: </span>
+                   <span th:text="${#temporals.format(notice.createdDate, 'yyyy-MM-dd HH:mm:ss')}"></span>
+               </div>
+           </div>
+       </div>
 
-    </div>
+       <div class="notice-content" th:text="${notice.content}"></div>
+
+       <div class="button-group">
+           <!-- 관리자만 수정/삭제 버튼 표시 -->
+           <div th:if="${session.userRole == 'ADMIN'}">
+               <a th:href="@{/notices/{id}/edit(id=${notice.noticeId})}" class="btn btn-modify">수정</a>
+               <form th:action="@{/notices/{id}/delete(id=${notice.noticeId})}" method="post" style="display: inline;">
+                   <button type="submit" class="btn btn-delete" 
+                           onclick="return confirm('정말 삭제하시겠습니까?')">삭제</button>
+               </form>
+           </div>
+           <a href="/notices" class="btn btn-list">목록</a>
+       </div>
+   </div>
 </body>
 </html>

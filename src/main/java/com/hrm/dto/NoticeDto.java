@@ -14,5 +14,6 @@ public class NoticeDto {
     private String content;
     private int authorId;
     private LocalDateTime createdDate;
+    private int readCount;
     private String authorName;
 }

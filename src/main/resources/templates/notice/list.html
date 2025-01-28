@@ -1,146 +1,187 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>공지사항</title>
-    <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { display: flex; min-height: 100vh; }
+   <title>공지사항</title>
+   <style>
+       * { margin: 0; padding: 0; box-sizing: border-box; }
+       body { display: flex; min-height: 100vh; }
 
-        .sidebar {
-            width: 200px;
-            background-color: #333;
-            padding: 20px;
-        }
+       .sidebar {
+           width: 200px;
+           background-color: #333;
+           padding: 20px;
+           height: 100vh;
+           position: fixed;
+       }
 
-        .sidebar .logo {
-            width: 100px;
-            height: 100px;
-            background-color: #666;
-            border-radius: 50%;
-            margin: 0 auto 20px;
-            overflow: hidden;
-        }
+       .sidebar .logo {
+           width: 100px;
+           height: 100px;
+           border-radius: 50%;
+           margin: 0 auto 20px;
+           overflow: hidden;
+       }
 
-        .sidebar .menu-item {
-            padding: 10px 0;
-            color: white;
-            text-decoration: none;
-            display: block;
-        }
+       .sidebar .menu-item {
+           padding: 12px 15px;
+           color: white;
+           text-decoration: none;
+           display: block;
+           margin-bottom: 5px;
+           border-radius: 5px;
+           transition: background-color 0.3s;
+       }
 
-        .main-content {
-            flex: 1;
-            padding: 20px;
-            position: relative;
-            min-height: 100vh;
-        }
+       .sidebar .menu-item:hover {
+           background-color: #444;
+       }
 
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
+       .main-content {
+           flex: 1;
+           margin-left: 200px;
+           padding: 20px;
+           position: relative;
+           min-height: 100vh;
+       }
 
-        .search-bar {
-            display: flex;
-            gap: 10px;
-            justify-content: flex-end;
-            margin-bottom: 20px;
-        }
+       .content-header {
+           margin-bottom: 20px;
+       }
 
-        .search-bar select {
-            padding: 5px;
-            width: 100px;
-        }
+       .search-bar {
+           display: flex;
+           gap: 10px;
+           margin-bottom: 20px;
+           justify-content: flex-end;
+       }
 
-        .search-bar input {
-            padding: 5px;
-            width: 200px;
-        }
+       .search-bar select,
+       .search-bar input {
+           padding: 8px;
+           border: 1px solid #ddd;
+           border-radius: 4px;
+       }
 
-        .search-bar button {
-            padding: 5px 15px;
-            background-color: #007bff;
-            color: white;
-            border: none;
-            border-radius: 4px;
-            cursor: pointer;
-        }
+       .search-bar button {
+           padding: 8px 16px;
+           background-color: #007bff;
+           color: white;
+           border: none;
+           border-radius: 4px;
+           cursor: pointer;
+       }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
+       table {
+           width: 100%;
+           border-collapse: collapse;
+           margin-top: 20px;
+       }
 
-        th, td {
-            padding: 10px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
-        }
+       th, td {
+           padding: 12px;
+           text-align: left;
+           border-bottom: 1px solid #ddd;
+       }
 
-        th {
-            background-color: #f5f5f5;
-        }
+       th {
+           background-color: #f8f9fa;
+           font-weight: bold;
+       }
 
-        .write-btn {
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
-            padding: 8px 20px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            text-decoration: none;
-            color: black;
-        }
-    </style>
+       tr:hover {
+           background-color: #f5f5f5;
+       }
+
+       .floating-button {
+           position: fixed;
+           bottom: 30px;
+           right: 30px;
+           z-index: 100;
+       }
+
+       .write-btn {
+           display: inline-block;
+           padding: 8px 20px;
+           background-color: #007bff;
+           color: white;
+           border: none;
+           border-radius: 4px;
+           text-decoration: none;
+           cursor: pointer;
+           box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+           transition: all 0.3s ease;
+       }
+
+       .write-btn:hover {
+           background-color: #0056b3;
+           box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+           transform: translateY(-2px);
+       }
+   </style>
 </head>
 <body>
-<div class="sidebar">
-    <div class="logo"></div>
-    <a href="/dashboard" class="menu-item">DashBoard</a>
-    <a href="/profile" class="menu-item">내 정보</a>
-    <a href="/management" class="menu-item">일정관리</a>
-    <a href="/notices" class="menu-item">공지사항</a>
-    <a href="/messages" class="menu-item">메시지함</a>
-    <a href="/attendance" class="menu-item">급여 조회</a>
-    <a href="/hrInquiry" class="menu-item">문의하기</a>
-    <a href="/approval" class="menu-item">업무공유</a>
-</div>
+   <!-- 사이드바 -->
+   <div class="sidebar">
+       <div class="logo"></div>
+       <!-- 공통 메뉴 -->
+       <a href="/dashboard" class="menu-item">DashBoard</a>
+       <a href="/profile" class="menu-item">내 정보</a>
+       <a href="/management" class="menu-item">일정관리</a>
+       <a href="/notices" class="menu-item">공지사항</a>
+       <a href="/attendance" class="menu-item">급여 조회</a>
+       <a href="/messages" class="menu-item">메시지</a>
+       <a href="/approval" class="menu-item">업무공유</a>
 
-<div class="main-content">
-    <h1>공지사항</h1>
-   <form th:action="@{/notices/search}" method="get" class="search-bar">
-        <select name="searchType">
-            <option value="title">제목</option>
-            <option value="author">작성자</option>
-        </select>
-        <input type="text" name="keyword" placeholder="검색어를 입력하세요">
-        <button type="submit">검색</button>
-    </form>
+       <!-- 관리자 전용 메뉴 -->
+       <div th:if="${session.userRole == 'ADMIN' || session.userRole == 'HR'}">
+           <a href="/attendance/manage" class="menu-item">근퇴 관리</a>
+           <a href="/employee/manage" class="menu-item">인사 관리</a>
+       </div>
+   </div>
 
-    <table>
-        <thead>
-            <tr>
-                <th>번호</th>
-                <th>제목</th>
-                <th>작성자</th>
-                <th>작성일</th>
-                <th>조회수</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr th:each="notice : ${notices}">
-                <td th:text="${notice.noticeId}"></td>
-                <td><a th:href="@{/notices/{id}(id=${notice.noticeId})}" th:text="${notice.title}"></a></td>
-                <td th:text="${notice.authorName}"></td>
-                <td th:text="${#temporals.format(notice.createdDate, 'yyyy-MM-dd')}"></td>
-                <td>0</td>
-            </tr>
-        </tbody>
-    </table>
+   <!-- 메인 컨텐츠 -->
+   <div class="main-content">
+       <div class="content-header">
+           <h2>공지사항</h2>
+       </div>
 
-    <a href="/notices/new" class="write-btn">작성</a>
-</div>
+       <!-- 검색 바 -->
+       <div class="search-bar">
+           <select name="searchType">
+               <option value="title">제목</option>
+               <option value="author">작성자</option>
+               <option value="content">내용</option>
+           </select>
+           <input type="text" placeholder="검색어를 입력하세요">
+           <button type="submit">검색</button>
+       </div>
+
+       <!-- 공지사항 테이블 -->
+       <table>
+           <thead>
+               <tr>
+                   <th>번호</th>
+                   <th>제목</th>
+                   <th>작성자</th>
+                   <th>작성일</th>
+                   <th>조회수</th>
+               </tr>
+           </thead>
+           <tbody>
+               <tr th:each="notice : ${notices}">
+                   <td th:text="${notice.noticeId}"></td>
+                   <td><a th:href="@{/notices/{id}(id=${notice.noticeId})}" th:text="${notice.title}"></a></td>
+                   <td th:text="${notice.authorName}"></td>
+                   <td th:text="${#temporals.format(notice.createdDate, 'yyyy-MM-dd')}"></td>
+                   <td th:text="${notice.readCount}"></td>
+               </tr>
+           </tbody>
+       </table>
+
+       <!-- ADMIN만 작성 버튼 표시 -->
+       <div th:if="${session.userRole == 'ADMIN'}" class="floating-button">
+           <a href="/notices/new" class="write-btn">작성</a>
+       </div>
+   </div>
 </body>
 </html>

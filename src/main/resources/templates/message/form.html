@@ -89,17 +89,23 @@
    </style>
 </head>
 <body>
-	<div class="sidebar">
-	    <div class="logo"></div>
-	    <a href="/dashboard" class="menu-item">DashBoard</a>
-	    <a href="/profile" class="menu-item">내 정보</a>
-	    <a href="/management" class="menu-item">일정관리</a>
-	    <a href="/notices" class="menu-item">공지사항</a>
-	    <a href="/messages" class="menu-item">메시지함</a>
-	    <a href="/attendance" class="menu-item">급여 조회</a>
-	    <a href="/hrInquiry" class="menu-item">문의하기</a>
-	    <a href="/approval" class="menu-item">업무공유</a>
-	</div>
+    <div class="sidebar">
+        <div class="logo"></div>
+        <!-- 공통 메뉴 -->
+        <a href="/dashboard" class="menu-item">DashBoard</a>
+        <a href="/profile" class="menu-item">내 정보</a>
+        <a href="/management" class="menu-item">일정관리</a>
+        <a href="/notices" class="menu-item">공지사항</a>
+        <a href="/attendance" class="menu-item">급여 조회</a>
+        <a href="/messages" class="menu-item">메시지</a>
+        <a href="/approval" class="menu-item">업무공유</a>
+
+        <!-- 관리자 전용 메뉴 -->
+		<div th:if="${session.userRole == 'ADMIN' || session.userRole == 'HR'}">
+		    <a href="/attendance/manage" class="menu-item">근퇴 관리</a>
+		    <a href="/employee/manage" class="menu-item">인사 관리</a>
+		</div>
+    </div>
 
    <div class="main-content">
        <h2>메시지 작성</h2>

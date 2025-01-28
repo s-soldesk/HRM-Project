@@ -3,6 +3,7 @@ package com.hrm.service;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.hrm.dto.NoticeDto;
 import com.hrm.mapper.NoticeMapper;
@@ -37,5 +38,11 @@ public class NoticeService {
     public List<NoticeDto> searchNotices(String searchType, String keyword) {
         return noticeMapper.searchNotices(searchType, keyword);
        
+    }
+    
+    @Transactional
+    public NoticeDto getNoticeWithIncreasedReadCount(int noticeId) {
+    	noticeMapper.increaseReadCount(noticeId);
+        return noticeMapper.getNoticeById(noticeId);
     }
 }

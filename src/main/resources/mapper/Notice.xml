@@ -29,6 +29,12 @@
    <delete id="deleteNotice" parameterType="int">
        DELETE FROM Notice WHERE NoticeID = #{noticeId}
    </delete>
+   
+	<update id="increaseReadCount">
+	    UPDATE Notice
+	    SET Readcount = Readcount + 1
+	    WHERE NoticeID = #{noticeId}
+	</update>
 
    <select id="searchNotices" resultType="com.hrm.dto.NoticeDto">
        SELECT n.*, 

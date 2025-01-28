@@ -14,6 +14,7 @@ public interface NoticeMapper {
     void insertNotice(NoticeDto notice);
     void updateNotice(NoticeDto notice);
     void deleteNotice(int noticeId);
+    void increaseReadCount(int noticeId);
     
     List<NoticeDto> searchNotices(@Param("searchType") String searchType, 
             @Param("keyword") String keyword);

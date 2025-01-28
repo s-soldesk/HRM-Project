@@ -1,0 +1,182 @@
+<!-- templates/salary/calculate.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+<head>
+    <title>급여 계산</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="calculate-container">
+            <div class="month-selector">
+                <select id="yearMonth">
+                    <option value="">귀속연월 선택</option>
+                    <!-- 동적으로 최근 12개월 옵션 생성 -->
+                    <option th:each="month : ${months}" 
+                            th:value="${month}" 
+                            th:text="${month}"></option>
+                </select>
+            </div>
+
+            <!-- 1단계: 근태 확인 -->
+            <div class="attendance-check-section">
+                <h3>근태 확인</h3>
+                <table class="attendance-table">
+                    <thead>
+                        <tr>
+                            <th>사원번호</th>
+                            <th>이름</th>
+                            <th>부서</th>
+                            <th>근무일수</th>
+                            <th>총근무시간</th>
+                            <th>연장근무시간</th>
+                            <th>승인상태</th>
+                            <th>상세보기</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="attendance : ${attendances}">
+                            <td th:text="${attendance.employeeId}"></td>
+                            <td th:text="${attendance.employeeName}"></td>
+                            <td th:text="${attendance.departmentName}"></td>
+                            <td th:text="${attendance.workingDays}"></td>
+                            <td th:text="${attendance.totalWorkingHours}"></td>
+                            <td th:text="${attendance.overtimeHours}"></td>
+                            <td th:text="${attendance.approvalStatus}"></td>
+                            <td>
+                                <button class="btn-detail" 
+                                        th:onclick="'showAttendanceDetail(' + ${attendance.employeeId} + ')'">
+                                    상세보기
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="action-buttons">
+                    <button id="btnCloseAttendance" class="btn-primary" 
+                            th:disabled="${!canCloseAttendance}">
+                        근태 마감하기
+                    </button>
+                </div>
+            </div>
+
+            <!-- 2단계: 급여 계산 -->
+            <div class="salary-calculation-section" th:if="${attendanceClosed}">
+                <h3>급여 계산</h3>
+                <table class="salary-table">
+                    <thead>
+                        <tr>
+                            <th>사원번호</th>
+                            <th>이름</th>
+                            <th>기본급</th>
+                            <th>연장수당</th>
+                            <th>기타수당</th>
+                            <th>공제액</th>
+                            <th>실지급액</th>
+                            <th>계산상태</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="salary : ${salaries}">
+                            <td th:text="${salary.employeeId}"></td>
+                            <td th:text="${salary.employeeName}"></td>
+                            <td th:text="${#numbers.formatDecimal(salary.baseSalary, 0, 'COMMA', 0, 'POINT')}"></td>
+                            <td th:text="${#numbers.formatDecimal(salary.overtimePay, 0, 'COMMA', 0, 'POINT')}"></td>
+                            <td th:text="${#numbers.formatDecimal(salary.allowances, 0, 'COMMA', 0, 'POINT')}"></td>
+                            <td th:text="${#numbers.formatDecimal(salary.deductions, 0, 'COMMA', 0, 'POINT')}"></td>
+                            <td th:text="${#numbers.formatDecimal(salary.netPay, 0, 'COMMA', 0, 'POINT')}"></td>
+                            <td th:text="${salary.calculationStatus}"></td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div class="action-buttons">
+                    <button id="btnCalculateSalary" class="btn-primary" 
+                            th:disabled="${!canCalculateSalary}">
+                        급여 계산하기
+                    </button>
+                </div>
+            </div>
+
+            <!-- 3단계: 급여 확정 -->
+            <div class="salary-confirmation-section" th:if="${salaryCalculated}">
+                <div class="action-buttons">
+                    <button id="btnConfirmSalary" class="btn-primary" 
+                            th:disabled="${!canConfirmSalary}">
+                        급여 확정하기
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 근태 상세 모달 -->
+    <div id="attendanceDetailModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>근태 상세 내역</h2>
+            <div id="attendanceDetailContent"></div>
+        </div>
+    </div>
+
+    <script th:inline="javascript">
+        const showAttendanceDetail = (employeeId) => {
+            fetch(`/attendance/detail/${employeeId}`)
+                .then(response => response.json())
+                .then(data => {
+                    // 모달에 데이터 표시
+                    document.getElementById('attendanceDetailContent').innerHTML = 
+                        createAttendanceDetailHTML(data);
+                    document.getElementById('attendanceDetailModal').style.display = 'block';
+                });
+        };
+
+        document.getElementById('btnCloseAttendance').addEventListener('click', () => {
+            if(confirm('근태를 마감하시겠습니까?')) {
+                const yearMonth = document.getElementById('yearMonth').value;
+                fetch(`/salary/manage/close-attendance/${yearMonth}`, {
+                    method: 'POST'
+                })
+                .then(response => {
+                    if(response.ok) {
+                        alert('근태가 마감되었습니다.');
+                        location.reload();
+                    }
+                });
+            }
+        });
+
+        document.getElementById('btnCalculateSalary').addEventListener('click', () => {
+            if(confirm('급여를 계산하시겠습니까?')) {
+                const yearMonth = document.getElementById('yearMonth').value;
+                fetch(`/salary/manage/calculate/${yearMonth}`, {
+                    method: 'POST'
+                })
+                .then(response => {
+                    if(response.ok) {
+                        alert('급여 계산이 완료되었습니다.');
+                        location.reload();
+                    }
+                });
+            }
+        });
+
+        document.getElementById('btnConfirmSalary').addEventListener('click', () => {
+            if(confirm('급여를 확정하시겠습니까? 확정 후에는 수정이 불가능합니다.')) {
+                const yearMonth = document.getElementById('yearMonth').value;
+                fetch(`/salary/manage/confirm/${yearMonth}`, {
+                    method: 'POST'
+                })
+                .then(response => {
+                    if(response.ok) {
+                        alert('급여가 확정되었습니다.');
+                        location.reload();
+                    }
+                });
+            }
+        });
+    </script>
+</body>
+</html>

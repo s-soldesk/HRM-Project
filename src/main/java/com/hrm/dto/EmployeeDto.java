@@ -15,7 +15,7 @@ public class EmployeeDto {
 	private Integer departmentId; // 부서번호
 	private String position; // 직급
 	private LocalDate hiredate; // 입사일
-	private String status; // 재직상태
+	private String status; // 재직상태(Active 재직, Inactive 휴직, Retirement 퇴사)
 	private String phonenumber; // 핸드폰
 	private String email; // 이메일
 	private DepartmentDto department; // 부서정보 매핑

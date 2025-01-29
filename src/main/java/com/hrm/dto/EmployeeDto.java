@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 public class EmployeeDto {
 	private Integer employeeId; // 사원번호
 	private String name; // 사원이름
-	private LocalDate dateBirth; // 생일
+	private LocalDate dateOfBirth; // 생일
 	private String gender; // 성별
 	private Integer departmentId; // 부서번호
 	private String position; // 직급

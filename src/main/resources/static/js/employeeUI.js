@@ -129,9 +129,12 @@ export async function employeeDetail(id) {
 
 // 상세 정보 업데이트 함수
 function updateDetailView(employee) {
+	console.log('Employee Detail Data:', employee); // 전체 데이터 확인
+	    console.log('Date of Birth:', employee.dateBirth); // 생년월일 데이터만 확인
+	    console.log('Hire Date:', employee.hiredate); // 입사일 데이터만 확인
 	// 각 필드 업데이트
 	document.getElementById('empName').textContent = employee.name ?? '';
-	document.getElementById('empDob').textContent = formatDate(employee.dateBirth) ?? '';
+	document.getElementById('empDob').textContent = formatDate(employee.dateOfBirth) ?? '';
 	document.getElementById('empGender').textContent = formatGender(employee.gender) ?? '';
 	document.getElementById('empDepartment').textContent = employee.department?.departmentname ?? '(부서정보없음)';
 	document.getElementById('empPosition').textContent = employee.position ?? '';

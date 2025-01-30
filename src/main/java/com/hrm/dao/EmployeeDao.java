@@ -27,6 +27,7 @@ public interface EmployeeDao {
 				e.Name,
 				d.DepartmentName
 			FROM Employee e NATURAL JOIN Department d
+			ORDER BY EmployeeID
 			""" })
 	@Result(property = "department.departmentname", column = "DepartmentName")
 	// "DepartmentName" 컬럼의 값을 EmployeeDto 의 Department 객체의 departmentname 필드에 넣음.

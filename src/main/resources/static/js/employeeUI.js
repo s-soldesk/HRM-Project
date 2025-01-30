@@ -81,7 +81,11 @@ function setEditFormData(employee) {
 
 	form.querySelector('#name').value = employee.name;
 	form.querySelector('#dateOfBirth').value = employee.dateOfBirth;
-	form.querySelector('#gender').value = employee.gender;
+	// 성별 라디오 버튼 설정
+	const genderRadio = form.querySelector(`input[name="gender"][value="${employee.gender}"]`);
+	if (genderRadio) {
+		genderRadio.checked = true;
+	}
 	form.querySelector('#departmentId').value = employee.departmentId;
 	form.querySelector('#position').value = employee.position;
 	form.querySelector('#hiredate').value = employee.hiredate;

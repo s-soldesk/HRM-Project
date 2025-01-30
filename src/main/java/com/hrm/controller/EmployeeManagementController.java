@@ -5,6 +5,7 @@ import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -23,7 +24,7 @@ public class EmployeeManagementController {
 	private final EmployeeService eService;
 
 	/*
-	 * 사원 리스트 뷰를 반환하지 않고, 응답의 본문에 JSON 형식의 리스트를 반환
+	 * 사원 리스트 뷰를 반환하지 않고, 응답의 본문에 JSON 형식의 리스트를 반환 (CSR)
 	 */
 	@GetMapping("/list")
 	public List<EmployeeDto> getEmployeeList() {
@@ -54,5 +55,14 @@ public class EmployeeManagementController {
 	public EmployeeDto addEmployee(@RequestBody EmployeeDto employeeDto) {
 		return eService.addEmployee(employeeDto);
 	}
+
+	// 사원정보 수정
+	@PutMapping("{employeeId}")
+	public int updateEmployee(@PathVariable("employeeId") int employeeId, @RequestBody EmployeeDto employeeDto) {
+		employeeDto.setEmployeeId(employeeId);
+		return eService.updateEmployee(employeeDto);
+	}
+
+	// 사원 삭제 (필요한가?)
 
 }

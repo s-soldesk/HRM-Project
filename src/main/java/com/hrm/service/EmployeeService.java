@@ -42,4 +42,9 @@ public class EmployeeService {
 		}
 		return null;
 	}
+
+	// 사원 수정
+	public int updateEmployee(EmployeeDto employeeDto) {
+		return employeeDao.updateEmployee(employeeDto);
+	}
 }

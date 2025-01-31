@@ -47,4 +47,20 @@ public class EmployeeService {
 	public int updateEmployee(EmployeeDto employeeDto) {
 		return employeeDao.updateEmployee(employeeDto);
 	}
+
+	// 사원 검색
+	public List<EmployeeDto> searchEmployee(String searchType, String keyword) {
+		if (searchType.equals("id")) {
+			try {
+				return employeeDao.searchById(Integer.valueOf(keyword));
+			} catch (NumberFormatException e) {
+				throw new IllegalArgumentException("사원 ID는 숫자로 검색해야합니다.");
+			}
+		} else if (searchType.equals("name"))
+			return employeeDao.searchByName(keyword);
+		else if (searchType.equals("department"))
+			return employeeDao.searchByDept(keyword);
+		else
+			throw new IllegalArgumentException("존재하지 않는 검색 타입: " + searchType); // 예외
+	}
 }

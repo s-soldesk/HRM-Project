@@ -15,7 +15,17 @@ public class AttendanceDto {
 	private LocalDate date; // 근무 날짜
 	private LocalTime checkInTime; // 출근 시간
 	private LocalTime checkOutTime; // 퇴근 시간
-	private BigDecimal hoursWorked; // 근무 시간
-	private BigDecimal overtimeHours; // 초과근무시간
+	private Double hoursWorked; // 근무 시간
+	private Double overtimeHours; // 초과근무시간
 	private String status; // 출근 상태
+	
+	// ------------------------------------------ 추가
+	
+	private String employeeName; // 사원이름 조인
+	private String departmentName; // 부서이름 조인 
+	private String position; // 조인
+	private Integer workingDays; // 근무일수 추가
+	
+	private DepartmentDto department; // 부서정보 매핑
+	private EmployeeDto employee; // 사원 정보 매핑
 }

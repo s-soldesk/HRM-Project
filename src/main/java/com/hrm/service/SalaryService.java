@@ -23,4 +23,15 @@ public interface SalaryService {
 
     // 급여 데이터 삭제 (인사 전용)
     boolean deleteSalary(Integer salaryId);
+    
+    // 급여 관리 데이터
+    void calculateSalaries(String yearMonth);
+    
+    // 근태 확인
+    void confirmSalaries(String yearMonth);
+    
+    // 급여 계산
+    boolean isSalaryCalculated(String yearMonth);
+    
+    List<SalaryDto> getCalculatedSalaries(String yearMonth);
 }

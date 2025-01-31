@@ -19,4 +19,9 @@ public interface SalaryDao {
 	List<SalaryDto> getSalariesByEmployeeName(String name);
     List<SalaryDto> getSalariesByPosition(String position);
     List<SalaryDto> getSalariesByDepartment(String department);
+    
+    // 근태 관련 메서드
+    void confirmSalaries(String yearMonth);
+    boolean isSalaryCalculated(String yearMonth);
+    List<SalaryDto> getCalculatedSalaries(String yearMonth);
 }

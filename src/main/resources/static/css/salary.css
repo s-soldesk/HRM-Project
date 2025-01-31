@@ -334,3 +334,76 @@ body {
 .arrow-btn:hover {
     color: #0066b3;
 }
+
+/* 급여 관리 CSS */
+.salary-calculate-container {
+    padding: 20px;
+}
+
+.month-selector {
+    margin-bottom: 20px;
+}
+
+.month-selector select {
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.calculate-content {
+    background: #fff;
+    padding: 20px;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.calculate-content h3 {
+    margin-bottom: 15px;
+    font-size: 18px;
+}
+
+.attendance-list table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.attendance-list th,
+.attendance-list td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: center;
+}
+
+.attendance-list th {
+    background: #f5f5f5;
+}
+
+.no-data {
+    padding: 30px;
+    text-align: center;
+    color: #666;
+}
+
+.button-group {
+    margin-top: 20px;
+    text-align: right;
+}
+
+.btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.btn.primary {
+    background: #0066b3;
+    color: white;
+}
+
+.btn.primary:hover {
+    background: #005299;
+}

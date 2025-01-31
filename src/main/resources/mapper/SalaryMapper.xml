@@ -133,8 +133,8 @@
 		DELETE FROM Salary WHERE
 		SalaryID = #{salaryId}
 	</delete>
-	
-	<!--  검색 사원이름  -->
+
+	<!-- 검색 사원이름 -->
 	<select id="getSalariesByEmployeeName" parameterType="string"
 		resultMap="SalaryResultMap">
 		SELECT
@@ -145,12 +145,14 @@
 		e.Position AS position,
 		d.DepartmentName AS departmentName
 		FROM Salary s
-		JOIN Employee e ON s.EmployeeID = e.EmployeeID
-		JOIN Department d ON e.DepartmentID = d.DepartmentID
+		JOIN Employee e ON
+		s.EmployeeID = e.EmployeeID
+		JOIN Department d ON e.DepartmentID =
+		d.DepartmentID
 		WHERE e.Name LIKE CONCAT('%', #{name}, '%')
 	</select>
-	
-	<!--  검색 사원 직급 -->
+
+	<!-- 검색 사원 직급 -->
 	<select id="getSalariesByPosition" parameterType="string"
 		resultMap="SalaryResultMap">
 		SELECT
@@ -161,11 +163,13 @@
 		e.Position AS position,
 		d.DepartmentName AS departmentName
 		FROM Salary s
-		JOIN Employee e ON s.EmployeeID = e.EmployeeID
-		JOIN Department d ON e.DepartmentID = d.DepartmentID
+		JOIN Employee e ON
+		s.EmployeeID = e.EmployeeID
+		JOIN Department d ON e.DepartmentID =
+		d.DepartmentID
 		WHERE e.Position LIKE CONCAT('%', #{position}, '%')
 	</select>
-	
+
 	<!-- 검색 부서 -->
 	<select id="getSalariesByDepartment" parameterType="string"
 		resultMap="SalaryResultMap">
@@ -177,8 +181,38 @@
 		e.Position AS position,
 		d.DepartmentName AS departmentName
 		FROM Salary s
+		JOIN Employee e ON
+		s.EmployeeID = e.EmployeeID
+		JOIN Department d ON e.DepartmentID =
+		d.DepartmentID
+		WHERE d.DepartmentName LIKE CONCAT('%', #{department},
+		'%')
+	</select>
+
+	<!-- 해당 월의 급여 계산 여부 확인 -->
+	<select id="isSalaryCalculated" parameterType="string"
+		resultType="boolean">
+		SELECT COUNT(*) > 0
+		FROM Salary
+		WHERE DATE_FORMAT(PaymentDate, '%Y/%m') = #{yearMonth}
+	</select>
+
+	<!-- 해당 월의 계산된 급여 목록 조회 -->
+	<select id="getCalculatedSalaries" parameterType="string"
+		resultMap="SalaryResultMap">
+		SELECT s.*, e.*, d.DepartmentName
+		FROM Salary s
 		JOIN Employee e ON s.EmployeeID = e.EmployeeID
 		JOIN Department d ON e.DepartmentID = d.DepartmentID
-		WHERE d.DepartmentName LIKE CONCAT('%', #{department}, '%')
+		WHERE DATE_FORMAT(s.PaymentDate, '%Y/%m') = #{yearMonth}
+		ORDER BY s.EmployeeID
 	</select>
+
+	<!-- 급여 확정 처리 -->
+	<update id="confirmSalaries" parameterType="string">
+		UPDATE Salary
+		SET Status = 'CONFIRMED'
+		WHERE DATE_FORMAT(PaymentDate, '%Y/%m') = #{yearMonth}
+	</update>
+
 </mapper>

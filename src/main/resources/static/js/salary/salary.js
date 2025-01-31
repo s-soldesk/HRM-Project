@@ -1,4 +1,5 @@
-// salary.js
+
+
 document.addEventListener('DOMContentLoaded', function() {
     // 급여 자동 계산 함수
     function calculateSalary() {

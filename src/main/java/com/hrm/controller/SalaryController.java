@@ -56,7 +56,7 @@ public class SalaryController {
 	@GetMapping("/employee")
 	public String viewEmployeeSalary(
 	        @RequestParam(name = "employeeId", required = false) Integer employeeId,
-	        Model model) {
+	        Model m) {
 	    
 	    // 임시로 직원 ID 설정 (나중에 로그인 정보에서 가져올 예정)
 	    if (employeeId == null) {
@@ -65,18 +65,18 @@ public class SalaryController {
 	    
 	    List<SalaryDto> salaries = salaryService.getSalariesByEmployeeId(employeeId);
 	    if (!salaries.isEmpty()) {
-	        model.addAttribute("employee", salaries.get(0).getEmployee());
+	        m.addAttribute("employee", salaries.get(0).getEmployee());
 	    }
-	    model.addAttribute("salaries", salaries);
+	    m.addAttribute("salaries", salaries);
 	    
 	    return "salary/employee";
 	}
 	
 	// 급여 명세서
 	@GetMapping("/detail/{salaryId}")
-	public String getSalaryDetail(@PathVariable("salaryId") Integer salaryId, Model model) {
+	public String getSalaryDetail(@PathVariable("salaryId") Integer salaryId, Model m) {
 		SalaryDto salary = salaryService.getSalaryById(salaryId);
-		model.addAttribute("salary", salary);
+		m.addAttribute("salary", salary);
 		return "salary/salaryDetail";
 	}
 }

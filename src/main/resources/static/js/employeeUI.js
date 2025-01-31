@@ -304,12 +304,61 @@ function formatStatus(status) {
 	return statusMap[status] || status;
 }
 
+// 검색 폼 설정
+function setupSearchForm() {
+	const searchForm = document.getElementById('searchForm');
+
+	if (searchForm) {
+		searchForm.onsubmit = handleSearch;
+	}
+}
+
+// 검색 처리
+async function handleSearch(e) {
+	e.preventDefault();
+
+	const searchType = document.getElementById('searchType').value;
+	const keyword = document.getElementById('searchKeyword').value;
+
+	if (!keyword.trim()) {
+		alert('검색어를 입력해주세요.');
+		return;
+	}
+
+	try {
+		// ID 검색 시 숫자 검증
+		if (searchType === 'id' && !/^\d+$/.test(keyword)) {
+			alert('사원 ID는 숫자만 입력 가능합니다.');
+			return;
+		}
+
+		const employees = await api.searchEmployee(searchType, keyword);
+
+		if (employees.length === 0) {
+			alert('검색 결과가 없습니다.');
+			return;
+		}
+
+		// 검색 결과로 테이블 업데이트
+		displayEmployees(employees);
+
+	} catch (error) {
+		console.error('검색 중 오류:', error);
+		if (error.message.includes('숫자로')) {
+			alert('사원 ID는 숫자만 입력 가능합니다.');
+		} else {
+			alert('검색 중 오류가 발생했습니다.');
+		}
+	}
+}
+
 // 초기화 함수 (외부에서 호출할 수 있도록 export)
 export function initializeUI() {
 	modal();
 	initializeEditModal();
 	initializeModalOutsideClick();
 	employeeList();
+	setupSearchForm();
 
 	const editBtn = document.getElementById('editEmployeeBtn');
 	editBtn.addEventListener('click', () => {

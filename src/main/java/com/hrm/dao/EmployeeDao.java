@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Result;
 import org.apache.ibatis.annotations.Results;
 import org.apache.ibatis.annotations.Select;
@@ -127,4 +128,49 @@ public interface EmployeeDao {
 	})
 	int updateEmployee(EmployeeDto employeeDto);
 	
+	/*-----------------------------사원 검색--------------------------------- */ 
+	 /*
+	  *  GET /employees/search
+	 */
+	// 사원 ID로 검색
+	@Select({"""
+			SELECT
+				e.EmployeeID,
+				e.Name,
+				d.DepartmentName
+			FROM Employee e NATURAL JOIN Department d
+			WHERE EmployeeID = #{keyword}
+			"""
+	})
+	@Result(property = "department.departmentname", column = "DepartmentName")
+	List<EmployeeDto> searchById(int keyword);
+	
+	// 사원 이름으로 검색
+	@Select({"""
+		SELECT
+			e.EmployeeID,
+			e.Name,
+			d.DepartmentName
+		FROM Employee e NATURAL JOIN Department d
+		WHERE Name LIKE CONCAT('%', #{keyword}, '%')
+		ORDER BY EmployeeID
+		"""
+	})
+	@Result(property = "department.departmentname", column = "DepartmentName")
+	List<EmployeeDto> searchByName(String keyword);
+	
+	// 사원의 부서로 검색
+	@Select({"""
+		SELECT
+			e.EmployeeID,
+			e.Name,
+			d.DepartmentName
+		FROM Employee e NATURAL JOIN Department d
+		WHERE DepartmentName LIKE CONCAT('%', #{keyword}, '%')
+		ORDER BY EmployeeID
+		"""
+	})
+	@Result(property = "department.departmentname", column = "DepartmentName")
+	List<EmployeeDto> searchByDept(String keyword);
+	/*-----------------------------사원 검색--------------------------------- */ 
 }

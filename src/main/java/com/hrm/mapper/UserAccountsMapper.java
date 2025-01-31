@@ -9,5 +9,10 @@ import com.hrm.dto.UserAccounts;
 
 @Mapper
 public interface UserAccountsMapper {
-    UserAccountDto findByEmployeeIdAndPassword(@Param("employeeId") String employeeId, @Param("password") String password);
+    UserAccountDto findByEmployeeIdAndPassword(@Param("employeeId") Integer employeeId, 
+                                             @Param("password") String password);
+    
+    UserAccountDto findByEmployeeId(Integer employeeId);
+    int updatePassword(@Param("employeeId") Integer employeeId, 
+                      @Param("newPassword") String newPassword);
 }

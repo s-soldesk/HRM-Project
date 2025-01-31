@@ -19,20 +19,6 @@ import lombok.extern.slf4j.Slf4j;
 public class MessageService {
     private final MessageMapper messageMapper;
     
-    public List<EmployeeDto> getAllEmployeesWithLastMessage(Integer currentUserId) {
-        try {
-            List<EmployeeDto> employees = messageMapper.getAllEmployees();
-            for (EmployeeDto emp : employees) {
-                MessageDto lastMessage = messageMapper.getLastMessageBetweenUsers(currentUserId, emp.getEmployeeId());
-                emp.setLastMessage(lastMessage != null ? lastMessage.getContent() : null);
-            }
-            return employees;
-        } catch (Exception e) {
-            log.error("Error getting employees with last messages: ", e);
-            throw new RuntimeException("Failed to get employees with last messages", e);
-        }
-    }
-    
     @Transactional
     public void sendMessage(MessageDto message) {
         try {
@@ -55,18 +41,6 @@ public class MessageService {
         } catch (Exception e) {
             log.error("Error sending message: {}", e.getMessage(), e);
             throw new RuntimeException("Failed to send message", e);
-        }
-    }
-    
-    public List<EmployeeDto> getAllEmployees() {
-        try {
-            log.info("Getting all employees");
-            List<EmployeeDto> employees = messageMapper.getAllEmployees();
-            log.info("Found {} employees", employees.size());
-            return employees;
-        } catch (Exception e) {
-            log.error("Error getting all employees: {}", e.getMessage(), e);
-            throw new RuntimeException("Failed to get employees", e);
         }
     }
     
@@ -97,6 +71,18 @@ public class MessageService {
         } catch (Exception e) {
             log.error("Error getting message: ", e);
             throw new RuntimeException("Failed to get message", e);
+        }
+    }
+    
+    public List<EmployeeDto> getAllEmployees() {
+        try {
+            log.info("Getting all employees");
+            List<EmployeeDto> employees = messageMapper.getAllEmployees();
+            log.info("Found {} employees", employees.size());
+            return employees;  // 일단 마지막 메시지 기능은 제거하고 직원 목록만 반환
+        } catch (Exception e) {
+            log.error("Error getting employees: {}", e.getMessage(), e);
+            throw new RuntimeException("Failed to get employees", e);
         }
     }
     

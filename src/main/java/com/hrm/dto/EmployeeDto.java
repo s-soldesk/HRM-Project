@@ -13,6 +13,7 @@ public class EmployeeDto {
 	private LocalDate dateOfBirth; // 생일
 	private String gender; // 성별
 	private Integer departmentId; // 부서번호
+	 private String profileImage; // 프로필 이미지
 	private String position; // 직급
 	private LocalDate hiredate; // 입사일
 	private String status; // 재직상태
@@ -21,4 +22,5 @@ public class EmployeeDto {
 	private DepartmentDto department; // 부서정보 매핑
 	private String departmentName; //부서정보 조인
 	private String lastMessage;
+	private String role;
 }

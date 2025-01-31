@@ -30,31 +30,25 @@ public class MessageController {
     @GetMapping("/messages")
     public String getMessages(Model model, HttpSession session) {
         try {
-            UserAccountDto loggedInUser = (UserAccountDto) session.getAttribute("loggedInUser");
-            String userEmail = (String) session.getAttribute("loggedInEmail");
+            Integer employeeId = (Integer) session.getAttribute("loggedInEmail");
             
-            log.info("Session info - loggedInUser: {}, email: {}", loggedInUser, userEmail);
-            
-            if (loggedInUser == null || userEmail == null) {
-                log.warn("No user in session");
+            if (employeeId == null) {
+                log.warn("No employeeId found in session");
                 return "redirect:/login";
             }
 
             try {
-                EmployeeDto employee = employeeService.getEmployeeById(userEmail);
-                log.info("Found employee: {}", employee);
+                EmployeeDto employee = employeeService.getEmployeeById(employeeId); // 수정된 부분
                 
                 if (employee != null) {
-                    model.addAttribute("currentUserId", employee.getEmployeeId());
+                    model.addAttribute("currentUserId", employeeId);
                     List<EmployeeDto> employees = messageService.getAllEmployees();
-                    log.info("Found {} employees", employees.size());
                     model.addAttribute("employees", employees);
                     
-                    List<MessageDto> messages = messageService.getReceivedMessages(employee.getEmployeeId());
-                    log.info("Found {} messages", messages.size());
+                    List<MessageDto> messages = messageService.getReceivedMessages(employeeId);
                     model.addAttribute("messages", messages);
                 } else {
-                    log.warn("No employee found for email: {}", userEmail);
+                    log.warn("No employee found for id: {}", employeeId);
                     return "redirect:/login";
                 }
             } catch (Exception e) {
@@ -73,28 +67,23 @@ public class MessageController {
     @GetMapping("/messages/chat/{userId}")
     public String chatRoom(@PathVariable("userId") Integer userId, Model model, HttpSession session) {
         try {
-            String employeeId = (String) session.getAttribute("loggedInEmail");
-            log.info("Opening chat room between {} and {}", employeeId, userId);
+            Integer employeeId = (Integer) session.getAttribute("loggedInEmail");
             
             if (employeeId == null) {
                 return "redirect:/login";
             }
 
-            EmployeeDto employee = employeeService.getEmployeeById(employeeId);
+            EmployeeDto employee = employeeService.getEmployeeById(employeeId); // 수정된 부분
             
             if (employee != null) {
-                model.addAttribute("currentUserId", employee.getEmployeeId());
+                model.addAttribute("currentUserId", employeeId);
                 model.addAttribute("selectedUserId", userId);
                 
-                // 모든 직원 목록 가져오기
                 List<EmployeeDto> employees = messageService.getAllEmployees();
                 model.addAttribute("employees", employees);
                 
-                // 채팅 메시지 목록
-                List<MessageDto> messages = messageService.getChatMessages(employee.getEmployeeId(), userId);
+                List<MessageDto> messages = messageService.getChatMessages(employeeId, userId);
                 model.addAttribute("messages", messages);
-                
-                log.info("Loaded chat room with {} messages", messages.size());
             }
             
             return "message/list";
@@ -108,28 +97,25 @@ public class MessageController {
     @PostMapping("/messages/send")
     public String sendMessage(@ModelAttribute MessageDto message, HttpSession session) {
         try {
-            Integer employeeId = (Integer) session.getAttribute("employeeId");
-            log.info("Sending message from {} to {}", employeeId, message.getReceiverId());
+            Integer employeeId = (Integer) session.getAttribute("loggedInEmail");
             
             if (employeeId == null) {
                 return "redirect:/login";
             }
 
-            EmployeeDto employee = employeeService.getEmployeeById(String.valueOf(employeeId));
+            EmployeeDto employee = employeeService.getEmployeeById(employeeId); // 수정된 부분
             
             if (employee == null || message.getReceiverId() == null) {
                 log.error("Invalid sender or receiver");
                 return "redirect:/messages";
             }
             
-            // 메시지 정보 설정
-            message.setSenderId(employee.getEmployeeId());
+            message.setSenderId(employeeId);
             message.setSentTime(LocalDateTime.now());
             message.setIsRead(false);
             
-            // 메시지 전송
             messageService.sendMessage(message);
-            log.info("Message sent successfully");
+            log.info("Message sent successfully from {} to {}", employeeId, message.getReceiverId());
             
             return "redirect:/messages/chat/" + message.getReceiverId();
             
@@ -146,7 +132,6 @@ public class MessageController {
             if (message != null) {
                 messageService.markAsRead(messageId);
                 model.addAttribute("message", message);
-                log.info("Viewing message {}", messageId);
             }
             return "message/view";
             
@@ -163,7 +148,6 @@ public class MessageController {
             if (originalMessage != null) {
                 model.addAttribute("originalMessage", originalMessage);
                 model.addAttribute("receiverId", originalMessage.getSenderId());
-                log.info("Opening reply form for message {}", messageId);
             }
             return "message/form";
             

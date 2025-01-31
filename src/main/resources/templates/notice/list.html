@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
+
 <head>
    <title>공지사항</title>
    <style>
@@ -133,10 +134,10 @@
        <a href="/approval" class="menu-item">업무공유</a>
 
        <!-- 관리자 전용 메뉴 -->
-       <div th:if="${session.userRole == 'ADMIN' || session.userRole == 'HR'}">
-           <a href="/attendance/manage" class="menu-item">근퇴 관리</a>
-           <a href="/employee/manage" class="menu-item">인사 관리</a>
-       </div>
+		<div th:if="${session.userRole != null and (#strings.contains(session.userRole, 'Admin') or #strings.contains(session.userRole, 'HR'))}">
+		    <a href="/attendance/manage" class="menu-item">근퇴 관리</a>
+		    <a href="/employee/manage" class="menu-item">인사 관리</a>
+		</div>
    </div>
 
    <!-- 메인 컨텐츠 -->
@@ -179,9 +180,9 @@
        </table>
 
        <!-- ADMIN만 작성 버튼 표시 -->
-       <div th:if="${session.userRole == 'ADMIN'}" class="floating-button">
-           <a href="/notices/new" class="write-btn">작성</a>
-       </div>
+		<div th:if="${session.userRole != null and #strings.contains(session.userRole, 'Admin')}" class="floating-button">
+		    <a href="/notices/new" class="write-btn">작성</a>
+		</div>
    </div>
 </body>
 </html>

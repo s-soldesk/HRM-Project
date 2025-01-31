@@ -69,16 +69,16 @@
        ORDER BY m.SentTime ASC
    </select>
 
-   <select id="getLastMessageBetweenUsers" resultType="com.hrm.dto.MessageDto">
-       SELECT m.*,
-           s.Name as senderName,
-           r.Name as receiverName
-       FROM Messages m
-       JOIN Employee s ON m.SenderID = s.EmployeeID
-       JOIN Employee r ON m.ReceiverID = r.EmployeeID
-       WHERE (m.SenderID = #{user1Id} AND m.ReceiverID = #{user2Id})
-       OR (m.SenderID = #{user2Id} AND m.ReceiverID = #{user1Id})
-       ORDER BY m.SentTime DESC
-       LIMIT 1
-   </select>
+	<select id="getLastMessageBetweenUsers" resultType="com.hrm.dto.MessageDto">
+	    SELECT m.*, 
+	           s.Name as senderName,
+	           r.Name as receiverName
+	    FROM Messages m
+	    JOIN Employee s ON m.SenderID = s.EmployeeID
+	    JOIN Employee r ON m.ReceiverID = r.EmployeeID
+	    WHERE (m.SenderID = #{user1Id} AND m.ReceiverID = #{user2Id})
+	       OR (m.SenderID = #{user2Id} AND m.ReceiverID = #{user1Id})
+	    ORDER BY m.SentTime DESC
+	    LIMIT 1
+	</select>
 </mapper>

@@ -120,10 +120,10 @@
        <a href="/approval" class="menu-item">업무공유</a>
 
        <!-- 관리자 전용 메뉴 -->
-       <div th:if="${session.userRole == 'ADMIN' || session.userRole == 'HR'}">
-           <a href="/attendance/manage" class="menu-item">근퇴 관리</a>
-           <a href="/employee/manage" class="menu-item">인사 관리</a>
-       </div>
+		<div th:if="${session.userRole != null and (#strings.toString(session.userRole).equals('Admin') or #strings.toString(session.userRole).equals('HR'))}">
+		    <a href="/attendance/manage" class="menu-item">근퇴 관리</a>
+		    <a href="/employee/manage" class="menu-item">인사 관리</a>
+		</div>
    </div>
 
    <div class="main-content">
@@ -143,13 +143,12 @@
 
        <div class="button-group">
            <!-- 관리자만 수정/삭제 버튼 표시 -->
-           <div th:if="${session.userRole == 'ADMIN'}">
-               <a th:href="@{/notices/{id}/edit(id=${notice.noticeId})}" class="btn btn-modify">수정</a>
-               <form th:action="@{/notices/{id}/delete(id=${notice.noticeId})}" method="post" style="display: inline;">
-                   <button type="submit" class="btn btn-delete" 
-                           onclick="return confirm('정말 삭제하시겠습니까?')">삭제</button>
-               </form>
-           </div>
+			<div th:if="${session.userRole != null and #strings.contains(session.userRole, 'Admin')}" class="button-group">
+			    <a th:href="@{/notices/{id}/edit(id=${notice.noticeId})}" class="btn btn-modify">수정</a>
+			    <form th:action="@{/notices/{id}/delete(id=${notice.noticeId})}" method="post" style="display: inline;">
+			        <button type="submit" class="btn btn-delete" onclick="return confirm('정말 삭제하시겠습니까?')">삭제</button>
+			    </form>
+			</div>
            <a href="/notices" class="btn btn-list">목록</a>
        </div>
    </div>

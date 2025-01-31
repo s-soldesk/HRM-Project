@@ -79,7 +79,7 @@
         <a href="/approval" class="menu-item">업무공유</a>
 
         <!-- 관리자 전용 메뉴 -->
-		<div th:if="${session.userRole == 'ADMIN' || session.userRole == 'HR'}">
+		<div th:if="${session.userRole != null and (#strings.toString(session.userRole).equals('Admin') or #strings.toString(session.userRole).equals('HR'))}">
 		    <a href="/attendance/manage" class="menu-item">근퇴 관리</a>
 		    <a href="/employee/manage" class="menu-item">인사 관리</a>
 		</div>

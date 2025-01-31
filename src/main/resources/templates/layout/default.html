@@ -1,0 +1,31 @@
+<!-- templates/layout/default.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>HRM System</title>
+    <link rel="stylesheet" th:href="@{/css/common.css}">
+    <link rel="stylesheet" th:href="@{/css/salary.css}">
+</head>
+<body>
+    <div class="layout">
+        <nav class="sidebar">
+            <div class="logo">[ SOLDESK ]</div>
+            <ul class="menu-list">
+                <li><a href="/dashboard">DashBoard</a></li>
+                <li><a href="#">내 정보</a></li>
+                <li><a href="#">일정관리</a></li>
+                <li><a href="#">공지사항</a></li>
+                <li><a href="/salary/manage">급여 조회(인사)</a></li>
+                <li><a href="/salary/calculate">급여 관리</a></li>
+                <li><a href="/salary/employee">급여 조회(사원 임시용)</a></li>
+                <li><a href="#">메신저</a></li>
+                <li><a href="#">업무공유</a></li>
+            </ul>
+        </nav>
+        <div class="main-content">
+            <th:block layout:fragment="content"></th:block>
+        </div>
+    </div>
+</body>
+</html>

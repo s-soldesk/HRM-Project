@@ -27,13 +27,18 @@ const api = {
 		});
 		return response.json();
 	},
+	// 사원 검색 API
+	async searchEmployee(searchType, keyword) {
+		const response = await fetch(`/employees/search?searchType=${searchType}&keyword=${keyword}`);
+		return response.json();
+	},
 
 
 	// 부서 관련 API
 	async getDepartments() {
 		const response = await fetch('/employees/department/list');
 		return response.json();
-	}
+	},
 };
 
 export default api;

@@ -15,6 +15,7 @@ import com.hrm.dto.EmployeeDto;
 import com.hrm.service.EmployeeService;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.RequestParam;
 
 @RestController
 @RequiredArgsConstructor
@@ -64,5 +65,11 @@ public class EmployeeManagementController {
 	}
 
 	// 사원 삭제 (필요한가?)
+
+	// 사원 검색
+	@GetMapping("/search")
+	public List<EmployeeDto> searchEmployee(@RequestParam("searchType") String searchType, @RequestParam("keyword") String keyword) {
+		return eService.searchEmployee(searchType, keyword);
+	}
 
 }

@@ -1,0 +1,264 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>메시지함</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { display: flex; min-height: 100vh; }
+
+        .sidebar {
+            width: 200px;
+            background-color: #333;
+            padding: 20px;
+        }
+
+        .sidebar .logo {
+            width: 100px;
+            height: 100px;
+            background-color: #666;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+        }
+
+        .sidebar .menu-item {
+            padding: 10px 0;
+            color: white;
+            text-decoration: none;
+            display: block;
+        }
+
+        .main-content {
+            flex: 1;
+            padding: 20px;
+        }
+
+        /* 채팅 컨테이너 스타일 */
+        .chat-container {
+            display: flex;
+            height: calc(100vh - 100px);
+            margin: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+
+        .user-list {
+            width: 300px;
+            border-right: 1px solid #ddd;
+            overflow-y: auto;
+        }
+
+        .chat-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .user-item {
+            padding: 15px;
+            border-bottom: 1px solid #eee;
+            cursor: pointer;
+        }
+
+        .user-item:hover {
+            background-color: #f5f5f5;
+        }
+
+        .user-item.active {
+            background-color: #e9ecef;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .message {
+            margin-bottom: 20px;
+            max-width: 70%;
+        }
+
+        .message.sent {
+            margin-left: auto;
+        }
+
+        .message.received {
+            margin-right: auto;
+        }
+
+        .message-bubble {
+            padding: 10px 15px;
+            border-radius: 15px;
+            display: inline-block;
+        }
+
+        .sent .message-bubble {
+            background-color: #0084ff;
+            color: white;
+        }
+
+        .received .message-bubble {
+            background-color: #e9ecef;
+        }
+
+        .message-time {
+            font-size: 12px;
+            color: #666;
+            margin-top: 5px;
+        }
+
+        .chat-input {
+            padding: 20px;
+            border-top: 1px solid #ddd;
+        }
+
+        .chat-input form {
+            display: flex;
+            gap: 10px;
+        }
+
+        .chat-input textarea {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            border-radius: 20px;
+            resize: none;
+            height: 40px;
+        }
+
+        .chat-input button {
+            padding: 0 20px;
+            background-color: #0084ff;
+            color: white;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background-color: #ddd;
+        }
+
+        .user-name {
+            font-weight: bold;
+        }
+
+        .last-message {
+            color: #666;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        /* 채팅방 헤더 */
+        .chat-header {
+            padding: 15px 20px;
+            border-bottom: 1px solid #ddd;
+            background-color: #f8f9fa;
+        }
+
+        .no-chat-selected {
+            display: flex;
+            height: 100%;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo"></div>
+        <!-- 공통 메뉴 -->
+        <a href="/dashboard" class="menu-item">DashBoard</a>
+        <a href="/profile" class="menu-item">내 정보</a>
+        <a href="/management" class="menu-item">일정관리</a>
+        <a href="/notices" class="menu-item">공지사항</a>
+        <a href="/attendance" class="menu-item">급여 조회</a>
+        <a href="/messages" class="menu-item">메시지</a>
+        <a href="/approval" class="menu-item">업무공유</a>
+
+        <!-- 관리자 전용 메뉴 -->
+		<div th:if="${session.userRole != null and (#strings.toString(session.userRole).equals('Admin') or #strings.toString(session.userRole).equals('HR'))}">
+		    <a href="/attendance/manage" class="menu-item">근퇴 관리</a>
+		    <a href="/employee/manage" class="menu-item">인사 관리</a>
+		</div>
+    </div>
+
+    <div class="main-content">
+        <div class="chat-container">
+            <!-- 사용자 목록 -->
+			<div class="user-list">
+			    <div th:each="emp : ${employees}" 
+			         th:if="${emp.employeeId != currentUserId}"
+			         class="user-item"
+			         th:attr="data-user-id=${emp.employeeId}"
+			         onclick="goToChat(this.getAttribute('data-user-id'))">
+			        <div class="user-info">
+			            <div class="user-avatar" th:text="${#strings.substring(emp.name, 0, 1)}"></div>
+			            <div>
+			                <div class="user-name">
+			                    <span class="user-status" th:classappend="'status-online'"></span>
+			                    <span th:text="${emp.name}"></span>
+			                </div>
+			                <div class="last-message" th:text="${emp.lastMessage != null ? emp.lastMessage : '새로운 메시지를 보내보세요'}">
+			                </div>
+			            </div>
+			        </div>
+			    </div>
+			</div>
+			
+			<script>
+			function goToChat(userId) {
+			    window.location.href = '/messages/chat/' + userId;
+			}
+			</script>
+
+            <!-- 채팅 내용 -->
+            <div class="chat-content">
+                <!-- 채팅방 헤더 -->
+                <div class="chat-header" th:if="${selectedUserId != null}">
+                    <div class="user-info" th:each="emp : ${employees}" 
+                         th:if="${emp.employeeId == selectedUserId}">
+                        <div class="user-avatar" th:text="${#strings.substring(emp.name, 0, 1)}"></div>
+                        <div class="user-name" th:text="${emp.name}"></div>
+                    </div>
+                </div>
+
+                <!-- 대화 선택 안내 메시지 -->
+                <div class="no-chat-selected" th:if="${selectedUserId == null}">
+                    <p>대화할 상대를 선택해주세요</p>
+                </div>
+
+                <!-- 메시지 목록 -->
+                <div class="chat-messages" th:if="${selectedUserId != null}">
+                    <div th:each="message : ${messages}" 
+                         th:class="${message.senderId == currentUserId ? 'message sent' : 'message received'}">
+                        <div class="message-bubble" th:text="${message.content}"></div>
+                        <div class="message-time" 
+                             th:text="${#temporals.format(message.sentTime, 'HH:mm')}"></div>
+                    </div>
+                </div>
+
+                <!-- 메시지 입력 -->
+                <div class="chat-input" th:if="${selectedUserId != null}">
+                    <form th:action="@{/messages/send}" method="post">
+                        <input type="hidden" name="receiverId" th:value="${selectedUserId}">
+                        <textarea name="content" placeholder="메시지를 입력하세요" required></textarea>
+                        <button type="submit">전송</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

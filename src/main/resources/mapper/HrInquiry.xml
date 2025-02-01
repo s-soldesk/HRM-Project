@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hrm.mapper.HrInquiryMapper">
+    <select id="getAllInquiries" resultType="com.hrm.dto.HrInquiryDto">
+        SELECT i.*, u.Username as authorName
+        FROM HR_Inquiry i
+        LEFT JOIN UserAccounts u ON i.AuthorID = u.UserID
+        ORDER BY i.InquiryID DESC
+    </select>
+    
+    <select id="getInquiryById" resultType="com.hrm.dto.HrInquiryDto">
+        SELECT i.*, u.Username as authorName
+        FROM HR_Inquiry i
+        LEFT JOIN UserAccounts u ON i.AuthorID = u.UserID
+        WHERE i.InquiryID = #{inquiryId}
+    </select>
+    
+    <insert id="insertInquiry" parameterType="com.hrm.dto.HrInquiryDto">
+        INSERT INTO HR_Inquiry (Title, Content, AuthorID, CreatedDate)
+        VALUES (#{title}, #{content}, #{authorId}, NOW())
+    </insert>
+    
+    <update id="updateReadCount">
+        UPDATE HR_Inquiry 
+        SET Readcount = Readcount + 1 
+        WHERE InquiryID = #{inquiryId}
+    </update>
+    
+    <select id="getCommentsByInquiryId" resultType="com.hrm.dto.CommentDto">
+   SELECT c.*, u.Username as authorName
+   FROM HR_Comments c
+   LEFT JOIN UserAccounts u ON c.AuthorID = u.UserID
+   WHERE c.InquiryID = #{inquiryId}
+   ORDER BY c.CreatedDate DESC
+	</select>
+
+	<insert id="insertComment" parameterType="com.hrm.dto.CommentDto">
+	   INSERT INTO HR_Comments (InquiryID, Content, AuthorID, CreatedDate)
+	   VALUES (#{inquiryId}, #{content}, #{authorId}, NOW())
+	</insert>
+	
+	<update id="updateInquiry">
+    UPDATE HR_Inquiry 
+    SET Title = #{title}, Content = #{content}
+    WHERE InquiryID = #{inquiryId}
+	</update>
+
+	<delete id="deleteInquiry">
+	    DELETE FROM HR_Inquiry WHERE InquiryID = #{inquiryId}
+	</delete>
+	
+	<select id="searchInquiries" resultType="com.hrm.dto.HrInquiryDto">
+   SELECT i.*, u.Username as authorName
+   FROM HR_Inquiry i
+   LEFT JOIN UserAccounts u ON i.AuthorID = u.UserID
+   WHERE 
+   <if test="searchType == 'title'">
+       i.Title LIKE CONCAT('%', #{keyword}, '%')
+   </if>
+   <if test="searchType == 'author'">
+       u.Username LIKE CONCAT('%', #{keyword}, '%')
+   </if>
+   ORDER BY i.InquiryID DESC
+   </select>
+</mapper>

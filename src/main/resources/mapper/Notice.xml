@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hrm.mapper.NoticeMapper">
+   <select id="getAllNotices" resultType="com.hrm.dto.NoticeDto">
+       SELECT n.*, 
+              (SELECT Username FROM UserAccounts WHERE UserID = n.AuthorID) as authorName
+       FROM Notice n
+       ORDER BY n.CreatedDate DESC
+   </select>
+
+   <select id="getNoticeById" parameterType="int" resultType="com.hrm.dto.NoticeDto">
+       SELECT n.*, 
+              (SELECT Username FROM UserAccounts WHERE UserID = n.AuthorID) as authorName
+       FROM Notice n
+       WHERE n.NoticeID = #{noticeId}
+   </select>
+
+   <insert id="insertNotice" parameterType="com.hrm.dto.NoticeDto">
+       INSERT INTO Notice (Title, Content, CreatedDate, AuthorID)
+       VALUES (#{title}, #{content}, #{createdDate}, #{authorId})
+   </insert>
+
+   <update id="updateNotice" parameterType="com.hrm.dto.NoticeDto">
+       UPDATE Notice
+       SET Title = #{title}, Content = #{content}
+       WHERE NoticeID = #{noticeId}
+   </update>
+
+   <delete id="deleteNotice" parameterType="int">
+       DELETE FROM Notice WHERE NoticeID = #{noticeId}
+   </delete>
+   
+	<update id="increaseReadCount">
+	    UPDATE Notice
+	    SET Readcount = Readcount + 1
+	    WHERE NoticeID = #{noticeId}
+	</update>
+
+   <select id="searchNotices" resultType="com.hrm.dto.NoticeDto">
+       SELECT n.*, 
+              (SELECT Username FROM UserAccounts WHERE UserID = n.AuthorID) as authorName
+       FROM Notice n
+       <where>
+           <choose>
+               <when test="searchType == 'title'">
+                   n.Title LIKE CONCAT('%', #{keyword}, '%')
+               </when>
+               <when test="searchType == 'author'">
+                   EXISTS (
+                       SELECT 1 FROM UserAccounts u 
+                       WHERE u.UserID = n.AuthorID AND u.Username LIKE CONCAT('%', #{keyword}, '%')
+                   )
+               </when>
+           </choose>
+       </where>
+       ORDER BY n.CreatedDate DESC
+   </select>
+</mapper>

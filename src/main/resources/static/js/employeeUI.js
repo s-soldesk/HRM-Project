@@ -229,10 +229,12 @@ function createEmployeeRow(emp) {
 }
 
 // 사원 목록 표시
-export async function employeeList() {
+export async function employeeList(page) {
 	try {
-		const employees = await api.getEmployees();
-		displayEmployees(employees);
+		const data = await api.getEmployees(page);
+		displayEmployees(data.employees);
+		displayPagination(data.page, data.totalPages);
+
 	} catch (error) {
 		console.error('사원 리스트 조회 중 오류:', error);
 		alert('사원 목록을 불러오는데 실패했습니다.');
@@ -243,10 +245,65 @@ function displayEmployees(employees) {
 	const tbody = document.getElementById('employeeTableBody');
 	tbody.innerHTML = '';
 
+	// 데이터가 없을 경우 처리
+	if (!employees || employees.length === 0) {
+		const tr = document.createElement('tr');
+		const td = document.createElement('td');
+		td.colSpan = 3;  // 3개 컬럼을 합침
+		td.textContent = '데이터가 없습니다.';
+		td.style.textAlign = 'center';
+		tr.appendChild(td);
+		tbody.appendChild(tr);
+		return;
+	}
+
 	employees.forEach(emp => {
 		const tr = createEmployeeRow(emp);
 		tbody.appendChild(tr);
 	});
+}
+// 페이지네이션 UI 표시
+function displayPagination(currentPage, totalPages) {
+	// undefined 체크 추가
+	currentPage = currentPage || 1;
+	totalPages = totalPages || 1;
+
+	// 페이지가 없을 경우 처리
+	if (totalPages === 0) {
+		pagination.innerHTML = '데이터가 없습니다.';
+		return;
+	}
+	const pagination = document.getElementById('pagination');
+	pagination.innerHTML = '';
+
+	// 이전 페이지 버튼
+	if (currentPage > 1) {
+		const prevBtn = document.createElement('button');
+		prevBtn.textContent = '이전';
+		prevBtn.onclick = () => employeeList(currentPage - 1);
+		pagination.appendChild(prevBtn);
+	}
+
+	// 페이지 번호들
+	for (let i = 1; i <= totalPages; i++) {
+		const pageBtn = document.createElement('button');
+		pageBtn.textContent = i;
+		pageBtn.onclick = () => employeeList(i);
+
+		if (i === currentPage) {
+			pageBtn.classList.add('active'); // 현재 페이지 강조
+		}
+
+		pagination.appendChild(pageBtn);
+	}
+
+	// 다음 페이지 버튼
+	if (currentPage < totalPages) {
+		const nextBtn = document.createElement('button');
+		nextBtn.textContent = '다음';
+		nextBtn.onclick = () => employeeList(currentPage + 1);
+		pagination.appendChild(nextBtn);
+	}
 }
 
 // 사원 상세정보 표시

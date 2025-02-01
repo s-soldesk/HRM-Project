@@ -21,6 +21,7 @@ public interface EmployeeDao {
 	 * GET /employees/list
 	 *  (리스트) Employee 테이블과 Department 테이블을 NATURAL JOIN하여
 	 * 사원번호 + 사원 이름 + 부서 이름만 가져옴.
+	 * + 페이징 적용
 	 */
 	@Select({ """
 			SELECT
@@ -29,10 +30,14 @@ public interface EmployeeDao {
 				d.DepartmentName
 			FROM Employee e NATURAL JOIN Department d
 			ORDER BY EmployeeID
+			LIMIT #{pageSize}
+			OFFSET #{offset}
 			""" })
 	@Result(property = "department.departmentname", column = "DepartmentName")
 	// "DepartmentName" 컬럼의 값을 EmployeeDto 의 Department 객체의 departmentname 필드에 넣음.
-	List<EmployeeDto> employeesList();
+	List<EmployeeDto> employeesList(@Param("pageSize") int pageSize, @Param("offset") int offset);
+	@Select("SELECT COUNT(*) FROM Employee")
+	int totalEmployees();
 
 	/*
 	 *  사원 세부정보 조회

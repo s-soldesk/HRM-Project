@@ -17,8 +17,12 @@ public class EmployeeService {
 	private final EmployeeDao employeeDao;
 
 	// 사원 리스트 (사원번호, 사원이름, 부서이름)
-	public List<EmployeeDto> employeesList() {
-		return employeeDao.employeesList();
+	public List<EmployeeDto> employeesList(int offset, int page) {
+		return employeeDao.employeesList(page, offset);
+	}
+	// 전체 사원 수
+	public int totalEmployees() {
+		return employeeDao.totalEmployees();
 	}
 
 	// 사원 상세정보 (사원번호, 생년월일, 직급 등...)

@@ -1,6 +1,8 @@
 package com.hrm.controller;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,8 +30,25 @@ public class EmployeeManagementController {
 	 * 사원 리스트 뷰를 반환하지 않고, 응답의 본문에 JSON 형식의 리스트를 반환 (CSR)
 	 */
 	@GetMapping("/list")
-	public List<EmployeeDto> getEmployeeList() {
-		return eService.employeesList();
+	public Map<String, Object> getEmployeeList(@RequestParam(name = "page", defaultValue = "1") int page) {
+		final int PAGE_SIZE = 5; // 페이지 크기 (상수)
+		int offset = (page - 1) * PAGE_SIZE;
+		int total = eService.totalEmployees();
+
+		// 데이터 조회
+		List<EmployeeDto> employees = eService.employeesList(offset, PAGE_SIZE);
+		int totalPages = (total + PAGE_SIZE - 1) / PAGE_SIZE;
+
+		// 현재 페이지가 유효한 범위에 있는지
+		if (page > totalPages)
+			page = totalPages;
+
+		Map<String, Object> map = new HashMap<>();
+		map.put("employees", employees);
+		map.put("page", page);
+		map.put("pageSize", PAGE_SIZE);
+		map.put("totalPages", totalPages);
+		return map;
 	}
 
 	// 사원의 세부정보
@@ -68,7 +87,8 @@ public class EmployeeManagementController {
 
 	// 사원 검색
 	@GetMapping("/search")
-	public List<EmployeeDto> searchEmployee(@RequestParam("searchType") String searchType, @RequestParam("keyword") String keyword) {
+	public List<EmployeeDto> searchEmployee(@RequestParam("searchType") String searchType,
+			@RequestParam("keyword") String keyword) {
 		return eService.searchEmployee(searchType, keyword);
 	}
 

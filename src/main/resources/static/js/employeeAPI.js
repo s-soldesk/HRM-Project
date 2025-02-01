@@ -1,8 +1,10 @@
 const api = {
 
 	// 사원 CRUD API
-	async getEmployees() {
-		const response = await fetch('/employees/list');
+	async getEmployees(page) {
+		// page가 undefined, null, 또는 유효하지 않은 값일 경우 1로 설정
+		const validPage = (!page || isNaN(page)) ? 1 : page;
+		const response = await fetch(`/employees/list?page=${validPage}`);
 		return response.json();
 	},
 

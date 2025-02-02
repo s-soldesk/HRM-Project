@@ -1,10 +1,65 @@
 <!DOCTYPE html>
-<html>
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
-<meta charset="UTF-8">
-<title>Insert title here</title>
+    <meta charset="UTF-8">
+    <title>Dashboard</title>
+    <link rel="stylesheet" href="/css/dashboard.css">
 </head>
 <body>
+
+    <!-- 사이드바 -->
+    <div th:replace="~{fragments/sidebar :: sidebar}"></div>
+    
+    <!-- 메인 컨텐츠 -->
+    <div class="content">
+        <div class="dashboard-header">
+            <h1>[ SOLDESK : ] 내 부서 : 인사 1팀</h1>
+        </div>
+
+        <!-- 통계 정보 -->
+        <div class="stats-container">
+            <div class="stat-card">
+                <h4>출근</h4>
+                <p>✔</p>
+            </div>
+            <div class="stat-card">
+                <h4>남은 연차 수</h4>
+                <p>9 / 15</p>
+            </div>
+            <div class="stat-card">
+                <h4>휴가</h4>
+                <p>-</p>
+            </div>
+        </div>
+
+        <!-- 업무 공유 -->
+        <div class="task-share">
+            <h4>업무공유</h4>
+            <div class="task-box">
+                <h5>회의</h5>
+                <ul>
+                    <li>20250115_홈데스크 영업 1팀 회의록.hwp</li>
+                    <li>20250115_홈데스크 영업 1팀 회의록.hwp</li>
+                </ul>
+            </div>
+            <div class="task-box">
+                <h5>문서</h5>
+                <ul>
+                    <li>20241229_홈데스크 제품 등록 승인건.xls</li>
+                    <li>20241229_홈데스크 제품 등록 승인건.xls</li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- 공지사항 -->
+        <div class="notice-board">
+            <h4>공지사항</h4>
+            <ul class="notice-list">
+                <li>20250115_홈데스크 영업 1팀 관련 공지사항</li>
+                <li>20250115_홈데스크 영업 1팀 관련 공지사항</li>
+            </ul>
+        </div>
+    </div>
 
 </body>
 </html>

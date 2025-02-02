@@ -44,22 +44,22 @@ public interface EmployeeDao {
 	 *  GET /employees/{employeeID}
 	 */
 	@Select({ """
-				SELECT
-					e.EmployeeID,
-					e.Name,
-					e.DateOfBirth,
-					e.Gender,
-					e.DepartmentID,
-					e.Position,
-					e.HireDate,
-					e.Status,
-					e.PhoneNumber,
-					e.Email,
+			SELECT
+				e.EmployeeID,
+				e.Name,
+				e.DateOfBirth,
+				e.Gender,
+				e.DepartmentID,
+				e.Position,
+				e.HireDate,
+				e.Status,
+				e.PhoneNumber,
+				e.Email,
 
-		            d.DepartmentName,
-		            d.Location
-				FROM Employee e NATURAL JOIN Department d
-				WHERE EmployeeID = #{EmployeeID}
+	            d.DepartmentName,
+	            d.Location
+			FROM Employee e NATURAL JOIN Department d
+			WHERE EmployeeID = #{EmployeeID}
 			"""
 	})
 	@Results({
@@ -117,18 +117,18 @@ public interface EmployeeDao {
 	 *  PUT /employees/{id}
 	 */
 	@Update({"""
-        UPDATE Employee 
-        SET
-			Name = #{name},
-	        DateOfBirth = #{dateOfBirth},
-	        Gender = #{gender},
-	        DepartmentID = #{departmentId},
-	        Position = #{position},
-	        HireDate = #{hiredate},
-	        Status = #{status},
-	        PhoneNumber = #{phonenumber},
-	        Email = #{email}
-        WHERE EmployeeID = #{employeeId}
+	        UPDATE Employee 
+	        SET
+				Name = #{name},
+		        DateOfBirth = #{dateOfBirth},
+		        Gender = #{gender},
+		        DepartmentID = #{departmentId},
+		        Position = #{position},
+		        HireDate = #{hiredate},
+		        Status = #{status},
+		        PhoneNumber = #{phonenumber},
+		        Email = #{email}
+	        WHERE EmployeeID = #{employeeId}
         """
 	})
 	int updateEmployee(EmployeeDto employeeDto);
@@ -137,57 +137,39 @@ public interface EmployeeDao {
 	 /*
 	  *  GET /employees/search
 	 */
-	// 사원 ID로 검색
 	@Select({"""
-			SELECT
-				e.EmployeeID,
-				e.Name,
-				d.DepartmentName
-			FROM Employee e NATURAL JOIN Department d
-			WHERE EmployeeID = #{keyword}
-			"""
-	})
+		    SELECT 
+		        e.EmployeeID,
+		        e.Name,
+		        d.DepartmentName
+		    FROM Employee e NATURAL JOIN Department d
+		    WHERE 
+		        CASE #{searchType}
+		            WHEN 'id' THEN EmployeeID = #{keyword}
+		            WHEN 'name' THEN Name LIKE CONCAT('%', #{keyword}, '%')
+		            WHEN 'department' THEN DepartmentName LIKE CONCAT('%', #{keyword}, '%')
+		        END
+		    ORDER BY EmployeeID
+		    LIMIT #{limit} OFFSET #{offset}
+			"""})
 	@Result(property = "department.departmentname", column = "DepartmentName")
-	List<EmployeeDto> searchById(@Param("keyword") int keyword, @Param("offset") int offset, @Param("limit") int limit);
-	
-	// 사원 이름으로 검색
-	@Select({"""
-		SELECT
-			e.EmployeeID,
-			e.Name,
-			d.DepartmentName
-		FROM Employee e NATURAL JOIN Department d
-		WHERE Name LIKE CONCAT('%', #{keyword}, '%')
-		ORDER BY EmployeeID
-		"""
-	})
-	@Result(property = "department.departmentname", column = "DepartmentName")
-	List<EmployeeDto> searchByName(String keyword);
-	
-	// 사원의 부서로 검색
-	@Select({"""
-		SELECT
-			e.EmployeeID,
-			e.Name,
-			d.DepartmentName
-		FROM Employee e NATURAL JOIN Department d
-		WHERE DepartmentName LIKE CONCAT('%', #{keyword}, '%')
-		ORDER BY EmployeeID
-		"""
-	})
-	@Result(property = "department.departmentname", column = "DepartmentName")
-	List<EmployeeDto> searchByDept(String keyword);
+	List<EmployeeDto> searchEmployees(
+	    @Param("searchType") String searchType, 
+	    @Param("keyword") String keyword,
+	    @Param("offset") int offset, 
+	    @Param("limit") int limit
+	);
 	
 	// 검색된 사원 수
 	@Select({"""
-			    SELECT COUNT(*) 
-			    FROM Employee e NATURAL JOIN Department d
-			    WHERE 
-			    CASE #{searchType}
-			        WHEN 'id' THEN EmployeeID = #{keyword}
-			        WHEN 'name' THEN Name LIKE CONCAT('%', #{keyword}, '%')
-			        WHEN 'department' THEN DepartmentName LIKE CONCAT('%', #{keyword}, '%')
-			    END
+		    SELECT COUNT(*) 
+		    FROM Employee e NATURAL JOIN Department d
+		    WHERE 
+		    CASE #{searchType}
+		        WHEN 'id' THEN EmployeeID = #{keyword}
+		        WHEN 'name' THEN Name LIKE CONCAT('%', #{keyword}, '%')
+		        WHEN 'department' THEN DepartmentName LIKE CONCAT('%', #{keyword}, '%')
+		    END
 			"""})
 	int countSearchEmployees(@Param("searchType") String searchType, @Param("keyword") String keyword);
 	/*-----------------------------사원 검색--------------------------------- */ 

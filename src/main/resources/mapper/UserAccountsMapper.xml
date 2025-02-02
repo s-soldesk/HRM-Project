@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hrm.mapper.UserAccountsMapper">
+    <!-- 사원번호로 사용자 찾기 -->
+    <select id="findByEmployeeId" resultType="com.hrm.dto.UserAccountDto">
+        SELECT 
+            ua.UserID as userId,
+            ua.EmployeeID as employeeId,
+            ua.Username as username,
+            ua.Password as password,
+            ua.Role as role
+        FROM useraccounts ua
+        WHERE ua.EmployeeID = #{employeeId}
+    </select>
+
+    <select id="findByEmployeeIdAndPassword" resultType="com.hrm.dto.UserAccountDto">
+        SELECT 
+            ua.UserID as userId,
+            ua.EmployeeID as employeeId,
+            ua.Username as username,
+            ua.Password as password,
+            ua.Role as role
+        FROM useraccounts ua
+        WHERE ua.EmployeeID = #{employeeId}
+    </select>
+
+    <!-- 프로필 업데이트 -->
+    <update id="updateProfile" parameterType="com.hrm.dto.UserAccountDto">
+        UPDATE employee
+        SET 
+            PhoneNumber = #{phoneNumber},
+            Email = #{email},
+            ProfileImage = #{profileImage}
+        WHERE EmployeeID = #{employeeId}
+    </update>
+
+    <!-- 비밀번호 업데이트 -->
+    <update id="updatePassword">
+        UPDATE useraccounts
+        SET Password = #{newPassword}
+        WHERE EmployeeID = #{employeeId}
+    </update>
+
+    <!-- 사용자 존재 여부 확인 -->
+    <select id="existsByEmployeeId" resultType="boolean">
+        SELECT COUNT(*) > 0
+        FROM useraccounts
+        WHERE EmployeeID = #{employeeId}
+    </select>
+    
+    <!-- 비밀번호 확인 -->
+    <select id="checkPassword" resultType="String">
+        SELECT Password
+        FROM useraccounts
+        WHERE EmployeeID = #{employeeId}
+    </select>
+</mapper>

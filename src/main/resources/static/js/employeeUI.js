@@ -61,8 +61,16 @@ export function initializeUI() {
 		employeeDetail(id);
 	});
 
-	setPageChangeCallback((page) => {
-		employeeList(page);
+	// 페이지 변경 콜백
+	setPageChangeCallback(async (page) => {
+		if (currentSearchType && currentKeyword) {
+			// 검색 상태일 때
+			const searchData = await api.searchEmployee(currentSearchType, currentKeyword, page);
+			handleSearchResults(searchData);
+		} else {
+			// 일반 목록 조회일 때
+			employeeList(page);
+		}
 	});
 
 	setSearchCallback(handleSearchResults);

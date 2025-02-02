@@ -62,9 +62,10 @@ export function displayEmployees(employees) {
 }
 
 // 페이지네이션 UI 표시
+// 페이지네이션 UI 표시
 export function displayPagination(currentPage, totalPages) {
-	currentPage = currentPage || 1;
-	totalPages = totalPages || 1;
+	currentPage = Number(currentPage) || 1;
+	totalPages = Number(totalPages) || 1;
 
 	const pagination = document.getElementById('pagination');
 	pagination.innerHTML = '';
@@ -75,23 +76,25 @@ export function displayPagination(currentPage, totalPages) {
 	}
 
 	// 이전 페이지 버튼
-	if (currentPage > 1) {
-		const prevBtn = document.createElement('button');
-		prevBtn.textContent = '이전';
-		prevBtn.onclick = () => {
-			if (onPageChange) {
-				onPageChange(currentPage - 1);
-			}
-		};
-		pagination.appendChild(prevBtn);
-	}
+	const prevBtn = document.createElement('button');
+	prevBtn.textContent = '이전';
+	prevBtn.onclick = () => {
+		if (currentPage > 1) {
+			onPageChange(currentPage - 1);
+		}
+	};
+	prevBtn.disabled = currentPage === 1;
+	pagination.appendChild(prevBtn);
 
-	// 페이지 번호들
-	for (let i = 1; i <= totalPages; i++) {
+	// 페이지 번호 표시 (최대 5개만 표시)
+	const startPage = Math.max(1, currentPage - 2);
+	const endPage = Math.min(totalPages, startPage + 4);
+
+	for (let i = startPage; i <= endPage; i++) {
 		const pageBtn = document.createElement('button');
 		pageBtn.textContent = i;
 		pageBtn.onclick = () => {
-			if (onPageChange) {
+			if (i !== currentPage) {
 				onPageChange(i);
 			}
 		};
@@ -104,16 +107,15 @@ export function displayPagination(currentPage, totalPages) {
 	}
 
 	// 다음 페이지 버튼
-	if (currentPage < totalPages) {
-		const nextBtn = document.createElement('button');
-		nextBtn.textContent = '다음';
-		nextBtn.onclick = () => {
-			if (onPageChange) {
-				onPageChange(currentPage + 1);
-			}
-		};
-		pagination.appendChild(nextBtn);
-	}
+	const nextBtn = document.createElement('button');
+	nextBtn.textContent = '다음';
+	nextBtn.onclick = () => {
+		if (currentPage < totalPages) {
+			onPageChange(currentPage + 1);
+		}
+	};
+	nextBtn.disabled = currentPage === totalPages;
+	pagination.appendChild(nextBtn);
 }
 
 // 상세 정보 업데이트 함수
@@ -162,17 +164,19 @@ async function handleSearch(e) {
 			return;
 		}
 
-		const employees = await api.searchEmployee(searchType, keyword);
+		// 첫 페이지(1)로 검색 시작
+		const searchData = await api.searchEmployee(searchType, keyword, 1);
 
-		if (employees.length === 0) {
+		if (searchData.employees.length === 0) {
 			alert('검색 결과가 없습니다.');
 			return;
 		}
 
 		if (onSearch) {
-			onSearch(employees);
+			onSearch(searchData); // 페이징 정보를 포함한 전체 데이터 전달
 		} else {
-			displayEmployees(employees);
+			displayEmployees(searchData.employees);
+			displayPagination(searchData.page, searchData.totalPages);
 		}
 
 	} catch (error) {

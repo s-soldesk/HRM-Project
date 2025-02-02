@@ -30,13 +30,16 @@ async function employeeDetail(id) {
 }
 
 // 검색 결과 처리
-function handleSearchResults(employees) {
-	displayEmployees(employees);
-	// 페이지네이션 숨기기 (검색 결과에는 페이지네이션이 필요 없음)
-	const pagination = document.getElementById('pagination');
-	if (pagination) {
-		pagination.style.display = 'none';
-	}
+let currentSearchType = null;
+let currentKeyword = null;
+
+function handleSearchResults(searchData) {
+	displayEmployees(searchData.employees);
+	displayPagination(searchData.page, searchData.totalPages);
+
+	// 현재 검색 조건 저장
+	currentSearchType = searchData.searchType;
+	currentKeyword = searchData.keyword;
 }
 
 // 초기화 함수

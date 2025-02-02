@@ -24,7 +24,9 @@ public class AttendanceDto {
 	private String employeeName; // 사원이름 조인
 	private String departmentName; // 부서이름 조인 
 	private String position; // 조인
-	private Integer workingDays; // 근무일수 추가
+	private Integer workingDays; // 근무일수
+	private Double totalWorkedHours;  // 총 근무시간
+    private Double totalOvertimeHours; // 총 초과근무시간
 	
 	private DepartmentDto department; // 부서정보 매핑
 	private EmployeeDto employee; // 사원 정보 매핑

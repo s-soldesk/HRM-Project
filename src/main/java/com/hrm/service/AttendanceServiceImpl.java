@@ -76,4 +76,14 @@ public class AttendanceServiceImpl implements AttendanceService {
            return false;
        }
    }
+   
+   @Override
+   public List<AttendanceDto> getMonthlyAttendanceSummary(String yearMonth) {
+       return attendanceMapper.getMonthlyAttendanceSummary(yearMonth);
+   }
+   
+   @Override
+   public List<AttendanceDto> getEmployeeMonthlyAttendance(Integer employeeId, String yearMonth) {
+       return attendanceMapper.getEmployeeMonthlyAttendance(employeeId, yearMonth);
+   }
 }

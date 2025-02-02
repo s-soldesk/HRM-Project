@@ -47,34 +47,27 @@ public class SalaryCalculateController {
 	// 특정 월 급여 계산 현황 조회
 	@GetMapping("/calculate/status/{yearMonth}")
 	public String getCalculationStatus(@PathVariable("yearMonth") String yearMonth, Model m) {
-		// 로깅 추가
-		System.out.println("Received yearMonth: " + yearMonth);
-
-		// 단순히 replace 사용
-		String formattedYearMonth = yearMonth; // 이미 올바른 형식으로 전달됨
-
-		List<AttendanceDto> attendances = attendanceService.getAllEmployeeAttendance(formattedYearMonth);
-		boolean attendanceClosed = attendanceService.isAttendanceClosed(formattedYearMonth);
-		boolean salaryCalculated = salaryService.isSalaryCalculated(yearMonth);
-
-		m.addAttribute("attendances", attendances);
-		m.addAttribute("attendanceClosed", attendanceClosed);
-		m.addAttribute("salaryCalculated", salaryCalculated);
-		m.addAttribute("months", getRecentMonths(12));
+		// 월별 사원 근태 통계 조회
+		List<AttendanceDto> monthlySummary = attendanceService.getMonthlyAttendanceSummary(yearMonth);
+		m.addAttribute("attendances", monthlySummary);
 		m.addAttribute("selectedMonth", yearMonth);
-
-		boolean canCloseAttendance = !attendanceClosed && (attendances != null && !attendances.isEmpty())
-				&& attendances.stream().allMatch(a -> "APPROVED".equals(a.getStatus()));
-		m.addAttribute("canCloseAttendance", canCloseAttendance);
-
-		if (attendanceClosed) {
-			List<SalaryDto> salaries = salaryService.getCalculatedSalaries(yearMonth);
-			m.addAttribute("salaries", salaries);
-		}
-
+		m.addAttribute("months", getRecentMonths(12));
 		return "salary/calculate";
 	}
-
+	
+	// 사원별 월간 상세 페이지
+    @GetMapping("/calculate/detail/{employeeId}/{yearMonth}")
+    public String getEmployeeMonthlyDetail(
+            @PathVariable("employeeId") Integer employeeId,
+            @PathVariable("yearMonth") String yearMonth,
+            Model m) {
+        List<AttendanceDto> details = attendanceService.getEmployeeMonthlyAttendance(employeeId, yearMonth);
+        m.addAttribute("attendances", details);
+        m.addAttribute("yearMonth", yearMonth);
+        m.addAttribute("employeeId", employeeId);
+        return "salary/calculateDetail";
+    }
+    
 	// 근태 마감
 	@PostMapping("/calculate/close/{yearMonth}")
 	@ResponseBody
@@ -108,22 +101,6 @@ public class SalaryCalculateController {
 			return ResponseEntity.ok().build();
 		} catch (Exception e) {
 			return ResponseEntity.badRequest().body(e.getMessage());
-		}
-	}
-
-	// 특정 사원 근태 조회
-	@GetMapping("/calculate/detail/{employeeId}/{date}")
-	public String getAttendanceDetail(@PathVariable("employeeId") Integer employeeId, // 이름 명시
-			@PathVariable("date") String date, // 이름 명시
-			Model model) {
-		try {
-			AttendanceDto attendance = attendanceService.getAttendanceDetail(employeeId, date);
-			model.addAttribute("attendance", attendance);
-			model.addAttribute("date", date);
-			return "salary/calculateDetail";
-		} catch (Exception e) {
-			e.printStackTrace();
-			return "redirect:/salary/calculate";
 		}
 	}
 

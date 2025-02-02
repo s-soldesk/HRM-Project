@@ -34,4 +34,5 @@ public interface SalaryService {
     boolean isSalaryCalculated(String yearMonth);
     
     List<SalaryDto> getCalculatedSalaries(String yearMonth);
+    
 }

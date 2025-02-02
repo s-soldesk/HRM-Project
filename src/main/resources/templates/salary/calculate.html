@@ -5,13 +5,12 @@
 <head>
 <title>급여 계산</title>
 <script th:inline="javascript">
-	function changeMonth(value) {
+	function changeMonth() {
+		const select = document.getElementById('yearMonth');
+		const value = select.value;
 		if (value) {
-			// value가 "2025/01" 형식으로 오는데, 이를 "2025-01" 형식으로 변경
-			var formattedValue = value.replace('/', '-');
-			var url = '/salary/calculate/status/' + formattedValue;
-			console.log('Moving to:', url); // 디버깅용
-			location.href = url;
+			window.location.href = '/salary/calculate/status/'
+					+ value.replace('/', '-');
 		}
 	}
 
@@ -36,10 +35,23 @@
 		}
 	}
 
-	function viewAttendanceDetail(employeeId, date) {
-	    window.location.href = `/salary/calculate/detail/${employeeId}/${date}`;
+	function viewAttendanceDetail(employeeId, yearMonth) {
+		if (!yearMonth || !employeeId) {
+			alert('필수 데이터가 없습니다.');
+			return;
+		}
+		window.location.href = `/salary/calculate/detail/${employeeId}/${yearMonth}`;
 	}
-	
+
+	function handleButtonClick(button) {
+		const employeeId = button.getAttribute('data-employee-id');
+		const yearMonth = button.getAttribute('data-year-month');
+		if (!employeeId || !yearMonth) {
+			alert('데이터가 누락되었습니다.');
+			return;
+		}
+		window.location.href = `/salary/calculate/detail/${employeeId}/${yearMonth}`;
+	}
 </script>
 </head>
 <body>
@@ -48,7 +60,7 @@
 			<h2 class="title">급여 계산</h2>
 
 			<div class="month-selector">
-				<select id="yearMonth" onchange="changeMonth(this.value)">
+				<select id="yearMonth" onchange="changeMonth()">
 					<option value="">귀속 연월 선택</option>
 					<option th:each="month : ${months}" th:value="${month}"
 						th:text="${month}"></option>
@@ -57,22 +69,13 @@
 
 			<div class="calculate-content">
 				<h3>근태 확인</h3>
-				<!-- 부서별 필터 추가 -->
-				<div class="filter-section">
-					<select id="departmentFilter">
-						<option value="">전체 부서</option>
-						<option value="마케팅팀">마케팅팀</option>
-						<option value="영업팀">영업팀</option>
-						<!-- 다른 부서들 추가 -->
-					</select>
+				<div class="selected-month">
+					<p th:text="'선택한 날짜 : ' + ${selectedMonth}"></p>
 				</div>
-
-				<!-- 근태 데이터 테이블 -->
 				<div class="attendance-list">
 					<table>
 						<thead>
 							<tr>
-								<th>날짜</th>
 								<th>사원번호</th>
 								<th>이름</th>
 								<th>부서</th>
@@ -80,48 +83,34 @@
 								<th>근무일수</th>
 								<th>총근무시간</th>
 								<th>연장근무시간</th>
-								<th>근태상태</th>
 								<th>상세보기</th>
 							</tr>
 						</thead>
 						<tbody>
-							<!-- 데이터가 있을 경우 -->
-							<tr th:if="${attendances != null and !attendances.isEmpty()}"
+							<tr
+								th:if="${attendances != null and not #lists.isEmpty(attendances)}"
 								th:each="attendance : ${attendances}">
-								<td
-									th:text="${#temporals.format(attendance.date, 'yyyy-MM-dd')}"></td>
 								<td th:text="${attendance.employeeId}"></td>
 								<td th:text="${attendance.employeeName}"></td>
 								<td th:text="${attendance.departmentName}"></td>
 								<td th:text="${attendance.position}"></td>
-								<td th:text="${attendance.workingDays}"></td>
-								<td th:text="${attendance.hoursWorked}"></td>
-								<td th:text="${attendance.overtimeHours}"></td>
-								<td th:text="${attendance.status}"></td>
+								<td th:text="${attendance.workingDays} + days"></td>
+								<td th:text="${attendance.totalWorkedHours} + h"></td>
+								<td th:text="${attendance.totalOvertimeHours} + h"></td>
 								<td>
-									<button class="btn-detail"
-										th:onclick="viewAttendanceDetail([[${attendance.employeeId}]], [[${#temporals.format(attendance.date, 'yyyy-MM-dd')}]])">
-										상세보기</button>
+									<button class="btn btn-primary"
+										th:attr="data-employee-id=${attendance.employeeId}, data-year-month=${yearMonth}"
+										onclick="handleButtonClick(this)">상세보기</button>
 								</td>
 							</tr>
-							<!-- 데이터가 없을 경우 -->
-							<tr th:if="${attendances == null or attendances.isEmpty()}">
-								<td colspan="9" class="no-data">해당 월의 근태 데이터가 없습니다.</td>
+							<tr th:if="${attendances == null or #lists.isEmpty(attendances)}">
+								<td colspan="8" class="no-data">해당 월의 근태 데이터가 없습니다.</td>
 							</tr>
 						</tbody>
 					</table>
 				</div>
-
-				<!-- 작업 버튼들 -->
-				<div class="action-buttons">
-					<button class="btn primary" onclick="confirmAttendance()"
-						th:if="${attendances != null and !attendances.isEmpty()}">
-						근태 확정</button>
-					<button class="btn secondary" onclick="calculateSalary()"
-						th:if="${attendanceConfirmed}">급여 계산</button>
-				</div>
 			</div>
 		</div>
 	</div>
-</body>
+</html>
 </html>

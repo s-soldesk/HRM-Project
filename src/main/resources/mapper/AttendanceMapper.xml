@@ -18,6 +18,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<result property="departmentName" column="DepartmentName" />
 		<result property="position" column="Position" />
 		<result property="workingDays" column="workingDays" />
+		<result property="totalWorkedHours" column="totalWorkedHours" />
+		<result property="totalOvertimeHours" column="totalOvertimeHours" />
 	</resultMap>
 
 	<!-- 근태 데이터 저장 -->
@@ -67,21 +69,39 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		DUPLICATE KEY UPDATE Status = 'CLOSED'
 	</update>
 
-	<!-- 특정 월 근태 데이터 조회 -->
-	<select id="getMonthlyAttendance" parameterType="string"
+	<!-- 월별 사원 근태 통계 -->
+	<select id="getMonthlyAttendanceSummary"
+		resultMap="AttendanceResultMap">
+		SELECT
+		e.EmployeeID,
+		e.Name as employeeName,
+		d.DepartmentName,
+		e.Position,
+		COUNT(DISTINCT a.Date) as workingDays,
+		SUM(a.HoursWorked) as totalWorkedHours,
+		SUM(a.OvertimeHours) as totalOvertimeHours,
+		e.DepartmentID
+		FROM Employee e
+		JOIN Department d ON e.DepartmentID = d.DepartmentID
+		LEFT JOIN Attendance a ON e.EmployeeID = a.EmployeeID
+		WHERE DATE_FORMAT(a.Date, '%Y-%m') = #{yearMonth}
+		GROUP BY e.EmployeeID, e.Name, d.DepartmentName, e.Position, e.DepartmentID
+	</select>
+
+	<!-- 특정 사원의 월별 상세 근태 -->
+	<select id="getEmployeeMonthlyAttendance"
 		resultMap="AttendanceResultMap">
 		SELECT
 		a.*,
-		e.Name,
+		e.Name as employeeName,
+		e.Position,
 		d.DepartmentName
 		FROM Attendance a
-		JOIN
-		Employee e ON a.EmployeeID = e.EmployeeID
-		JOIN Department d ON
-		e.DepartmentID = d.DepartmentID
-		WHERE DATE_FORMAT(a.Date, '%Y/%m') =
-		#{yearMonth}
-		ORDER BY a.EmployeeID, a.Date
+		JOIN Employee e ON a.EmployeeID = e.EmployeeID
+		JOIN Department d ON e.DepartmentID = d.DepartmentID
+		WHERE a.EmployeeID = #{employeeId}
+		AND DATE_FORMAT(a.Date, '%Y-%m') = #{yearMonth}
+		ORDER BY a.Date
 	</select>
 
 	<!-- 전체 직원의 근태 데이터 조회 -->
@@ -115,14 +135,17 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<select id="getAttendanceDetail" resultMap="AttendanceResultMap">
 		SELECT
 		a.*,
-		e.Name as employeeName,
+		e.Name as
+		employeeName,
 		e.Position as position,
 		d.DepartmentName
 		FROM Attendance a
 		JOIN Employee e ON a.EmployeeID = e.EmployeeID
-		JOIN Department d ON e.DepartmentID = d.DepartmentID
+		JOIN Department d ON
+		e.DepartmentID = d.DepartmentID
 		WHERE a.EmployeeID = #{employeeId}
-		AND a.Date = #{date}
+		AND
+		a.Date = #{date}
 	</select>
 
 	<!-- 부서별 근태 데이터 조회 -->

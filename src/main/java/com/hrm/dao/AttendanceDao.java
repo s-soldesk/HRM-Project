@@ -39,4 +39,11 @@ public interface AttendanceDao {
 
 	// 근태 수정
 	int updateAttendanceStatus(Integer employeeId, String date, String status);
+
+	// 월별 사원 근태 통계 조회
+	List<AttendanceDto> getMonthlyAttendanceSummary(@Param("yearMonth") String yearMonth);
+
+	// 특정 사원의 월별 상세 근태 조회
+	List<AttendanceDto> getEmployeeMonthlyAttendance(@Param("employeeId") Integer employeeId,
+			@Param("yearMonth") String yearMonth);
 }

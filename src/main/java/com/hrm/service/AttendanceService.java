@@ -17,4 +17,8 @@ public interface AttendanceService {
     AttendanceDto getAttendanceDetail(Integer employeeId, String date);
     
     boolean updateAttendanceStatus(Integer employeeId, String date, String status);
+    
+    List<AttendanceDto> getMonthlyAttendanceSummary(String yearMonth);
+
+    List<AttendanceDto> getEmployeeMonthlyAttendance(Integer employeeId, String yearMonth);
 }

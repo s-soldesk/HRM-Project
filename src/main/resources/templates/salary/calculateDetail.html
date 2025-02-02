@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>근태 상세 정보</title>
+</head>
+<body>
+    <div class="attendance-detail">
+        <h2>근태 상세 정보</h2>
+        <div th:if="${attendance != null}">
+            <p>사원명: <span th:text="${attendance.employeeName}"></span></p>
+            <p>부서: <span th:text="${attendance.departmentName}"></span></p>
+            <p>직급: <span th:text="${attendance.position}"></span></p>
+            <p>날짜: <span th:text="${#temporals.format(attendance.date, 'yyyy-MM-dd')}"></span></p>
+            <p>출근시간: <span th:text="${#temporals.format(attendance.checkInTime, 'HH:mm')}"></span></p>
+            <p>퇴근시간: <span th:text="${#temporals.format(attendance.checkOutTime, 'HH:mm')}"></span></p>
+            <p>근무시간: <span th:text="${attendance.hoursWorked}"></span>시간</p>
+            <p>초과근무: <span th:text="${attendance.overtimeHours}"></span>시간</p>
+            <p>상태: <span th:text="${attendance.status}"></span></p>
+        </div>
+        <div class="buttons">
+            <button onclick="history.back()">돌아가기</button>
+            <button th:if="${attendance.status != 'CONFIRMED'}"
+                    onclick="confirmAttendance()">근태 확정</button>
+        </div>
+    </div>
+</body>
+</html>

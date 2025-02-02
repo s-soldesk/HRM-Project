@@ -111,6 +111,22 @@ public class SalaryCalculateController {
 		}
 	}
 
+	// 특정 사원 근태 조회
+	@GetMapping("/calculate/detail/{employeeId}/{date}")
+	public String getAttendanceDetail(@PathVariable("employeeId") Integer employeeId, // 이름 명시
+			@PathVariable("date") String date, // 이름 명시
+			Model model) {
+		try {
+			AttendanceDto attendance = attendanceService.getAttendanceDetail(employeeId, date);
+			model.addAttribute("attendance", attendance);
+			model.addAttribute("date", date);
+			return "salary/calculateDetail";
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "redirect:/salary/calculate";
+		}
+	}
+
 	private List<String> getRecentMonths(int count) {
 		List<String> months = new ArrayList<>();
 		YearMonth current = YearMonth.now();

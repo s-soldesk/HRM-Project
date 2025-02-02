@@ -94,16 +94,35 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		d.DepartmentName,
 		a.Date as attendanceDate,
 		(
-		SELECT COUNT(DISTINCT sub_a.Date)
+		SELECT COUNT(DISTINCT
+		sub_a.Date)
 		FROM Attendance sub_a
 		WHERE sub_a.EmployeeID = a.EmployeeID
 		AND DATE_FORMAT(sub_a.Date, '%Y-%m') = DATE_FORMAT(a.Date, '%Y-%m')
-		) as workingDays
+		)
+		as workingDays
+		FROM Attendance a
+		JOIN Employee e ON a.EmployeeID =
+		e.EmployeeID
+		JOIN Department d ON e.DepartmentID = d.DepartmentID
+		WHERE
+		DATE_FORMAT(a.Date, '%Y-%m') = #{yearMonth}
+		ORDER BY a.EmployeeID,
+		a.Date
+	</select>
+
+	<!-- 특정 직원의 특정 날짜 근태 상세 조회 -->
+	<select id="getAttendanceDetail" resultMap="AttendanceResultMap">
+		SELECT
+		a.*,
+		e.Name as employeeName,
+		e.Position as position,
+		d.DepartmentName
 		FROM Attendance a
 		JOIN Employee e ON a.EmployeeID = e.EmployeeID
 		JOIN Department d ON e.DepartmentID = d.DepartmentID
-		WHERE DATE_FORMAT(a.Date, '%Y-%m') = #{yearMonth}
-		ORDER BY a.EmployeeID, a.Date
+		WHERE a.EmployeeID = #{employeeId}
+		AND a.Date = #{date}
 	</select>
 
 	<!-- 부서별 근태 데이터 조회 -->

@@ -35,9 +35,9 @@
 			location.href = '/salary/calculate/confirm/' + yearMonth;
 		}
 	}
-	
-	function viewDetail(employeeId, date) {
-	    window.location.href = `/attendance/detail/${employeeId}/${date}`;
+
+	function viewAttendanceDetail(employeeId, date) {
+	    window.location.href = `/salary/calculate/detail/${employeeId}/${date}`;
 	}
 	
 </script>
@@ -88,7 +88,8 @@
 							<!-- 데이터가 있을 경우 -->
 							<tr th:if="${attendances != null and !attendances.isEmpty()}"
 								th:each="attendance : ${attendances}">
-								<td th:text="${#temporals.format(attendance.date, 'yyyy-MM-dd')}"></td>
+								<td
+									th:text="${#temporals.format(attendance.date, 'yyyy-MM-dd')}"></td>
 								<td th:text="${attendance.employeeId}"></td>
 								<td th:text="${attendance.employeeName}"></td>
 								<td th:text="${attendance.departmentName}"></td>
@@ -99,8 +100,8 @@
 								<td th:text="${attendance.status}"></td>
 								<td>
 									<button class="btn-detail"
-										th:onclick="'viewDetail(' + ${attendance.employeeId} + ')'"
-										type="button">상세보기</button>
+										th:onclick="viewAttendanceDetail([[${attendance.employeeId}]], [[${#temporals.format(attendance.date, 'yyyy-MM-dd')}]])">
+										상세보기</button>
 								</td>
 							</tr>
 							<!-- 데이터가 없을 경우 -->

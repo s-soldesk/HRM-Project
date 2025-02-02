@@ -62,4 +62,18 @@ public class AttendanceServiceImpl implements AttendanceService {
    public List<AttendanceDto> getMonthlyAttendance(String yearMonth) {
        return attendanceMapper.getMonthlyAttendance(yearMonth);
    }
+   
+   @Override
+   public AttendanceDto getAttendanceDetail(Integer employeeId, String date) {
+       return attendanceMapper.getAttendanceDetail(employeeId, date);
+   }
+
+   @Override
+   public boolean updateAttendanceStatus(Integer employeeId, String date, String status) {
+       try {
+           return attendanceMapper.updateAttendanceStatus(employeeId, date, status) > 0;
+       } catch (Exception e) {
+           return false;
+       }
+   }
 }

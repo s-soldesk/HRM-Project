@@ -55,22 +55,18 @@ public class EmployeeService {
 
 	// 사원 검색
 	public List<EmployeeDto> searchEmployee(String searchType, String keyword, int offset, int limit) {
-		if (searchType.equals("id")) {
-			try {
-				return employeeDao.searchById(Integer.valueOf(keyword), offset, limit);
-			} catch (NumberFormatException e) {
-				throw new IllegalArgumentException("사원 ID는 숫자로 검색해야합니다.");
-			}
-		} else if (searchType.equals("name"))
-			return employeeDao.searchByName(keyword);
-		else if (searchType.equals("department"))
-			return employeeDao.searchByDept(keyword);
-		else
-			throw new IllegalArgumentException("존재하지 않는 검색 타입: " + searchType); // 예외
+		validateSearchInput(searchType, keyword);
+		return employeeDao.searchEmployees(searchType, keyword, offset, limit);
 	}
 
 	// 검색된 사원의 수
 	public int totalSearchEmployees(String searchType, String keyword) {
+		validateSearchInput(searchType, keyword);
+		return employeeDao.countSearchEmployees(searchType, keyword);
+	}
+
+	// 검색 입력값 검증
+	private void validateSearchInput(String searchType, String keyword) {
 		if (searchType.equals("id")) {
 			try {
 				Integer.valueOf(keyword);
@@ -78,6 +74,5 @@ public class EmployeeService {
 				throw new IllegalArgumentException("사원 ID는 숫자로 검색해야합니다.");
 			}
 		}
-		return employeeDao.countSearchEmployees(searchType, keyword);
 	}
 }

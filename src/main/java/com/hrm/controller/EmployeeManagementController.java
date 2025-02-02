@@ -87,9 +87,32 @@ public class EmployeeManagementController {
 
 	// 사원 검색
 	@GetMapping("/search")
-	public List<EmployeeDto> searchEmployee(@RequestParam("searchType") String searchType,
-			@RequestParam("keyword") String keyword) {
-		return eService.searchEmployee(searchType, keyword);
+	public Map<String, Object> searchEmployee(@RequestParam("searchType") String searchType,
+			@RequestParam("keyword") String keyword, @RequestParam(name = "page", defaultValue = "1") int page) {
+
+		final int PAGE_SIZE = 5;
+		int offset = (page - 1) * PAGE_SIZE;
+		int total = eService.totalSearchEmployees(searchType, keyword);
+		System.out.println(total);
+
+		// 데이터 조회
+		List<EmployeeDto> searchResults = eService.searchEmployee(searchType, keyword, offset, PAGE_SIZE);
+		int totalPages = (total + PAGE_SIZE - 1) / PAGE_SIZE;
+
+		// 현재 페이지가 유효한 범위에 있는지
+		if (page > totalPages) {
+			page = totalPages;
+		}
+
+		Map<String, Object> map = new HashMap<>();
+		map.put("employees", searchResults);
+		map.put("page", page);
+		map.put("pageSize", PAGE_SIZE);
+		map.put("totalPages", totalPages);
+		map.put("searchType", searchType); // 검색 파라미터 추가
+		map.put("keyword", keyword); // 검색 파라미터 추가
+
+		return map;
 	}
 
 }

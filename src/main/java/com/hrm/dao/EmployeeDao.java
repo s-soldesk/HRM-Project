@@ -148,7 +148,7 @@ public interface EmployeeDao {
 			"""
 	})
 	@Result(property = "department.departmentname", column = "DepartmentName")
-	List<EmployeeDto> searchById(int keyword);
+	List<EmployeeDto> searchById(@Param("keyword") int keyword, @Param("offset") int offset, @Param("limit") int limit);
 	
 	// 사원 이름으로 검색
 	@Select({"""
@@ -177,5 +177,18 @@ public interface EmployeeDao {
 	})
 	@Result(property = "department.departmentname", column = "DepartmentName")
 	List<EmployeeDto> searchByDept(String keyword);
+	
+	// 검색된 사원 수
+	@Select({"""
+			    SELECT COUNT(*) 
+			    FROM Employee e NATURAL JOIN Department d
+			    WHERE 
+			    CASE #{searchType}
+			        WHEN 'id' THEN EmployeeID = #{keyword}
+			        WHEN 'name' THEN Name LIKE CONCAT('%', #{keyword}, '%')
+			        WHEN 'department' THEN DepartmentName LIKE CONCAT('%', #{keyword}, '%')
+			    END
+			"""})
+	int countSearchEmployees(@Param("searchType") String searchType, @Param("keyword") String keyword);
 	/*-----------------------------사원 검색--------------------------------- */ 
 }

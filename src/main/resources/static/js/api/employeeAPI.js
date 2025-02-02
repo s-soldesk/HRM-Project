@@ -30,8 +30,8 @@ const api = {
 		return response.json();
 	},
 	// 사원 검색 API
-	async searchEmployee(searchType, keyword) {
-		const response = await fetch(`/employees/search?searchType=${searchType}&keyword=${keyword}`);
+	async searchEmployee(searchType, keyword, page) {
+		const response = await fetch(`/employees/search?searchType=${searchType}&keyword=${keyword}&page=${page}`);
 		return response.json();
 	},
 

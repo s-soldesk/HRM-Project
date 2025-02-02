@@ -4,6 +4,7 @@ import com.hrm.dto.SalaryDto;
 import java.util.List;
 
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 @Mapper
 public interface SalaryDao {
@@ -24,4 +25,7 @@ public interface SalaryDao {
     void confirmSalaries(String yearMonth);
     boolean isSalaryCalculated(String yearMonth);
     List<SalaryDto> getCalculatedSalaries(String yearMonth);
+
+    // 특정 사원의 특정 월 급여 조회 메서드
+    SalaryDto getEmployeeSalaryByMonth(@Param("employeeId") Integer employeeId, @Param("yearMonth") String yearMonth);
 }

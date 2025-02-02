@@ -1,27 +1,99 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/default}">
 <head>
-    <title>근태 상세 정보</title>
+<title>근태 상세 정보</title>
+<link rel="stylesheet" th:href="@{/css/common.css}">
+<link rel="stylesheet" th:href="@{/css/salary.css}">
+<script>
+	function confirmAttendance(employeeId, yearMonth) {
+		if (!employeeId || !yearMonth) {
+			alert('올바르지 않은 데이터입니다.');
+			return;
+		}
+		if (confirm('근태를 확정하시겠습니까?')) {
+			window.location.href = `/salary/confirm-attendance/${employeeId}/${yearMonth}`;
+		}
+	}
+</script>
 </head>
 <body>
-    <div class="attendance-detail">
-        <h2>근태 상세 정보</h2>
-        <div th:if="${attendance != null}">
-            <p>사원명: <span th:text="${attendance.employeeName}"></span></p>
-            <p>부서: <span th:text="${attendance.departmentName}"></span></p>
-            <p>직급: <span th:text="${attendance.position}"></span></p>
-            <p>날짜: <span th:text="${#temporals.format(attendance.date, 'yyyy-MM-dd')}"></span></p>
-            <p>출근시간: <span th:text="${#temporals.format(attendance.checkInTime, 'HH:mm')}"></span></p>
-            <p>퇴근시간: <span th:text="${#temporals.format(attendance.checkOutTime, 'HH:mm')}"></span></p>
-            <p>근무시간: <span th:text="${attendance.hoursWorked}"></span>시간</p>
-            <p>초과근무: <span th:text="${attendance.overtimeHours}"></span>시간</p>
-            <p>상태: <span th:text="${attendance.status}"></span></p>
-        </div>
-        <div class="buttons">
-            <button onclick="history.back()">돌아가기</button>
-            <button th:if="${attendance.status != 'CONFIRMED'}"
-                    onclick="confirmAttendance()">근태 확정</button>
-        </div>
-    </div>
+	<div layout:fragment="content">
+		<div class="payslip-container">
+			<h2 class="payslip-title">근태 상세 정보</h2>
+
+			<div class="employee-info">
+				<table class="info-table">
+					<tr>
+						<th>사원명</th>
+						<td th:text="${attendances[0].employeeName}"></td>
+						<th>부서</th>
+						<td th:text="${attendances[0].departmentName}"></td>
+					</tr>
+					<tr>
+						<th>직급</th>
+						<td th:text="${attendances[0].position}"></td>
+						<th>근무월</th>
+						<td th:text="${yearMonth}"></td>
+					</tr>
+				</table>
+			</div>
+
+			<div class="salary-summary">
+				<h3>근태 및 급여 요약</h3>
+				<br>
+				<p>
+					총 근무시간: <span th:text="${totalWorkHours} + ' 시간'"></span>
+				</p>
+				<p>
+					총 초과근무시간: <span th:text="${totalOvertimeHours} + ' 시간'"></span>
+				</p>
+				<p>
+					기본 급여: <span th:text="${salaryInfo.baseSalary} + ' 원'"></span>
+				</p>
+				<p>
+					총 공제액: <span th:text="${salaryInfo.deductionTotal} + ' 원'"></span>
+				</p>
+				<p>
+					총 수령액: <span th:text="${salaryInfo.totalSalary} + ' 원'"></span>
+				</p>
+			</div>
+
+			<div class="salary-list">
+				<table>
+					<thead>
+						<tr>
+							<th>날짜</th>
+							<th>출근시간</th>
+							<th>퇴근시간</th>
+							<th>근무시간</th>
+							<th>초과근무시간</th>
+							<th>상태</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="detail : ${attendances}">
+							<td th:text="${#temporals.format(detail.date, 'yyyy-MM-dd')}"></td>
+							<td th:text="${#temporals.format(detail.checkInTime, 'HH:mm')}"></td>
+							<td th:text="${#temporals.format(detail.checkOutTime, 'HH:mm')}"></td>
+							<td th:text="${detail.hoursWorked}"></td>
+							<td th:text="${detail.overtimeHours}"></td>
+							<td th:text="${detail.status}"></td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+
+			<div class="button-group">
+				<button class="btn" onclick="history.back()">돌아가기</button>
+				<button class="btn primary"
+					th:if="${attendanceClosed != null and !attendanceClosed}"
+					th:attr="data-employee-id=${attendances[0].employeeId}, data-year-month=${yearMonth}"
+					onclick="confirmAttendance(this.getAttribute('data-employee-id'), this.getAttribute('data-year-month'))">
+					근태 확정</button>
+			</div>
+		</div>
+	</div>
 </body>
 </html>

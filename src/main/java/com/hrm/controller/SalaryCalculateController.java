@@ -62,7 +62,21 @@ public class SalaryCalculateController {
             @PathVariable("yearMonth") String yearMonth,
             Model m) {
         List<AttendanceDto> details = attendanceService.getEmployeeMonthlyAttendance(employeeId, yearMonth);
+        
+        SalaryDto salaryInfo = salaryService.getEmployeeSalaryByMonth(employeeId, yearMonth);
+
+        // 총 근무 시간 및 초과 근무 시간 계산
+        double totalWorkHours = details.stream().mapToDouble(AttendanceDto::getHoursWorked).sum();
+        double totalOvertimeHours = details.stream().mapToDouble(AttendanceDto::getOvertimeHours).sum();
+        
+        // 근태 마감 상태 확인
+        boolean isAttendanceClosed = attendanceService.isAttendanceClosed(yearMonth);
+        
+        m.addAttribute("attendanceClosed", isAttendanceClosed);
         m.addAttribute("attendances", details);
+        m.addAttribute("salaryInfo", salaryInfo);
+        m.addAttribute("totalWorkHours", totalWorkHours);
+        m.addAttribute("totalOvertimeHours", totalOvertimeHours);
         m.addAttribute("yearMonth", yearMonth);
         m.addAttribute("employeeId", employeeId);
         return "salary/calculateDetail";

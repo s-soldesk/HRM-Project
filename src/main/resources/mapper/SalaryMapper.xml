@@ -194,7 +194,8 @@
 		resultType="boolean">
 		SELECT COUNT(*) > 0
 		FROM Salary
-		WHERE DATE_FORMAT(PaymentDate, '%Y/%m') = #{yearMonth}
+		WHERE
+		DATE_FORMAT(PaymentDate, '%Y/%m') = #{yearMonth}
 	</select>
 
 	<!-- 해당 월의 계산된 급여 목록 조회 -->
@@ -202,8 +203,10 @@
 		resultMap="SalaryResultMap">
 		SELECT s.*, e.*, d.DepartmentName
 		FROM Salary s
-		JOIN Employee e ON s.EmployeeID = e.EmployeeID
-		JOIN Department d ON e.DepartmentID = d.DepartmentID
+		JOIN Employee
+		e ON s.EmployeeID = e.EmployeeID
+		JOIN Department d ON e.DepartmentID =
+		d.DepartmentID
 		WHERE DATE_FORMAT(s.PaymentDate, '%Y/%m') = #{yearMonth}
 		ORDER BY s.EmployeeID
 	</select>
@@ -211,8 +214,27 @@
 	<!-- 급여 확정 처리 -->
 	<update id="confirmSalaries" parameterType="string">
 		UPDATE Salary
-		SET Status = 'CONFIRMED'
-		WHERE DATE_FORMAT(PaymentDate, '%Y/%m') = #{yearMonth}
+		SET
+		Status = 'CONFIRMED'
+		WHERE DATE_FORMAT(PaymentDate, '%Y/%m') =
+		#{yearMonth}
 	</update>
+
+	<select id="getEmployeeSalaryByMonth"
+		resultMap="SalaryResultMap">
+		SELECT
+		s.*,
+		e.EmployeeID AS employeeId,
+		e.Name AS employeeName,
+		e.DepartmentID AS departmentId,
+		e.Position AS position,
+		d.DepartmentName AS departmentName
+		FROM Salary s
+		JOIN Employee e ON s.EmployeeID = e.EmployeeID
+		JOIN Department d ON e.DepartmentID = d.DepartmentID
+		WHERE s.EmployeeID = #{employeeId}
+		AND DATE_FORMAT(s.PaymentDate, '%Y-%m') = #{yearMonth}
+	</select>
+
 
 </mapper>

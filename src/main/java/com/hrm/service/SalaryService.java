@@ -3,6 +3,8 @@ package com.hrm.service;
 import com.hrm.dto.SalaryDto;
 import java.util.List;
 
+import org.apache.ibatis.annotations.Param;
+
 public interface SalaryService {
     // 모든 사원의 급여 조회 (인사 전용)
     List<SalaryDto> getAllSalaries();
@@ -35,4 +37,7 @@ public interface SalaryService {
     
     List<SalaryDto> getCalculatedSalaries(String yearMonth);
     
+    // 특정 사원의 특정 월 급여 조회 메서드
+    SalaryDto getEmployeeSalaryByMonth(Integer employeeId, String yearMonth);
+
 }

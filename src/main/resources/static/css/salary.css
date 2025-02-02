@@ -407,3 +407,24 @@ body {
 .btn.primary:hover {
     background: #005299;
 }
+
+.salary-summary {
+    border: 1px solid #ddd;
+    padding: 15px;
+    margin: 20px 0;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.salary-summary h3 {
+    font-size: 1.5rem;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.salary-summary p {
+    font-size: 1rem;
+    color: #555;
+    margin: 5px 0;
+}

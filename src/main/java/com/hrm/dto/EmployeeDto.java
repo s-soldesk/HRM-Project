@@ -20,7 +20,6 @@ public class EmployeeDto {
 	private String email; // 이메일
 	private DepartmentDto department; // 부서정보 매핑
 	private String departmentName; //부서정보 조인
-	private String lastMessage;
 	private String role;
 	private String profileImage; // 프로필 이미지
 }

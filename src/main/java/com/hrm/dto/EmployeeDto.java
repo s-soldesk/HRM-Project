@@ -16,7 +16,11 @@ public class EmployeeDto {
 	private String position; // 직급
 	private LocalDate hiredate; // 입사일
 	private String status; // 재직상태
-	private Integer phonenumber; // 핸드폰
+	private String phoneNumber; // 핸드폰
 	private String email; // 이메일
 	private DepartmentDto department; // 부서정보 매핑
+	private String departmentName; //부서정보 조인
+	private String lastMessage;
+	private String role;
+	private String profileImage; // 프로필 이미지
 }

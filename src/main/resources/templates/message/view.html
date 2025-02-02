@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>메시지 상세보기</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { display: flex; min-height: 100vh; }
+        
+        .sidebar {
+            width: 200px;
+            background-color: #333;
+            padding: 20px;
+        }
+        
+        .sidebar .logo {
+            width: 100px;
+            height: 100px;
+            background-color: #666;
+            border-radius: 50%;
+            margin: 0 auto 20px;
+        }
+        
+        .sidebar .menu-item {
+            padding: 10px 0;
+            color: white;
+            text-decoration: none;
+            display: block;
+        }
+        
+        .main-content {
+            flex: 1;
+            padding: 20px;
+        }
+
+        .message-header {
+            background-color: #f8f9fa;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+        }
+
+        .message-content {
+            padding: 20px;
+            min-height: 200px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+
+        .message-info {
+            margin-bottom: 10px;
+        }
+
+        .btn {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 4px;
+            background-color: #007bff;
+            color: white;
+            text-decoration: none;
+            display: inline-block;
+        }
+
+        .btn-reply {
+            background-color: #28a745;
+        }
+    </style>
+</head>
+<body>
+    <div class="sidebar">
+        <div class="logo"></div>
+        <!-- 공통 메뉴 -->
+        <a href="/dashboard" class="menu-item">DashBoard</a>
+        <a href="/profile" class="menu-item">내 정보</a>
+        <a href="/management" class="menu-item">일정관리</a>
+        <a href="/notices" class="menu-item">공지사항</a>
+        <a href="/attendance" class="menu-item">급여 조회</a>
+        <a href="/messages" class="menu-item">메시지</a>
+        <a href="/approval" class="menu-item">업무공유</a>
+
+        <!-- 관리자 전용 메뉴 -->
+		<div th:if="${session.userRole != null and (#strings.toString(session.userRole).equals('Admin') or #strings.toString(session.userRole).equals('HR'))}">
+		    <a href="/attendance/manage" class="menu-item">근퇴 관리</a>
+		    <a href="/employee/manage" class="menu-item">인사 관리</a>
+		</div>
+    </div>
+
+    <div class="main-content">
+        <h2>메시지 상세보기</h2>
+        
+        <div class="message-header">
+            <div class="message-info">
+                <strong>보낸 사람:</strong> <span th:text="${message.senderName}"></span>
+            </div>
+            <div class="message-info">
+                <strong>받는 사람:</strong> <span th:text="${message.receiverName}"></span>
+            </div>
+            <div class="message-info">
+                <strong>보낸 시간:</strong> 
+                <span th:text="${#temporals.format(message.sentTime, 'yyyy-MM-dd HH:mm:ss')}"></span>
+            </div>
+        </div>
+
+        <div class="message-content" th:text="${message.content}">
+        </div>
+
+        <div>
+            <a href="/messages" class="btn">목록으로</a>
+            <a th:href="@{/messages/reply/{id}(id=${message.messageId})}" class="btn btn-reply">답장하기</a>
+        </div>
+    </div>
+</body>
+</html>

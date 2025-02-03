@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>근태 기록 조회</title>
+</head>
+<body>
+    <h1>근태 조회</h1>
+    
+    <!-- 검색 폼 -->
+    <form method="get" action="/attendance/records">
+        <input type="text" name="employeeId" placeholder="사원 ID">
+        <input type="text" name="name" placeholder="사원 이름">
+        <input type="date" name="startDate">
+        <input type="date" name="endDate">
+        <select name="attendanceType">
+            <option value="">전체</option>
+            <option value="Present">출근</option>
+            <option value="Late">지각</option>
+            <option value="Overtime">야근</option>
+            <option value="EarlyLeave">조퇴</option>
+            <option value="Leave">휴가</option>
+            <option value="Absent">결근</option>
+        </select>
+        <button type="submit">검색</button>
+    </form>
+
+    <!-- 근태 기록 테이블 -->
+    <table border="1" cellpadding="5" cellspacing="0">
+        <thead>
+            <tr>
+                <th>사원 ID</th>
+                <th>사원 이름</th>
+                <th>날짜</th>
+                <th>출근 시간</th>
+                <th>퇴근 시간</th>
+                <th>근무 시간</th>
+                <th>초과근무 시간</th>
+                <th>근태 유형</th>
+                <th>비고</th>
+                <th>수정</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="record : ${records}">
+                <td th:text="${record.employeeId}"></td>
+                <td th:text="${record.employeeName}"></td>
+                <td th:text="${record.date}"></td>
+                <td th:text="${record.checkInTime}"></td>
+                <td th:text="${record.checkOutTime}"></td>
+                <td th:text="${record.hoursWorked} + ' 시간'"></td>
+                <td th:text="${record.overtimeHours} + ' 시간'"></td>
+                <td th:text="${record.attendanceType}"></td>
+                <td th:text="${record.remarks}"></td>
+                <td>
+                <!-- 수정 버튼: 해당 근태 기록 수정 페이지로 이동 -->
+                <a th:href="@{/attendance/update/{id}(id=${record.attendanceId})}">수정</a>
+            </td>
+            </tr>
+            <tr th:if="${#lists.isEmpty(records)}">
+                <td colspan="8" style="text-align: center;">조회된 근태 기록이 없습니다.</td>
+            </tr>
+        </tbody>
+    </table>
+    
+    <a href="/attendance">메인 페이지로 돌아가기</a>
+    
+     <!-- PDF 다운로드 버튼 -->
+    <form method="get" action="/attendance/records/pdf" style="margin-top: 10px;">
+        <input type="hidden" name="employeeId" value="">
+        <input type="hidden" name="startDate" value="">
+        <input type="hidden" name="endDate" value="">
+        <input type="hidden" name="attendanceType" value="">
+        <button type="submit">PDF 다운로드</button>
+    </form>
+    
+</body>
+</html>

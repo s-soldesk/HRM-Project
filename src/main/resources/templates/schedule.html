@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>휴가 신청 기록 관리</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/css/style.css">
+</head>
+<body>
+    <h1>휴가 신청 관리</h1>
+    
+    <!-- 메시지 표시 -->
+    <p th:if="${message}" th:text="${message}" style="color: green;"></p>
+    
+    <!-- 일정 추가 폼 -->
+    <form th:action="@{/attendance/schedule/add}" method="post">
+        <label>사원 ID: <input type="number" name="employeeId" required></label><br>
+        <label>일정 제목: <input type="text" name="title" required></label><br>
+        <label>휴가 유형 (선택):
+            <select name="leaveType">
+                <option value="">선택 안함</option>
+                <option value="Annual">연차</option>
+                <option value="Sick">병가</option>
+                <option value="Personal">개인 사유</option>
+                <option value="Unpaid">무급</option>
+            </select>
+        </label><br>
+        <label>사유: <input type="text" name="reason"></label><br>
+        <label>시작 날짜: <input type="datetime-local" name="startDate" required></label><br>
+        <label>종료 날짜: <input type="datetime-local" name="endDate" required></label><br>
+        <button type="submit">일정 추가</button>
+    </form>
+
+    <h3>휴가 신청 목록</h3>
+    <table border="1">
+        <thead>
+            <tr>
+                <th>사원 ID</th>
+                <th>사원 이름</th>
+                <th>제목</th>
+                <th>휴가 유형</th>
+                <th>사유</th>
+                <th>시작일</th>
+                <th>종료일</th>
+                <th>상태</th>
+                <th>승인</th>
+                <th>삭제</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr th:each="schedule : ${schedules}">
+                <td th:text="${schedule.employeeId}"></td>
+                <td th:text="${schedule.employeeName}"></td>
+                <td th:text="${schedule.title}"></td>
+                <td th:text="${schedule.leaveType}"></td>
+                <td th:text="${schedule.reason}"></td>
+                <td th:text="${schedule.startDate}"></td>
+                <td th:text="${schedule.endDate}"></td>
+                <td th:text="${schedule.status}"></td>
+                <td>
+                    <form th:action="@{/attendance/schedule/approve}" method="post">
+                        <input type="hidden" name="scheduleId" th:value="${schedule.scheduleId}">
+                        <select name="status">
+                            <option value="CONFIRMED">승인</option>
+                            <option value="REJECTED">거절</option>
+                        </select>
+                        <button type="submit">변경</button>
+                    </form>
+                </td>
+                <td>
+                    <form th:action="@{/attendance/schedule/delete/{scheduleId}(scheduleId=${schedule.scheduleId})}" method="post">
+                        <input type="hidden" name="scheduleId" th:value="${schedule.scheduleId}">
+                        <button type="submit" onclick="return confirm('정말 삭제하시겠습니까?')">삭제</button>
+                    </form>
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    
+     <a href="/attendance">메인 페이지로 돌아가기</a>
+</body>
+</html>

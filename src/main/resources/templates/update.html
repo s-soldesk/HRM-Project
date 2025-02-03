@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>근태 기록 수정</title>
+</head>
+<body>
+    <h1>근태 기록 수정</h1>
+    
+    <!-- 사원 정보 출력 -->
+    <p><strong>사원 ID:</strong> <span th:text="${attendance.employeeId}"></span></p>
+    <p><strong>사원 이름:</strong> <span th:text="${attendance.employeeName}"></span></p>
+    
+    <!-- 근태 수정 폼 -->
+    <form method="post" action="/attendance/update">
+        <input type="hidden" name="attendanceId" th:value="${attendance.attendanceId}">
+        
+        <label>출근 시간</label>
+        <input type="time" name="checkInTime" th:value="${attendance.checkInTime}">
+        
+        <label>퇴근 시간</label>
+        <input type="time" name="checkOutTime" th:value="${attendance.checkOutTime}">
+        
+        <label>근태 유형</label>
+        <select name="attendanceType" th:value="${attendance.attendanceType}">
+            <option value="Present">출근</option>
+            <option value="Late">지각</option>
+            <option value="Overtime">야근</option>
+            <option value="Leave">휴가</option>
+            <option value="Absent">결근</option>
+        </select>
+        
+        <label>비고</label>
+        <textarea name="remarks" th:text="${attendance.remarks}"></textarea>
+        
+        <button type="submit">수정</button>
+    </form>
+</body>
+</html>

@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -50,18 +51,32 @@ public class SalaryServiceImpl implements SalaryService {
 	}
 
 	@Override
-	public void calculateSalaries(String yearMonth) {
-		// 근태 마감 확인
-		if (!attendanceService.isAttendanceClosed(yearMonth)) {
-			throw new IllegalStateException("근태가 마감되지 않았습니다.");
+	public void calculateSalaries(Integer employeeId, String yearMonth) {
+		// 근태 데이터 조회
+		List<AttendanceDto> attendances = attendanceService.getEmployeeMonthlyAttendance(employeeId, yearMonth);
+
+		if (attendances == null || attendances.isEmpty()) {
+			throw new IllegalStateException("근태 데이터가 없습니다.");
 		}
 
-		// 근태 데이터 조회
-		List<AttendanceDto> attendances = attendanceService.getMonthlyAttendance(yearMonth);
+		// 급여 계산
+		SalaryDto salary = calculateIndividualSalary(attendances.get(0));
 
-		// 각 직원별 급여 계산 및 저장
-		for (AttendanceDto attendance : attendances) {
-			SalaryDto salary = calculateIndividualSalary(attendance);
+		// 필수 필드 설정
+		salary.setEmployeeId(employeeId);
+		salary.setStatus("CONFIRMED");
+
+		// 기존 급여 정보 확인
+		SalaryDto existingSalary = salaryDao.getEmployeeSalaryByMonth(employeeId, yearMonth);
+
+		if (existingSalary != null) {
+			// 기존 급여 정보 업데이트 - PaymentDate는 그대로 유지
+			salary.setSalaryId(existingSalary.getSalaryId());
+			salary.setPaymentDate(existingSalary.getPaymentDate()); // 기존 날짜 유지
+			salaryDao.updateSalary(salary);
+		} else {
+			// 새로운 급여 정보 추가 - 해당 월의 날짜로 설정
+			salary.setPaymentDate(LocalDate.parse(yearMonth + "-01")); // 해당 월의 첫째 날로 설정
 			salaryDao.addSalary(salary);
 		}
 	}
@@ -153,7 +168,15 @@ public class SalaryServiceImpl implements SalaryService {
 	// 급여 확정 상태로 업데이트
 	@Override
 	public void confirmSalaries(String employeeId, String yearMonth) {
-		salaryMapper.confirmSalaries(Map.of("employeeId", employeeId, "yearMonth", yearMonth));
+		try {
+			// 날짜 형식 변환 (2025-01 형식으로 통일)
+			yearMonth = yearMonth.replace("/", "-");
+
+			// 급여 상태 CONFIRMED로 업데이트
+			salaryMapper.confirmSalaries(Map.of("employeeId", employeeId, "yearMonth", yearMonth));
+		} catch (Exception e) {
+			throw new RuntimeException("급여 확정 처리 중 오류가 발생했습니다: " + e.getMessage());
+		}
 	}
 
 	@Override
@@ -169,6 +192,12 @@ public class SalaryServiceImpl implements SalaryService {
 	@Override
 	public List<SalaryDto> getCalculatedSalaries(String yearMonth) {
 		return salaryMapper.getCalculatedSalaries(yearMonth);
+	}
+
+	@Override
+	public boolean isSalaryClosed(Integer employeeId, String yearMonth) {
+		SalaryDto salary = salaryMapper.getEmployeeSalaryByMonth(employeeId, yearMonth);
+		return salary != null && "CONFIRMED".equals(salary.getStatus());
 	}
 
 }

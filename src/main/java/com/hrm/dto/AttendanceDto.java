@@ -17,10 +17,10 @@ public class AttendanceDto {
 	private LocalTime checkOutTime; // 퇴근 시간
 	private Double hoursWorked; // 근무 시간
 	private Double overtimeHours; // 초과근무시간
-	private String status; // 출근 상태
+
 	
 	// ------------------------------------------ 추가
-	
+	private String status; // 출근 상태
 	private String employeeName; // 사원이름 조인
 	private String departmentName; // 부서이름 조인 
 	private String position; // 조인

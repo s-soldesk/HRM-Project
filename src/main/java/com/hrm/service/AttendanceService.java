@@ -5,9 +5,9 @@ import java.util.List;
 import com.hrm.dto.AttendanceDto;
 
 public interface AttendanceService {
-    boolean isAttendanceClosed(String yearMonth);
-    void closeAttendance(String yearMonth);
-    List<AttendanceDto> getMonthlyAttendance(String yearMonth);
+    boolean isAttendanceClosed(Integer employeeId, String yearMonth);
+    void closeAttendance(Integer employeeId, String yearMonth);
+    List<AttendanceDto> getMonthlyAttendance(Integer employeeId, String yearMonth);
     
     List<AttendanceDto> getAllEmployeeAttendance(String yearMonth);
     List<AttendanceDto> getAttendanceByDepartment(String yearMonth, String department);
@@ -22,5 +22,6 @@ public interface AttendanceService {
 
     List<AttendanceDto> getEmployeeMonthlyAttendance(Integer employeeId, String yearMonth);
     
-    
+    void closeAttendanceForEmployee(Integer employeeId, String yearMonth);
+
 }

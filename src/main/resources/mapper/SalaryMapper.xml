@@ -22,7 +22,7 @@
 		<result property="mealAllowance" column="MealAllowance" />
 		<result property="positionAllowance" column="PositionAllowance" />
 		<result property="paymentDate" column="PaymentDate" />
-		<result property="status" column="Status"/>
+		<result property="status" column="Status" />
 
 		<!-- EmployeeDto 매핑 -->
 		<association property="employee"
@@ -92,20 +92,38 @@
 	<!-- 급여 데이터 추가 -->
 	<insert id="addSalary" parameterType="com.hrm.dto.SalaryDto">
 		INSERT INTO Salary (
-		EmployeeID, BaseSalary, OvertimePay, TotalSalary, PaymentDate,
-		IncomeTax, LocalIncomeTax, NationalPension, HealthInsurance,
-		EmploymentInsurance, LongTermCareInsurance, MealAllowance,
-		PositionAllowance
+		EmployeeID,
+		BaseSalary,
+		OvertimePay,
+		TotalSalary,
+		IncomeTax,
+		LocalIncomeTax,
+		NationalPension,
+		HealthInsurance,
+		EmploymentInsurance,
+		LongTermCareInsurance,
+		MealAllowance,
+		PositionAllowance,
+		Status,
+		PaymentDate
 		) VALUES (
-		#{employeeId}, #{baseSalary},
-		#{overtimePay}, #{totalSalary}, #{paymentDate},
+		#{employeeId},
+		#{baseSalary},
+		#{overtimePay},
+		#{totalSalary},
 		#{incomeTax},
-		#{localIncomeTax}, #{nationalPension},
+		#{localIncomeTax},
+		#{nationalPension},
 		#{healthInsurance},
-		#{employmentInsurance}, #{longTermCareInsurance}, #{mealAllowance},
-		#{positionAllowance}
+		#{employmentInsurance},
+		#{longTermCareInsurance},
+		#{mealAllowance},
+		#{positionAllowance},
+		'CONFIRMED',
+		#{paymentDate}
 		)
 	</insert>
+
 
 	<!-- 급여 데이터 수정 -->
 	<update id="updateSalary" parameterType="com.hrm.dto.SalaryDto">
@@ -206,41 +224,42 @@
 		FROM Salary s
 		JOIN Employee
 		e ON s.EmployeeID = e.EmployeeID
-		JOIN Department d ON e.DepartmentID =
+		JOIN Department d ON
+		e.DepartmentID =
 		d.DepartmentID
-		WHERE DATE_FORMAT(s.PaymentDate, '%Y/%m') = #{yearMonth}
+		WHERE DATE_FORMAT(s.PaymentDate,
+		'%Y/%m') = #{yearMonth}
 		ORDER BY s.EmployeeID
 	</select>
 
-	<!-- 급여 확정 처리 -->
+	<!-- 근태 확정 처리 -->
 	<update id="confirmSalaries" parameterType="map">
 		UPDATE Salary
-		SET Status = 'CONFIRMED'
-		WHERE PaymentDate BETWEEN CONCAT(#{yearMonth}, '-01') AND
+		SET
+		Status = 'CONFIRMED'
+		WHERE PaymentDate BETWEEN CONCAT(#{yearMonth},
+		'-01') AND
 		LAST_DAY(CONCAT(#{yearMonth}, '-01'))
-		AND EmployeeID = #{employeeId}
+		AND EmployeeID =
+		#{employeeId}
 	</update>
-
-
 
 	<select id="getEmployeeSalaryByMonth"
 		resultMap="SalaryResultMap">
 		SELECT
 		s.*,
+		s.Status AS status,
 		e.EmployeeID AS employeeId,
 		e.Name AS employeeName,
 		e.DepartmentID AS departmentId,
 		e.Position AS position,
 		d.DepartmentName AS departmentName
 		FROM Salary s
-		JOIN Employee e ON
-		s.EmployeeID = e.EmployeeID
-		JOIN Department d ON e.DepartmentID =
-		d.DepartmentID
-		WHERE s.EmployeeID = #{employeeId}
-		AND
-		DATE_FORMAT(s.PaymentDate, '%Y-%m') = #{yearMonth}
+		JOIN Employee e ON s.EmployeeID = e.EmployeeID
+		JOIN Department d ON e.DepartmentID = d.DepartmentID
+		WHERE s.PaymentDate BETWEEN CONCAT(#{yearMonth}, '-01') AND
+		LAST_DAY(CONCAT(#{yearMonth}, '-01'))
+		AND s.EmployeeID = #{employeeId}
+
 	</select>
-
-
 </mapper>

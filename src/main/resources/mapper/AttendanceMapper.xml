@@ -19,7 +19,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<result property="position" column="Position" />
 		<result property="workingDays" column="workingDays" />
 		<result property="totalWorkedHours" column="totalWorkedHours" />
-		<result property="totalOvertimeHours" column="totalOvertimeHours" />
+		<result property="totalOvertimeHours"
+			column="totalOvertimeHours" />
 	</resultMap>
 
 	<!-- 근태 데이터 저장 -->
@@ -74,35 +75,42 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		resultMap="AttendanceResultMap">
 		SELECT
 		e.EmployeeID,
-		e.Name as employeeName,
+		e.Name AS employeeName,
 		d.DepartmentName,
 		e.Position,
-		COUNT(DISTINCT a.Date) as workingDays,
-		SUM(a.HoursWorked) as totalWorkedHours,
-		SUM(a.OvertimeHours) as totalOvertimeHours,
-		e.DepartmentID
+		COALESCE(COUNT(DISTINCT a.Date), 0) AS workingDays,
+		COALESCE(SUM(a.HoursWorked), 0) AS totalWorkedHours,
+		COALESCE(SUM(a.OvertimeHours), 0) AS totalOvertimeHours
 		FROM Employee e
 		JOIN Department d ON e.DepartmentID = d.DepartmentID
-		LEFT JOIN Attendance a ON e.EmployeeID = a.EmployeeID
-		WHERE DATE_FORMAT(a.Date, '%Y-%m') = #{yearMonth}
-		GROUP BY e.EmployeeID, e.Name, d.DepartmentName, e.Position, e.DepartmentID
+		LEFT JOIN
+		Attendance a ON e.EmployeeID = a.EmployeeID
+		AND DATE_FORMAT(a.Date,
+		'%Y-%m') = #{yearMonth}
+		GROUP BY e.EmployeeID, e.Name,
+		d.DepartmentName, e.Position
 	</select>
+
 
 	<!-- 특정 사원의 월별 상세 근태 -->
 	<select id="getEmployeeMonthlyAttendance"
 		resultMap="AttendanceResultMap">
 		SELECT
 		a.*,
-		e.Name as employeeName,
+		e.Name AS employeeName,
 		e.Position,
 		d.DepartmentName
 		FROM Attendance a
-		JOIN Employee e ON a.EmployeeID = e.EmployeeID
+		JOIN Employee e ON a.EmployeeID =
+		e.EmployeeID
 		JOIN Department d ON e.DepartmentID = d.DepartmentID
-		WHERE a.EmployeeID = #{employeeId}
-		AND DATE_FORMAT(a.Date, '%Y-%m') = #{yearMonth}
+		WHERE
+		a.EmployeeID = #{employeeId}
+		AND DATE_FORMAT(a.Date, '%Y-%m') =
+		#{yearMonth}
 		ORDER BY a.Date
 	</select>
+
 
 	<!-- 전체 직원의 근태 데이터 조회 -->
 	<select id="getAllEmployeeAttendance" parameterType="string"
@@ -176,12 +184,25 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	</update>
 
 	<!-- 근태 마감 확인 -->
-	<select id="isAttendanceClosed" parameterType="string"
+	<select id="isAttendanceClosed" parameterType="map"
 		resultType="boolean">
-		SELECT COUNT(*) > 0
+		SELECT EXISTS (
+		SELECT 1
 		FROM Attendance
-		WHERE DATE_FORMAT(Date,
-		'%Y-%m') = #{yearMonth}
-		AND Status = 'Confirmed'
+		WHERE EmployeeID =
+		#{employeeId}
+		AND DATE_FORMAT(Date, '%Y-%m') = #{yearMonth}
+		AND Status =
+		'OnTime'
+		)
 	</select>
+
+	<!-- 특정 사원의 근태 마감 -->
+	<update id="closeAttendanceForEmployee">
+		UPDATE Attendance
+		SET Status = 'OnTime'
+		WHERE EmployeeID = #{employeeId}
+		AND DATE_FORMAT(Date, '%Y-%m') = #{yearMonth}
+	</update>
+
 </mapper>

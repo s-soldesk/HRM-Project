@@ -14,35 +14,6 @@
 		}
 	}
 
-	function closeAttendance() {
-		const yearMonth = document.getElementById('yearMonth').value;
-		if (confirm('근태를 마감하시겠습니까?')) {
-			location.href = '/salary/calculate/close/' + yearMonth;
-		}
-	}
-
-	function calculateSalary() {
-		const yearMonth = document.getElementById('yearMonth').value;
-		if (confirm('급여를 계산하시겠습니까?')) {
-			location.href = '/salary/calculate/' + yearMonth;
-		}
-	}
-
-	function confirmSalary() {
-		const yearMonth = document.getElementById('yearMonth').value;
-		if (confirm('급여를 확정하시겠습니까? 확정 후에는 수정이 불가능합니다.')) {
-			location.href = '/salary/calculate/confirm/' + yearMonth;
-		}
-	}
-
-	function viewAttendanceDetail(employeeId, yearMonth) {
-		if (!yearMonth || !employeeId) {
-			alert('필수 데이터가 없습니다.');
-			return;
-		}
-		window.location.href = `/salary/calculate/detail/${employeeId}/${yearMonth}`;
-	}
-
 	function handleButtonClick(button) {
 		const employeeId = button.getAttribute('data-employee-id');
 		const yearMonth = button.getAttribute('data-year-month');
@@ -86,6 +57,7 @@
 								<th>총근무시간</th>
 								<th>연장근무시간</th>
 								<th>근태 확정</th>
+								
 								<th>상세보기</th>
 							</tr>
 						</thead>

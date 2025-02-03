@@ -30,4 +30,7 @@ public interface SalaryDao {
 
     // 특정 사원의 특정 월 급여 조회 메서드
     SalaryDto getEmployeeSalaryByMonth(@Param("employeeId") Integer employeeId, @Param("yearMonth") String yearMonth);
+    
+    // 근태 비교위한 조회
+    public boolean isSalaryClosed(Integer employeeId, String yearMonth);
 }

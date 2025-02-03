@@ -57,22 +57,16 @@ public class EmployeeController {
     @PostMapping("/profile/update")
     public String updateProfile(
             @RequestParam(value = "profileImage", required = false) MultipartFile file,
-            HttpSession session,
             RedirectAttributes redirectAttributes) {
         try {
-            Integer employeeId = (Integer) session.getAttribute("loggedInEmail");
-            if (employeeId == null) {
-                return "redirect:/login";
-            }
-
-            EmployeeDto employee = employeeService.getEmployeeById(employeeId);
+            EmployeeDto employee = employeeService.getEmployeeById(DEFAULT_EMPLOYEE_ID);
             if (employee == null) {
                 redirectAttributes.addFlashAttribute("error", "프로필을 찾을 수 없습니다.");
                 return "redirect:/profile?error";
             }
 
             if (file != null && !file.isEmpty()) {
-                String imagePath = saveProfileImage(file, String.valueOf(employeeId));
+                String imagePath = saveProfileImage(file, String.valueOf(DEFAULT_EMPLOYEE_ID));
                 employee.setProfileImage(imagePath);
                 employeeService.updateProfile(employee);
             }

@@ -1,344 +1,286 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-   <title>내 정보</title>
-   <style>
-       * { margin: 0; padding: 0; box-sizing: border-box; }
-       body { display: flex; min-height: 100vh; }
-       
-       .sidebar {
-           width: 200px;
-           background-color: #333;
-           padding: 20px;
-           height: 100vh;
-           position: fixed;
-       }
-       
-       .sidebar .logo {
-           width: 100px;
-           height: 100px;
-           background-color: #666;
-           border-radius: 50%;
-           margin: 0 auto 20px;
-       }
-       
-       .sidebar .menu-item {
-           padding: 12px 15px;
-           color: white;
-           text-decoration: none;
-           display: block;
-           margin-bottom: 5px;
-           border-radius: 5px;
-           transition: background-color 0.3s;
-       }
+    <title>내 정보</title>
+    <link rel="stylesheet" type="text/css" href="/css/dashboard.css">
+    <style>
+        .profile-container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+        }
 
-       .sidebar .menu-item:hover {
-           background-color: #444;
-       }
-       
-       .main-content {
-           flex: 1;
-           margin-left: 200px;
-           padding: 20px;
-       }
+        .profile-box {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 30px;
+            margin-bottom: 30px;
+        }
 
-       .profile-container {
-           max-width: 800px;
-           margin: 0 auto;
-           padding: 20px;
-       }
+        .profile-header {
+            display: flex;
+            gap: 30px;
+            margin-bottom: 30px;
+        }
 
-       .profile-box {
-           background: white;
-           border-radius: 8px;
-           box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-           padding: 30px;
-           margin-bottom: 30px;
-       }
+        .profile-image-container {
+            position: relative;
+            width: 150px;
+            height: 200px;
+        }
 
-       .profile-header {
-           display: flex;
-           gap: 30px;
-           margin-bottom: 30px;
-       }
+        .profile-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 8px;
+            background-color: #f0f0f0;
+        }
 
-       .profile-image-container {
-           position: relative;
-           width: 150px;
-           height: 200px;
-       }
+        .image-upload {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(0,0,0,0.7);
+            padding: 8px;
+            text-align: center;
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+        }
 
-       .profile-image {
-           width: 100%;
-           height: 100%;
-           object-fit: cover;
-           border-radius: 8px;
-           background-color: #f0f0f0;
-       }
+        .image-upload label {
+            color: white;
+            cursor: pointer;
+            font-size: 14px;
+        }
 
-       .image-upload {
-           position: absolute;
-           bottom: 0;
-           left: 0;
-           right: 0;
-           background: rgba(0,0,0,0.7);
-           padding: 8px;
-           text-align: center;
-           border-bottom-left-radius: 8px;
-           border-bottom-right-radius: 8px;
-       }
+        .image-upload input[type="file"] {
+            display: none;
+        }
 
-       .image-upload label {
-           color: white;
-           cursor: pointer;
-           font-size: 14px;
-       }
+        .profile-info {
+            flex: 1;
+        }
 
-       .image-upload input[type="file"] {
-           display: none;
-       }
+        .info-row {
+            display: flex;
+            margin-bottom: 15px;
+            border-bottom: 1px solid #eee;
+            padding: 10px 0;
+        }
 
-       .profile-info {
-           flex: 1;
-       }
+        .info-label {
+            width: 120px;
+            font-weight: bold;
+            color: #666;
+        }
 
-       .info-row {
-           display: flex;
-           margin-bottom: 15px;
-           border-bottom: 1px solid #eee;
-           padding: 10px 0;
-       }
+        .info-value {
+            flex: 1;
+        }
 
-       .info-label {
-           width: 120px;
-           font-weight: bold;
-           color: #666;
-       }
+        .password-change-box {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 30px;
+        }
 
-       .info-value {
-           flex: 1;
-       }
+        .section-title {
+            margin-bottom: 20px;
+            color: #333;
+            font-size: 1.2em;
+        }
 
-       .info-value input {
-           width: 100%;
-           padding: 8px;
-           border: 1px solid #ddd;
-           border-radius: 4px;
-       }
+        .alert {
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 4px;
+        }
 
-       .password-change-box {
-           background: white;
-           border-radius: 8px;
-           box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-           padding: 30px;
-       }
+        .alert-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
 
-       .section-title {
-           margin-bottom: 20px;
-           color: #333;
-           font-size: 1.2em;
-       }
+        .alert-danger {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
 
-       .button-group {
-           text-align: center;
-           margin-top: 20px;
-       }
+        .button-group {
+            text-align: center;
+            margin-top: 20px;
+        }
 
-       .btn {
-           padding: 10px 20px;
-           border: none;
-           border-radius: 4px;
-           cursor: pointer;
-           font-weight: bold;
-           transition: all 0.3s ease;
-       }
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: all 0.3s ease;
+        }
 
-       .btn-primary {
-           background-color: #007bff;
-           color: white;
-       }
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
 
-       .btn-success {
-           background-color: #28a745;
-           color: white;
-       }
-
-       .alert {
-           padding: 15px;
-           margin-bottom: 20px;
-           border-radius: 4px;
-       }
-
-       .alert-success {
-           background-color: #d4edda;
-           color: #155724;
-           border: 1px solid #c3e6cb;
-       }
-
-       .alert-danger {
-           background-color: #f8d7da;
-           color: #721c24;
-           border: 1px solid #f5c6cb;
-       }
-   </style>
+        .btn-success {
+            background-color: #28a745;
+            color: white;
+        }
+    </style>
 </head>
 <body>
-   <div class="sidebar">
-       <div class="logo"></div>
-       <a href="/dashboard" class="menu-item">DashBoard</a>
-       <a href="/profile" class="menu-item">내 정보</a>
-       <a href="/management" class="menu-item">일정관리</a>
-       <a href="/notices" class="menu-item">공지사항</a>
-       <a href="/attendance" class="menu-item">급여 조회</a>
-       <a href="/messages" class="menu-item">메시지</a>
-       <a href="/approval" class="menu-item">업무공유</a>
+    <!-- 사이드바 fragment 적용 -->
+    <div th:replace="~{layout/sidebar :: sidebar}"></div>
 
-		<div th:if="${session.userRole != null and (#strings.toString(session.userRole).equals('Admin') or #strings.toString(session.userRole).equals('HR'))}">
-		    <a href="/attendance/manage" class="menu-item">근퇴 관리</a>
-		    <a href="/employee/manage" class="menu-item">인사 관리</a>
-		</div>
-   </div>
+    <div class="content">
+        <div class="profile-container">
+            <h2>[ SOLDESK ]</h2>
+            
+            <!-- 알림 메시지 -->
+            <div th:if="${param.success}" class="alert alert-success">
+                프로필이 성공적으로 업데이트되었습니다.
+            </div>
+            <div th:if="${param.error}" class="alert alert-danger">
+                프로필 업데이트 중 오류가 발생했습니다.
+            </div>
+            
+            <!-- 프로필 정보 -->
+            <form action="/profile/update" method="post" enctype="multipart/form-data" class="profile-box">
+                <div class="profile-header">
+                    <div class="profile-image-container">
+                        <img th:if="${employee.profileImage != null and employee.profileImage != ''}" 
+                             th:src="@{'/uploads/' + ${employee.profileImage}}"
+                             alt="프로필 이미지" 
+                             class="profile-image"
+                             onerror="this.src='/uploads/default-profile.jpg'">
+                        <img th:unless="${employee.profileImage != null and employee.profileImage != ''}" 
+                             src="/uploads/default-profile.jpg"
+                             alt="기본 프로필 이미지" 
+                             class="profile-image">
+                        <div class="image-upload">
+                            <label for="profile-upload">이미지 변경</label>
+                            <input id="profile-upload" type="file" 
+                                   name="profileImage" 
+                                   accept="image/jpeg, image/png, image/jpg">
+                        </div>
+                    </div>
+                    
+                    <div class="profile-info">
+                        <div class="info-row">
+                            <div class="info-label">회사명:</div>
+                            <div class="info-value">(주) Soldesk</div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">부서:</div>
+                            <div class="info-value" th:text="${employee?.departmentName}"></div>
+                        </div>
+                        <div class="info-row">
+                            <div class="info-label">전화번호:</div>
+                            <div class="info-value" th:text="${employee?.phoneNumber}"></div>
+                        </div>
+                    </div>
+                </div>
 
-   <div class="main-content">
-       <div class="profile-container">
-           <h2>[ SOLDESK ]</h2>
-           
-           <!-- 알림 메시지 -->
-           <div th:if="${param.success}" class="alert alert-success">
-               프로필이 성공적으로 업데이트되었습니다.
-           </div>
-           <div th:if="${param.error}" class="alert alert-danger">
-               프로필 업데이트 중 오류가 발생했습니다.
-           </div>
-           
-           <!-- 프로필 정보 -->
-           <form action="/profile/update" method="post" enctype="multipart/form-data" class="profile-box">
-               <div class="profile-header">
-					<div class="profile-image-container">
-					    <img th:if="${employee.profileImage != null and employee.profileImage != ''}" 
-					         th:src="@{'/uploads/' + ${employee.profileImage}}"
-					         alt="프로필 이미지" 
-					         class="profile-image"
-					         onerror="this.src='/uploads/default-profile.jpg'">
-					    <img th:unless="${employee.profileImage != null and employee.profileImage != ''}" 
-					         src="/uploads/default-profile.jpg"
-					         alt="기본 프로필 이미지" 
-					         class="profile-image">
-					    <div class="image-upload">
-					        <label for="profile-upload">이미지 변경</label>
-					        <input id="profile-upload" type="file" 
-					               name="profileImage" 
-					               accept="image/jpeg, image/png, image/jpg">
-					    </div>
-					</div>
-                   
-                   <div class="profile-info">
-                       <div class="info-row">
-                           <div class="info-label">회사명:</div>
-                           <div class="info-value">(주) Soldesk</div>
-                       </div>
-                       <div class="info-row">
-                           <div class="info-label">부서:</div>
-                           <div class="info-value" th:text="${employee?.departmentName}"></div>
-                       </div>
-						<div class="info-row">
-						    <div class="info-label">전화번호:</div>
-						    <div class="info-value" th:text="${employee?.phoneNumber}"></div>
-						</div>
-                   </div>
-               </div>
+                <div class="info-row">
+                    <div class="info-label">이름:</div>
+                    <div class="info-value" th:text="${employee?.name}"></div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">생년월일:</div>
+                    <div class="info-value" th:text="${employee?.dateBirth}"></div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">직책:</div>
+                    <div class="info-value" th:text="${employee?.position}"></div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">직급:</div>
+                    <div class="info-value" th:text="${employee?.role}"></div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">상태:</div>
+                    <div class="info-value" th:text="${employee?.status}"></div>
+                </div>
+                <div class="info-row">
+                    <div class="info-label">이메일:</div>
+                    <div class="info-value" th:text="${employee?.email}"></div>
+                </div>
 
-               <div class="info-row">
-                   <div class="info-label">이름:</div>
-                   <div class="info-value" th:text="${employee?.name}"></div>
-               </div>
-               <div class="info-row">
-                   <div class="info-label">생년월일:</div>
-                   <div class="info-value" th:text="${employee?.dateBirth}"></div>
-               </div>
-               <div class="info-row">
-                   <div class="info-label">직책:</div>
-                   <div class="info-value" th:text="${employee?.position}"></div>
-               </div>
-               <div class="info-row">
-                   <div class="info-label">직급:</div>
-                   <div class="info-value" th:text="${employee?.role}"></div>
-               </div>
-               <div class="info-row">
-                   <div class="info-label">상태:</div>
-                   <div class="info-value" th:text="${employee?.status}"></div>
-               </div>
-				<div class="info-row">
-				    <div class="info-label">이메일:</div>
-				    <div class="info-value" th:text="${employee?.email}"></div>
-				</div>
+                <div class="button-group">
+                    <button type="submit" class="btn btn-primary">정보 수정</button>
+                </div>
+            </form>
 
-               <div class="button-group">
-                   <button type="submit" class="btn btn-primary">정보 수정</button>
-               </div>
-           </form>
+            <!-- 비밀번호 변경 -->
+            <form action="/profile/password" method="post" class="password-change-box">
+                <h3 class="section-title">비밀번호 변경</h3>
 
-           <!-- 비밀번호 변경 -->
-           <form action="/profile/password" method="post" class="password-change-box">
-               <h3 class="section-title">비밀번호 변경</h3>
+                <div th:if="${param.pwSuccess}" class="alert alert-success">
+                    비밀번호가 성공적으로 변경되었습니다.
+                </div>
+                <div th:if="${param.pwError}" class="alert alert-danger">
+                    비밀번호 변경 중 오류가 발생했습니다.
+                </div>
 
-               <div th:if="${param.pwSuccess}" class="alert alert-success">
-                   비밀번호가 성공적으로 변경되었습니다.
-               </div>
-               <div th:if="${param.pwError}" class="alert alert-danger">
-                   비밀번호 변경 중 오류가 발생했습니다.
-               </div>
+                <div class="info-row">
+                    <div class="info-label">현재 비밀번호</div>
+                    <div class="info-value">
+                        <input type="password" name="currentPassword" required>
+                    </div>
+                </div>
 
-               <div class="info-row">
-                   <div class="info-label">현재 비밀번호</div>
-                   <div class="info-value">
-                       <input type="password" name="currentPassword" required>
-                   </div>
-               </div>
+                <div class="info-row">
+                    <div class="info-label">새 비밀번호</div>
+                    <div class="info-value">
+                        <input type="password" name="newPassword" id="newPassword" required>
+                    </div>
+                </div>
 
-               <div class="info-row">
-                   <div class="info-label">새 비밀번호</div>
-                   <div class="info-value">
-                       <input type="password" name="newPassword" id="newPassword" required>
-                   </div>
-               </div>
+                <div class="info-row">
+                    <div class="info-label">비밀번호 확인</div>
+                    <div class="info-value">
+                        <input type="password" name="confirmPassword" id="confirmPassword" required>
+                    </div>
+                </div>
 
-               <div class="info-row">
-                   <div class="info-label">비밀번호 확인</div>
-                   <div class="info-value">
-                       <input type="password" name="confirmPassword" id="confirmPassword" required>
-                   </div>
-               </div>
+                <div class="button-group">
+                    <button type="submit" class="btn btn-success">비밀번호 변경</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
-               <div class="button-group">
-                   <button type="submit" class="btn btn-success">비밀번호 변경</button>
-               </div>
-           </form>
-       </div>
-   </div>
+    <!-- 비밀번호 확인 스크립트 -->
+    <script>
+        document.querySelector('form[action="/profile/password"]').addEventListener('submit', function(e) {
+            const newPassword = document.getElementById('newPassword').value;
+            const confirmPassword = document.getElementById('confirmPassword').value;
+            
+            if (newPassword !== confirmPassword) {
+                e.preventDefault();
+                alert('새 비밀번호가 일치하지 않습니다.');
+            }
+        });
 
-   <!-- 비밀번호 확인 스크립트 -->
-   <script>
-       document.querySelector('form[action="/profile/password"]').addEventListener('submit', function(e) {
-           const newPassword = document.getElementById('newPassword').value;
-           const confirmPassword = document.getElementById('confirmPassword').value;
-           
-           if (newPassword !== confirmPassword) {
-               e.preventDefault();
-               alert('새 비밀번호가 일치하지 않습니다.');
-           }
-       });
-
-       // 이미지 미리보기
-       document.getElementById('profile-upload').addEventListener('change', function(e) {
-           if (this.files && this.files[0]) {
-               const reader = new FileReader();
-               reader.onload = function(e) {
-                   document.querySelector('.profile-image').src = e.target.result;
-               };
-               reader.readAsDataURL(this.files[0]);
-           }
-       });
-   </script>
+        // 이미지 미리보기
+        document.getElementById('profile-upload').addEventListener('change', function(e) {
+            if (this.files && this.files[0]) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.querySelector('.profile-image').src = e.target.result;
+                };
+                reader.readAsDataURL(this.files[0]);
+            }
+        });
+    </script>
 </body>
 </html>

@@ -7,6 +7,6 @@ import org.apache.ibatis.annotations.Select;
 import com.hrm.dto.UserAccountDto;
 
 @Mapper
-public interface UserAccountRepository {
+public interface UserAccountDao {
 	UserAccountDto findByEmployeeId(@Param("employeeId") String employeeId);
 }

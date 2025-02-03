@@ -1,6 +1,6 @@
 package com.hrm.service;
 
-import com.hrm.dao.UserAccountRepository;
+import com.hrm.dao.UserAccountDao;
 import com.hrm.dto.UserAccountDto;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -16,12 +16,12 @@ import java.util.Collections;
 public class UserDetailsServiceImpl implements UserDetailsService {
 
 	@Autowired
-    private UserAccountRepository userAccountRepository;
+    private UserAccountDao userAccountDao;
 
     @Override
     public UserDetails loadUserByUsername(String employeeId) throws UsernameNotFoundException {
         // 사용자 계정 정보 조회
-        UserAccountDto user = userAccountRepository.findByEmployeeId(employeeId);
+        UserAccountDto user = userAccountDao.findByEmployeeId(employeeId);
 
         // 사용자가 존재하지 않으면 예외 발생
         if (user == null) {

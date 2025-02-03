@@ -1,6 +1,8 @@
 package com.hrm.config;
 
 import com.hrm.service.UserDetailsServiceImpl;
+
+import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -11,6 +13,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 @Configuration
+@MapperScan(basePackages = "com.hrm.dao")
 public class SecurityConfig {
 
     private final UserDetailsServiceImpl userDetailsService;

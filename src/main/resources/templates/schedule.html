@@ -16,7 +16,6 @@
         <!-- 일정 관리 컨텐츠 -->
         <div class="content">
             <h2>일정 관리</h2>
-            <p>캘린더를 통해 일정을 추가, 조회, 수정, 삭제할 수 있습니다.</p>
 
             <!-- FullCalendar -->
             <div id="calendar"></div>
@@ -100,7 +99,7 @@
                 calendar.unselect();
             },
 
-            // ✅ 일정 수정 (드래그 & 드롭)
+         // ✅ 일정 이동 (드래그 & 드롭)
             eventDrop: function(info) {
                 let updatedEvent = {
                     scheduleId: info.event.id,
@@ -115,14 +114,39 @@
                     contentType: "application/json",
                     data: JSON.stringify(updatedEvent),
                     success: function() {
-                        alert("일정이 수정되었습니다.");
+                        alert("일정이 이동되었습니다."); // ✅ 이동 메시지
                     },
                     error: function(xhr, status, error) {
-                        console.error("🚨 수정 실패:", error);
-                        alert("일정 수정에 실패했습니다.");
+                        console.error("🚨 이동 실패:", error);
+                        alert("일정 이동에 실패했습니다.");
                     }
                 });
             },
+
+            // ✅ 일정 크기 조정 (Resize)
+            eventResize: function(info) {
+                let updatedEvent = {
+                    scheduleId: info.event.id,
+                    title: info.event.title,
+                    start: info.event.start.toISOString(),
+                    end: info.event.end ? info.event.end.toISOString() : info.event.start.toISOString()
+                };
+
+                $.ajax({
+                    url: "/api/schedules/update/" + updatedEvent.scheduleId,
+                    type: "PUT",
+                    contentType: "application/json",
+                    data: JSON.stringify(updatedEvent),
+                    success: function() {
+                        alert("일정 시간이 변경되었습니다."); // ✅ 크기 조정 메시지
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("🚨 크기 조정 실패:", error);
+                        alert("일정 크기 변경에 실패했습니다.");
+                    }
+                });
+            },
+
 
 
             // ✅ 일정 삭제 (일정 클릭 시)

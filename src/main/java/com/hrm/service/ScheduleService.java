@@ -13,27 +13,30 @@ public class ScheduleService {
     @Autowired
     private ScheduleMapper scheduleMapper;
 
-    // 모든 일정 조회
+    /**
+     * ✅ 모든 직원의 일정 조회
+     */
     public List<ScheduleDto> getAllSchedules() {
         return scheduleMapper.getAllSchedules();
     }
 
-    // 특정 직원 일정 조회
-    public List<ScheduleDto> getSchedulesByEmployeeID(int employeeId) {
-        return scheduleMapper.getSchedulesByEmployeeID(employeeId);
-    }
-
-    // 일정 추가
+    /**
+     * ✅ 일정 추가
+     */
     public void createSchedule(ScheduleDto scheduleDto) {
         scheduleMapper.createSchedule(scheduleDto);
     }
 
-    // 일정 수정
+    /**
+     * ✅ 일정 수정
+     */
     public void updateSchedule(ScheduleDto scheduleDto) {
         scheduleMapper.updateSchedule(scheduleDto);
     }
 
-    // 일정 삭제
+    /**
+     * ✅ 일정 삭제
+     */
     public void deleteSchedule(int scheduleId) {
         scheduleMapper.deleteSchedule(scheduleId);
     }

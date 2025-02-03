@@ -2,55 +2,76 @@ package com.hrm.controller;
 
 import com.hrm.dto.ScheduleDto;
 import com.hrm.service.ScheduleService;
-import com.hrm.service.UserDetailsServiceImpl;
-
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.security.Principal;
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/schedules")
 public class ScheduleController {
-    
+
     @Autowired
     private ScheduleService scheduleService;
 
-    @Autowired
-    private UserDetailsServiceImpl userDetailsService;
-    
-    // 일정 조회
+    /**
+     * ✅ 모든 직원의 일정 조회
+     */
     @GetMapping
-    public List<ScheduleDto> getAllSchedules() {
-        return scheduleService.getAllSchedules();
+    public List<ScheduleDto> calendarList() {
+        return scheduleService.getAllSchedules(); // 모든 일정 가져옴
     }
 
-    // 일정 추가
-    @PostMapping
-    public ResponseEntity<String> createSchedule(@RequestBody ScheduleDto scheduleDto, Principal principal) {
-        // 로그인한 사용자의 EmployeeID 가져오기
-        String employeeId = principal.getName();  // 여기서 employeeId 그대로 가져옴
+    /**
+     * ✅ 일정 추가 (로그인한 직원 기준)
+     */
+    @PostMapping("/add")
+    public ScheduleDto calendarSave(@RequestBody Map<String, Object> map) {
+        ScheduleDto schedule = new ScheduleDto();
+        schedule.setEmployeeId(Integer.parseInt((String) map.get("employeeId"))); // 받아온 employeeId 설정
+        schedule.setTitle((String) map.get("title"));
 
-        scheduleDto.setEmployeeId(Integer.parseInt(employeeId));  // EmployeeID 설정
-        scheduleService.createSchedule(scheduleDto);
+        schedule.setStartDate((String) map.get("start"));
+        schedule.setEndDate(map.get("end") != null ? (String) map.get("end") : null);
 
-        return ResponseEntity.ok("일정이 등록되었습니다.");
+        scheduleService.createSchedule(schedule);
+        return schedule; // FullCalendar에서 반영 가능
     }
 
-    // 일정 수정
-    @PutMapping("/{scheduleID}")
-    public ResponseEntity<String> updateSchedule(@PathVariable int scheduleID, @RequestBody ScheduleDto scheduleDto) {
-        scheduleDto.setScheduleId(scheduleID);
-        scheduleService.updateSchedule(scheduleDto);
-        return ResponseEntity.ok("일정이 수정되었습니다.");
+    /**
+     * ✅ 일정 삭제
+     */
+    @DeleteMapping("/delete/{scheduleId}")
+    public String calendarDelete(@PathVariable int scheduleId) {
+        try {
+            scheduleService.deleteSchedule(scheduleId);
+            return "success";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "fail";
+        }
     }
 
-    // 일정 삭제
-    @DeleteMapping("/{scheduleID}")
-    public ResponseEntity<String> deleteSchedule(@PathVariable int scheduleID) {
-        scheduleService.deleteSchedule(scheduleID);
-        return ResponseEntity.ok("일정이 삭제되었습니다.");
+    /**
+     * ✅ 일정 수정
+     */
+    @PutMapping("/update/{scheduleId}")
+    public String eventUpdate(@PathVariable int scheduleId, @RequestBody Map<String, Object> map) {
+        ScheduleDto schedule = new ScheduleDto();
+        schedule.setScheduleId(scheduleId);
+        schedule.setTitle((String) map.get("title"));
+        schedule.setStartDate(map.get("start").toString().substring(0, 19));
+        if (map.get("end") != null) {
+            schedule.setEndDate(map.get("end").toString().substring(0, 19));
+        }
+
+        try {
+            scheduleService.updateSchedule(schedule);
+            return "success";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "fail";
+        }
     }
 }

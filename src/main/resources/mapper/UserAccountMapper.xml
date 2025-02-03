@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<!-- 특정 EmployeeID으로 사용자 정보를 조회하는 쿼리 -->
+<mapper namespace="com.hrm.dao.UserAccountRepository">
+    <select id="findByEmployeeId" resultType="com.hrm.dto.UserAccountDto">
+        SELECT 
+            UserID AS userId,
+            EmployeeID AS employeeId,
+            Username AS username,
+            Password AS password,
+            Role AS role
+        FROM useraccounts
+        WHERE EmployeeID = #{employeeId}
+    </select>
+</mapper>

@@ -27,7 +27,7 @@ public class SalaryController {
 	SalaryService salaryService;
 	
 	// security 구현 안 해서 임시방편
-	@GetMapping("/salary")
+	@GetMapping
 	public String redirectToSalaryPage(@RequestParam(required = false) Boolean isHR) {
 	    if (Boolean.TRUE.equals(isHR)) {
 	        return "redirect:/salary/manage";  // 인사부서용 페이지

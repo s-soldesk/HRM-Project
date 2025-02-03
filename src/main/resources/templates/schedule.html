@@ -71,11 +71,8 @@
             select: function(arg) {
                 let title = prompt("새로운 일정 제목을 입력하세요:");
                 if (title) {
-                    let employeeId = prompt("직원 ID를 입력하세요:");
-
                     let newEvent = {
                         title: title,
-                        employeeId: employeeId,
                         start: arg.startStr,
                         end: arg.endStr
                     };
@@ -108,7 +105,7 @@
                 let updatedEvent = {
                     scheduleId: info.event.id,
                     title: info.event.title,
-                    start: info.event.start.toISOString(),
+                    start: info.event.start ? info.event.start.toISOString() : null,  // ✅ null 방지
                     end: info.event.end ? info.event.end.toISOString() : info.event.start.toISOString()
                 };
 
@@ -120,23 +117,26 @@
                     success: function() {
                         alert("일정이 수정되었습니다.");
                     },
-                    error: function() {
+                    error: function(xhr, status, error) {
+                        console.error("🚨 수정 실패:", error);
                         alert("일정 수정에 실패했습니다.");
                     }
                 });
             },
 
+
             // ✅ 일정 삭제 (일정 클릭 시)
             eventClick: function(info) {
                 if (confirm("이 일정을 삭제하시겠습니까?")) {
                     $.ajax({
-                        url: "/api/schedules/delete/" + info.event.id,
+                        url: "/api/schedules/delete/" + info.event.id,  // ✅ 올바른 URL 경로
                         type: "DELETE",
                         success: function() {
                             alert("일정이 삭제되었습니다.");
-                            info.event.remove();
+                            info.event.remove(); // UI에서 즉시 삭제
                         },
-                        error: function() {
+                        error: function(xhr, status, error) {
+                            console.error("🚨 삭제 실패:", error);
                             alert("일정 삭제에 실패했습니다.");
                         }
                     });
@@ -147,7 +147,7 @@
         // 캘린더 랜더링
         calendar.render();
     });
-</script>
+    </script>
 
 </body>
 </html>

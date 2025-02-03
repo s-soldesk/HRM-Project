@@ -19,14 +19,19 @@ import com.hrm.service.UserAccountService;
 @Configuration
 @EnableWebSecurity
 public class SecurityConfig {
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
             .csrf(csrf -> csrf.disable())
             .authorizeHttpRequests(authorize -> authorize
-                .requestMatchers("/**").permitAll()  // 모든 경로에 대해 접근 허용
-            )
-            .headers(headers -> headers.frameOptions(options -> options.disable()));
+                .requestMatchers("/**").permitAll()
+            );
         return http.build();
+    }
+
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        return NoOpPasswordEncoder.getInstance();
     }
 }

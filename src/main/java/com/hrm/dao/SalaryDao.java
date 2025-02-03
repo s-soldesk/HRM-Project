@@ -2,6 +2,7 @@ package com.hrm.dao;
 
 import com.hrm.dto.SalaryDto;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
@@ -22,8 +23,9 @@ public interface SalaryDao {
     List<SalaryDto> getSalariesByDepartment(String department);
     
     // 근태 관련 메서드
-    void confirmSalaries(String yearMonth);
     boolean isSalaryCalculated(String yearMonth);
+    void confirmSalaries(@Param("employeeId") String employeeId, @Param("yearMonth") String yearMonth);
+    void confirmSalaries(Map<String, String> of);
     List<SalaryDto> getCalculatedSalaries(String yearMonth);
 
     // 특정 사원의 특정 월 급여 조회 메서드

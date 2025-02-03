@@ -26,6 +26,7 @@ public class SalaryDto {
 	private LocalDate paymentDate; // 급여지급일
 	private BigDecimal deductionTotal; // 공제총액
 	private BigDecimal netPay; // 실지급액
+	private String status; // 급여 지급 상태
 
 	// 공제총액 계산 메서드
 	public BigDecimal getDeductionTotal() {

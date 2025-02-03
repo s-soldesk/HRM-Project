@@ -85,6 +85,7 @@
 								<th>근무일수</th>
 								<th>총근무시간</th>
 								<th>연장근무시간</th>
+								<th>근태 확정</th>
 								<th>상세보기</th>
 							</tr>
 						</thead>
@@ -99,6 +100,7 @@
 								<td th:text="${attendance.workingDays} + days"></td>
 								<td th:text="${attendance.totalWorkedHours} + h"></td>
 								<td th:text="${attendance.totalOvertimeHours} + h"></td>
+								<td th:text="${attendance.salaryStatus == 'CONFIRMED' ? '✔️' : '❌'}"></td>
 								<td>
 									<button class="btn btn-primary"
 										th:attr="data-employee-id=${attendance.employeeId}, data-year-month=${yearMonth}"

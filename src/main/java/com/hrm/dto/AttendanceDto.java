@@ -27,7 +27,9 @@ public class AttendanceDto {
 	private Integer workingDays; // 근무일수
 	private Double totalWorkedHours;  // 총 근무시간
     private Double totalOvertimeHours; // 총 초과근무시간
-	
+    private String salaryStatus; // 급여 지급 상태 확인 조인
+    
+    private SalaryDto salary; // 급여정보 매핑
 	private DepartmentDto department; // 부서정보 매핑
 	private EmployeeDto employee; // 사원 정보 매핑
 }

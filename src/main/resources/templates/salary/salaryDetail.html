@@ -40,6 +40,10 @@
                 <th>직책수당</th>
                 <td th:text="${#numbers.formatInteger(salary.positionAllowance, 0, 'COMMA')}"></td>
             </tr>
+             <tr>
+            	<th>초과 근무수당</th>
+            	<td th:text="${#numbers.formatInteger(salary.overtimePay, 0, 'COMMA')}"></td>
+            </tr>
             <tr class="total">
                 <th>지급총액</th>
                 <td th:text="${#numbers.formatInteger(salary.totalSalary, 0, 'COMMA')}"></td>

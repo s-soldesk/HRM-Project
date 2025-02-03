@@ -29,9 +29,6 @@ public interface SalaryService {
     // 급여 관리 데이터
     void calculateSalaries(String yearMonth);
     
-    // 근태 확인
-    void confirmSalaries(String yearMonth);
-    
     // 급여 계산
     boolean isSalaryCalculated(String yearMonth);
     
@@ -39,5 +36,8 @@ public interface SalaryService {
     
     // 특정 사원의 특정 월 급여 조회 메서드
     SalaryDto getEmployeeSalaryByMonth(Integer employeeId, String yearMonth);
+    
+    // 근태 확인
+	void confirmSalaries(String employeeId, String yearMonth);
 
 }

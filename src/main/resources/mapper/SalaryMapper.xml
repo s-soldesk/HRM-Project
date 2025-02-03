@@ -22,6 +22,7 @@
 		<result property="mealAllowance" column="MealAllowance" />
 		<result property="positionAllowance" column="PositionAllowance" />
 		<result property="paymentDate" column="PaymentDate" />
+		<result property="status" column="Status"/>
 
 		<!-- EmployeeDto 매핑 -->
 		<association property="employee"
@@ -201,7 +202,7 @@
 	<!-- 해당 월의 계산된 급여 목록 조회 -->
 	<select id="getCalculatedSalaries" parameterType="string"
 		resultMap="SalaryResultMap">
-		SELECT s.*, e.*, d.DepartmentName
+		SELECT s.*, e.*, d.DepartmentName, s.Status
 		FROM Salary s
 		JOIN Employee
 		e ON s.EmployeeID = e.EmployeeID
@@ -212,13 +213,15 @@
 	</select>
 
 	<!-- 급여 확정 처리 -->
-	<update id="confirmSalaries" parameterType="string">
+	<update id="confirmSalaries" parameterType="map">
 		UPDATE Salary
-		SET
-		Status = 'CONFIRMED'
-		WHERE DATE_FORMAT(PaymentDate, '%Y/%m') =
-		#{yearMonth}
+		SET Status = 'CONFIRMED'
+		WHERE PaymentDate BETWEEN CONCAT(#{yearMonth}, '-01') AND
+		LAST_DAY(CONCAT(#{yearMonth}, '-01'))
+		AND EmployeeID = #{employeeId}
 	</update>
+
+
 
 	<select id="getEmployeeSalaryByMonth"
 		resultMap="SalaryResultMap">
@@ -230,10 +233,13 @@
 		e.Position AS position,
 		d.DepartmentName AS departmentName
 		FROM Salary s
-		JOIN Employee e ON s.EmployeeID = e.EmployeeID
-		JOIN Department d ON e.DepartmentID = d.DepartmentID
+		JOIN Employee e ON
+		s.EmployeeID = e.EmployeeID
+		JOIN Department d ON e.DepartmentID =
+		d.DepartmentID
 		WHERE s.EmployeeID = #{employeeId}
-		AND DATE_FORMAT(s.PaymentDate, '%Y-%m') = #{yearMonth}
+		AND
+		DATE_FORMAT(s.PaymentDate, '%Y-%m') = #{yearMonth}
 	</select>
 
 

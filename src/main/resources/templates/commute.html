@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>출퇴근 기록 관리</title>
+</head>
+<body>
+    <h1>출퇴근 관리</h1>
+    <form action="/attendance/commute/check-in" method="post">
+        <label for="employeeId">사원 ID:</label>
+        <input type="number" id="employeeId" name="employeeId" required>
+        <button type="submit">출근하기</button>
+    </form>
+
+    <form action="/attendance/commute/check-out" method="post">
+        <label for="employeeId">사원 ID:</label>
+        <input type="number" id="employeeId" name="employeeId" required>
+        <button type="submit">퇴근하기</button>
+    </form>
+
+    <h2 th:if="${message}" th:text="${message}"></h2>
+    
+     <a href="/attendance">메인 페이지로 돌아가기</a>
+</body>
+</html>

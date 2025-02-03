@@ -1,35 +1,44 @@
 package com.hrm.dao;
 
-import org.apache.ibatis.annotations.*;
-import java.time.LocalDate;
-import java.time.LocalTime;
+import com.hrm.dto.AttendanceDto;
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
+
+import java.util.List;
 
 @Mapper
 public interface AttendanceDao {
 
-    // 오늘 출근 기록이 존재하는지 확인
-    @Select("SELECT COUNT(*) > 0 FROM Attendance WHERE EmployeeID = #{employeeId} AND Date = #{date}")
-    boolean existsTodayRecord(@Param("employeeId") int employeeId, @Param("date") LocalDate date);
+	// 근태 기록 조회
+	@Select("<script>" +
+	        "SELECT a.*, e.name AS employeeName FROM Attendance a " +
+	        "JOIN Employee e ON a.EmployeeID = e.EmployeeID " +
+	        "WHERE 1=1 " +
+	        "<if test='employeeId != null'>AND a.EmployeeID = #{employeeId}</if> " +
+	        "<if test='name != null'>AND e.Name LIKE CONCAT('%', #{name}, '%')</if> " +
+	        "<if test='startDate != null and endDate != null'>AND a.Date BETWEEN #{startDate} AND #{endDate}</if> " +
+	        "<if test='startDate == null and endDate != null'>AND a.Date &lt;= #{endDate}</if> " +
+	        "<if test='startDate != null and endDate == null'>AND a.Date &gt;= #{startDate}</if> " +
+	        "<if test='attendanceType != null'>AND a.AttendanceType = #{attendanceType}</if> " +
+	        "</script>")
+	List<AttendanceDto> searchAttendanceRecords(@Param("employeeId") String employeeId,
+	                                             @Param("name") String name,
+	                                             @Param("startDate") String startDate,
+	                                             @Param("endDate") String endDate,
+	                                             @Param("attendanceType") String attendanceType);
 
-    // 출근 기록 추가
-    @Insert("INSERT INTO Attendance (EmployeeID, Date, CheckInTime) VALUES (#{employeeId}, #{date}, #{checkInTime})")
-    void insertCheckIn(@Param("employeeId") int employeeId, @Param("date") LocalDate date, @Param("checkInTime") LocalTime checkInTime);
+	
+	// 특정한 근태 기록과 해당 사원 이름 조회
+	@Select("SELECT a.*, e.name AS employeeName FROM Attendance a " +
+	        "JOIN Employee e ON a.EmployeeID = e.EmployeeID " +
+	        "WHERE a.AttendanceID = #{attendanceId}")
+	AttendanceDto getAttendanceById(@Param("attendanceId") int attendanceId);
+	
+    
+	// 근태 기록 수정
+	@Update("UPDATE Attendance SET CheckInTime = #{checkInTime}, CheckOutTime = #{checkOutTime}, AttendanceType = #{attendanceType}, Remarks = #{remarks} WHERE AttendanceID = #{attendanceId}")
+    void updateAttendance(AttendanceDto attendance);
 
-    // 출근 시간 가져오기
-    @Select("SELECT CheckInTime FROM Attendance WHERE EmployeeID = #{employeeId} AND Date = #{date}")
-    LocalTime getCheckInTime(@Param("employeeId") int employeeId, @Param("date") LocalDate date);
-
-    // 퇴근 시간, 근무 시간, 초과 근무 시간 및 근태 상태 업데이트
-    @Update("UPDATE Attendance " +
-            "SET CheckOutTime = #{checkOutTime}, " +
-            "HoursWorked = #{hoursWorked}, " +
-            "OvertimeHours = #{overtimeHours}, " +
-            "AttendanceType = #{attendanceType} " +
-            "WHERE EmployeeID = #{employeeId} AND Date = #{date}")
-    void updateCheckOut(@Param("employeeId") int employeeId,
-                        @Param("date") LocalDate date,
-                        @Param("checkOutTime") LocalTime checkOutTime,
-                        @Param("hoursWorked") double hoursWorked,
-                        @Param("overtimeHours") double overtimeHours,
-                        @Param("attendanceType") String attendanceType);
 }

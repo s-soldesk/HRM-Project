@@ -17,4 +17,5 @@ public class EmployeeDto {
 	private String phonenumber; // 핸드폰
 	private String email; // 이메일
 	private DepartmentDto department; // 부서정보 매핑
+	private Integer roleId; // 접근 권한
 }

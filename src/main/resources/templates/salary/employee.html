@@ -1,0 +1,61 @@
+<!-- templates/salary/employee.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      layout:decorate="~{layout/default}">
+<head>
+    <title>일반사원 급여조회</title>
+</head>
+<body>
+    <div layout:fragment="content">
+        <div class="emp-salary-container">
+            <div class="employee-info">
+                <table>
+                    <tr>
+                        <th>사원번호</th>
+                        <td th:text="${employee.employeeId}">1001</td>
+                        <th>성명</th>
+                        <td th:text="${employee.name}">김진실</td>
+                    </tr>
+                    <tr>
+                        <th>부서</th>  
+                        <td th:text="${employee.departmentName}">마케팅팀</td>
+                        <th>직급</th>
+                        <td th:text="${employee.position}">팀장</td>
+                    </tr>
+                </table>
+            </div>
+
+            <div class="salary-list">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>귀속월</th>
+                            <th>총급여</th>
+                            <th>공제총액</th>
+                            <th>실수령액</th>
+                            <th>확인</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="salary : ${salaries}">
+                            <td th:text="${#temporals.format(salary.paymentDate, 'yyyy/MM')}"></td>
+                            <td th:text="${#numbers.formatInteger(salary.totalSalary, 0, 'COMMA')}"></td>
+                            <td th:text="${#numbers.formatInteger(salary.deductionTotal, 0, 'COMMA')}"></td>
+                            <td th:text="${#numbers.formatInteger(salary.netPay, 0, 'COMMA')}"></td>
+                            <td>✓</td>
+                            <td>
+                                <button class="arrow-btn" 
+                                        th:onclick="'location.href=\'/salary/detail/' + ${salary.salaryId} + '\''">
+                                    →
+                                </button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,0 +1,430 @@
+/* salary.css */
+
+body {
+    font-family: 'Malgun Gothic', sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f5f5f5;
+}
+
+.salary-table {
+    width: 100%;
+    border-collapse: collapse;
+    background-color: white;
+}
+
+.salary-table th {
+    background-color: #f0f0f0;
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+
+.salary-table td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #ddd;
+}
+
+.arrow-button {
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 5px;
+}
+
+.arrow-button:hover {
+    opacity: 0.7;
+}
+
+.search-box {
+    margin-bottom: 20px;
+    padding: 10px;
+    background-color: white;
+    border-radius: 4px;
+}
+
+.search-box input {
+    padding: 8px;
+    width: 200px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+.header {
+    background-color: #0066b3;
+    color: white;
+    padding: 10px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.salary-grid table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.salary-grid th {
+    background-color: #f5f5f5;
+    padding: 10px;
+    border: 1px solid #ddd;
+}
+
+.salary-grid td {
+    padding: 8px;
+    border: 1px solid #ddd;
+    text-align: center;
+}
+
+.button-group {
+    margin-top: 20px;
+    padding: 10px;
+}
+
+.btn-primary {
+    background-color: #0066b3;
+    color: white;
+    padding: 5px 15px;
+    border: none;
+    border-radius: 3px;
+    cursor: pointer;
+}
+
+.payslip-container {
+    max-width: 900px;
+    margin: 20px auto;
+    padding: 20px;
+}
+
+.employee-info table,
+.salary-summary table,
+.salary-detail table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 15px 0;
+}
+
+.employee-info th,
+.salary-summary th,
+.salary-detail th {
+    background-color: #f5f5f5;
+    padding: 8px;
+    border: 1px solid #ddd;
+    width: 20%;
+}
+
+.search-section {
+    margin: 20px 0;
+    padding: 20px;
+    background-color: #f8f9fa;
+    border-radius: 5px;
+}
+
+.search-select {
+    padding: 8px;
+    margin-right: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.search-input {
+    padding: 8px;
+    width: 200px;
+    margin-right: 10px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.search-button {
+    padding: 8px 20px;
+    background-color: #0066b3;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.search-button:hover {
+    background-color: #005299;
+}
+
+.detail-button {
+    padding: 5px 10px;
+    background-color: #0066b3;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.detail-button:hover {
+    background-color: #005299;
+}
+
+
+/* 급여명세서 스타일 추가 */
+.payslip-container {
+    max-width: 800px;
+    margin: 20px auto;
+    padding: 20px;
+}
+
+.payslip-title {
+    font-size: 24px;
+    margin-bottom: 30px;
+}
+
+.info-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 30px;
+}
+
+.info-table th,
+.info-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+}
+
+.info-table th {
+    background-color: #f5f5f5;
+}
+
+.salary-details h3 {
+    margin: 20px 0 10px;
+    font-size: 18px;
+}
+
+.payment-table,
+.deduction-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.payment-table th,
+.payment-table td,
+.deduction-table th,
+.deduction-table td {
+    border: 1px solid #ddd;
+    padding: 10px;
+}
+
+.payment-table th,
+.deduction-table th {
+    background-color: #f5f5f5;
+    width: 30%;
+}
+
+.payment-table td,
+.deduction-table td {
+    text-align: right;
+}
+
+.total {
+    font-weight: bold;
+    background-color: #f5f5f5;
+}
+
+.net-pay {
+    margin: 30px 0;
+    text-align: right;
+}
+
+.net-pay h3 {
+    display: inline-block;
+    margin-right: 20px;
+}
+
+.net-pay p {
+    display: inline-block;
+    font-size: 24px;
+    font-weight: bold;
+}
+
+.button-group {
+    text-align: center;
+    margin-top: 30px;
+}
+
+.btn {
+    padding: 8px 20px;
+    margin: 0 5px;
+    border: none;
+    border-radius: 4px;
+    background-color: #0066b3;
+    color: white;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background-color: #005299;
+}
+
+/* 사원 전용 급여조회 CSS */
+/* salary.css에 추가 */
+.emp-salary-container {
+    max-width: 1000px;
+    margin: 20px auto;
+    padding: 20px;
+}
+
+.title {
+    font-size: 24px;
+    margin-bottom: 30px;
+}
+
+.employee-info {
+    margin-bottom: 30px;
+}
+
+.employee-info table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.employee-info th,
+.employee-info td {
+    padding: 12px;
+    border: 1px solid #ddd;
+}
+
+.employee-info th {
+    background-color: #f5f5f5;
+    width: 15%;
+}
+
+.salary-list table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.salary-list th,
+.salary-list td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: center;
+}
+
+.salary-list th {
+    background-color: #f5f5f5;
+}
+
+.salary-list td {
+    text-align: right;
+}
+
+.salary-list td:first-child,
+.salary-list td:nth-last-child(-n+2) {
+    text-align: center;
+}
+
+.checkmark {
+    color: #2ecc71;
+    font-weight: bold;
+}
+
+.arrow-btn {
+    background: none;
+    border: none;
+    font-size: 18px;
+    cursor: pointer;
+    padding: 5px 10px;
+}
+
+.arrow-btn:hover {
+    color: #0066b3;
+}
+
+/* 급여 관리 CSS */
+.salary-calculate-container {
+    padding: 20px;
+}
+
+.month-selector {
+    margin-bottom: 20px;
+}
+
+.month-selector select {
+    padding: 8px;
+    font-size: 14px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.calculate-content {
+    background: #fff;
+    padding: 20px;
+    border-radius: 4px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+.calculate-content h3 {
+    margin-bottom: 15px;
+    font-size: 18px;
+}
+
+.attendance-list table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+
+.attendance-list th,
+.attendance-list td {
+    padding: 12px;
+    border: 1px solid #ddd;
+    text-align: center;
+}
+
+.attendance-list th {
+    background: #f5f5f5;
+}
+
+.no-data {
+    padding: 30px;
+    text-align: center;
+    color: #666;
+}
+
+.button-group {
+    margin-top: 20px;
+    text-align: right;
+}
+
+.btn {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+}
+
+.btn.primary {
+    background: #0066b3;
+    color: white;
+}
+
+.btn.primary:hover {
+    background: #005299;
+}
+
+.salary-summary {
+    border: 1px solid #ddd;
+    padding: 15px;
+    margin: 20px 0;
+    background-color: #f9f9f9;
+    border-radius: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.salary-summary h3 {
+    font-size: 1.5rem;
+    color: #333;
+    margin-bottom: 10px;
+}
+
+.salary-summary p {
+    font-size: 1rem;
+    color: #555;
+    margin: 5px 0;
+}

@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hrm.mapper.ScheduleMapper">
+
+    <!-- 모든 일정 조회 -->
+    <select id="getAllSchedules" resultType="com.hrm.dto.ScheduleDto">
+        SELECT ScheduleID, EmployeeID, Title, StartDate, EndDate FROM schedule
+    </select>
+
+    <!-- 특정 직원 일정 조회 -->
+    <select id="getSchedulesByEmployeeID" resultType="com.hrm.dto.ScheduleDto">
+        SELECT ScheduleID, EmployeeID, Title, StartDate, EndDate FROM schedule WHERE EmployeeID = #{employeeId}
+    </select>
+
+    <!-- 일정 추가 -->
+    <insert id="createSchedule" parameterType="com.hrm.dto.ScheduleDto" useGeneratedKeys="true" keyProperty="scheduleId">
+        INSERT INTO schedule (EmployeeID, Title, StartDate, EndDate) 
+        VALUES (#{employeeId}, #{title}, #{startDate}, #{endDate})
+    </insert>
+
+    <!-- 일정 수정 -->
+    <update id="updateSchedule" parameterType="com.hrm.dto.ScheduleDto">
+        UPDATE schedule 
+        SET Title = #{title}, StartDate = #{startDate}, EndDate = #{endDate}
+        WHERE ScheduleID = #{scheduleId}
+    </update>
+
+    <!-- 일정 삭제 -->
+    <delete id="deleteSchedule" parameterType="int">
+        DELETE FROM schedule WHERE ScheduleID = #{scheduleId}
+    </delete>
+
+</mapper>

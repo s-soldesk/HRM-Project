@@ -4,7 +4,7 @@
   "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 
 <!-- 특정 EmployeeID으로 사용자 정보를 조회하는 쿼리 -->
-<mapper namespace="com.hrm.dao.UserAccountRepository">
+<mapper namespace="com.hrm.dao.UserAccountDao">
     <select id="findByEmployeeId" resultType="com.hrm.dto.UserAccountDto">
         SELECT 
             UserID AS userId,

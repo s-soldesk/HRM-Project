@@ -43,12 +43,14 @@ public class NoticeController {
     }
     
     @GetMapping("/notices")
-    public String listNotices(Model model) {
+    public String listNotices(Model model, HttpSession session) {
         try {
+            // 테스트용 Admin 권한 설정
+            session.setAttribute("userRole", "Admin");
+            
             List<NoticeDto> notices = noticeService.getAllNotices();
             model.addAttribute("notices", notices);
-            model.addAttribute("userRole", "Admin"); // 테스트용으로 Admin 권한 부여
-            log.info("Loaded {} notices", notices.size());
+            
             return "notice/list";
         } catch (Exception e) {
             log.error("Error in listNotices: ", e);

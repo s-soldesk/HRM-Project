@@ -8,7 +8,7 @@ import org.apache.ibatis.annotations.Select;
 import com.hrm.dto.EmployeeDto;
 
 @Mapper
-public interface EmployeeMapper {
+public interface ProfileMapper {
     EmployeeDto getEmployeeById(Integer employeeId);
     void updateProfile(EmployeeDto employee);
     List<EmployeeDto> getAllEmployees();

@@ -5,25 +5,19 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
-import java.security.Principal;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import com.hrm.dto.EmployeeDto;
-import com.hrm.service.EmployeeService;
+import com.hrm.service.ProfileService;
 import com.hrm.service.UserAccountService;
-
-import jakarta.servlet.http.HttpSession;
-
-import org.springframework.ui.Model;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,9 +25,9 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 @Controller
 @RequiredArgsConstructor
-public class EmployeeController {
-    
-    private final EmployeeService employeeService;
+public class ProfileController {
+	
+    private final ProfileService profileService;
     private final UserAccountService userAccountService;
     
     @Value("${file.upload.dir:uploads/profiles}")
@@ -45,9 +39,9 @@ public class EmployeeController {
     @GetMapping("/profile")
     public String getProfile(Model model) {
         try {
-            EmployeeDto employee = employeeService.getEmployeeById(DEFAULT_EMPLOYEE_ID);
+            EmployeeDto employee = profileService.getEmployeeById(DEFAULT_EMPLOYEE_ID);
             model.addAttribute("employee", employee);
-            return "employee/profile";
+            return "profile/profile";
         } catch (Exception e) {
             log.error("Error fetching profile: ", e);
             return "error";
@@ -59,7 +53,7 @@ public class EmployeeController {
             @RequestParam(value = "profileImage", required = false) MultipartFile file,
             RedirectAttributes redirectAttributes) {
         try {
-            EmployeeDto employee = employeeService.getEmployeeById(DEFAULT_EMPLOYEE_ID);
+            EmployeeDto employee = profileService.getEmployeeById(DEFAULT_EMPLOYEE_ID);
             if (employee == null) {
                 redirectAttributes.addFlashAttribute("error", "프로필을 찾을 수 없습니다.");
                 return "redirect:/profile?error";
@@ -68,7 +62,7 @@ public class EmployeeController {
             if (file != null && !file.isEmpty()) {
                 String imagePath = saveProfileImage(file, String.valueOf(DEFAULT_EMPLOYEE_ID));
                 employee.setProfileImage(imagePath);
-                employeeService.updateProfile(employee);
+                profileService.updateProfile(employee);
             }
 
             redirectAttributes.addFlashAttribute("success", "프로필이 성공적으로 업데이트되었습니다.");

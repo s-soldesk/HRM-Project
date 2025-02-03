@@ -4,18 +4,19 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.hrm.dto.EmployeeDto;
-import com.hrm.mapper.EmployeeMapper;
+import com.hrm.mapper.ProfileMapper;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
-public class EmployeeService {
-    private final EmployeeMapper employeeMapper;
+
+public class ProfileService {
+    private final ProfileMapper profileMapper;
     
     public EmployeeDto getEmployeeById(Integer employeeId) {
         try {
-            return employeeMapper.getEmployeeById(employeeId);
+            return profileMapper.getEmployeeById(employeeId);
         } catch (Exception e) {
             throw new RuntimeException("Failed to get employee with ID: " + employeeId, e);
         }
@@ -24,7 +25,7 @@ public class EmployeeService {
     @Transactional
     public void updateProfile(EmployeeDto employee) {
         try {
-            employeeMapper.updateProfile(employee);
+        	profileMapper.updateProfile(employee);
         } catch (Exception e) {
             throw new RuntimeException("Failed to update profile", e);
         }

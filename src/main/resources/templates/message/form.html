@@ -1,142 +1,99 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-   <title>메시지 작성</title>
-   <style>
-       * { margin: 0; padding: 0; box-sizing: border-box; }
-       body { display: flex; min-height: 100vh; }
-       
-       .sidebar {
-           width: 200px;
-           background-color: #333;
-           padding: 20px;
-       }
-       
-       .sidebar .logo {
-           width: 100px;
-           height: 100px;
-           background-color: #666;
-           border-radius: 50%;
-           margin: 0 auto 20px;
-       }
-       
-       .sidebar .menu-item {
-           padding: 10px 0;
-           color: white;
-           text-decoration: none;
-           display: block;
-       }
-       
-       .main-content {
-           flex: 1;
-           padding: 20px;
-       }
+    <title>메시지 작성</title>
+    <link rel="stylesheet" type="text/css" href="/css/dashboard.css">
+    <style>
+        .form-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f8f9fa;
+            border-radius: 5px;
+        }
 
-       .form-container {
-           max-width: 600px;
-           margin: 0 auto;
-           padding: 20px;
-           background-color: #f8f9fa;
-           border-radius: 5px;
-       }
+        .form-group {
+            margin-bottom: 20px;
+        }
 
-       .form-group {
-           margin-bottom: 20px;
-       }
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
 
-       .form-group label {
-           display: block;
-           margin-bottom: 5px;
-           font-weight: bold;
-       }
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
 
-       .form-group select,
-       .form-group textarea {
-           width: 100%;
-           padding: 8px;
-           border: 1px solid #ddd;
-           border-radius: 4px;
-       }
+        .form-group textarea {
+            height: 200px;
+            resize: vertical;
+        }
 
-       .form-group textarea {
-           height: 200px;
-           resize: vertical;
-       }
+        .btn-group {
+            display: flex;
+            gap: 10px;
+            justify-content: center;
+        }
 
-       .btn-group {
-           display: flex;
-           gap: 10px;
-           justify-content: center;
-       }
+        .btn {
+            padding: 8px 20px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            text-decoration: none;
+        }
 
-       .btn {
-           padding: 8px 20px;
-           border: none;
-           border-radius: 4px;
-           cursor: pointer;
-           text-decoration: none;
-       }
+        .btn-primary {
+            background-color: #007bff;
+            color: white;
+        }
 
-       .btn-primary {
-           background-color: #007bff;
-           color: white;
-       }
-
-       .btn-secondary {
-           background-color: #6c757d;
-           color: white;
-       }
-   </style>
+        .btn-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+    </style>
 </head>
 <body>
-    <div class="sidebar">
-        <div class="logo"></div>
-        <!-- 공통 메뉴 -->
-        <a href="/dashboard" class="menu-item">DashBoard</a>
-        <a href="/profile" class="menu-item">내 정보</a>
-        <a href="/management" class="menu-item">일정관리</a>
-        <a href="/notices" class="menu-item">공지사항</a>
-        <a href="/attendance" class="menu-item">급여 조회</a>
-        <a href="/messages" class="menu-item">메시지</a>
-        <a href="/approval" class="menu-item">업무공유</a>
+    <!-- 사이드바 fragment 적용 -->
+    <div th:replace="~{layout/sidebar :: sidebar}"></div>
 
-        <!-- 관리자 전용 메뉴 -->
-		<div th:if="${session.userRole != null and (#strings.toString(session.userRole).equals('Admin') or #strings.toString(session.userRole).equals('HR'))}">
-		    <a href="/attendance/manage" class="menu-item">근퇴 관리</a>
-		    <a href="/employee/manage" class="menu-item">인사 관리</a>
-		</div>>
+    <div class="content">
+        <h2>메시지 작성</h2>
+        
+        <div class="form-container">
+            <form th:action="@{/messages/send}" method="post">
+                <input type="hidden" name="senderId" th:value="${currentUserId}">
+                
+                <div class="form-group">
+                    <label>받는 사람</label>
+                    <select name="receiverId" required>
+                        <option value="">선택하세요</option>
+                        <option th:each="emp : ${employees}" 
+                                th:value="${emp.employeeId}" 
+                                th:text="${emp.name}"
+                                th:selected="${emp.employeeId == receiverId}"></option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label>내용</label>
+                    <textarea name="content" required 
+                              th:text="${originalMessage != null ? 'RE: ' + originalMessage.content : ''}"></textarea>
+                </div>
+
+                <div class="btn-group">
+                    <button type="submit" class="btn btn-primary">보내기</button>
+                    <a href="/messages" class="btn btn-secondary">취소</a>
+                </div>
+            </form>
+        </div>
     </div>
-
-   <div class="main-content">
-       <h2>메시지 작성</h2>
-       
-       <div class="form-container">
-           <form th:action="@{/messages/send}" method="post">
-               <input type="hidden" name="senderId" th:value="${currentUserId}">
-               
-               <div class="form-group">
-                   <label>받는 사람</label>
-                   <select name="receiverId" required>
-                       <option value="">선택하세요</option>
-                       <option th:each="emp : ${employees}" 
-                               th:value="${emp.employeeId}" 
-                               th:text="${emp.name}"
-                               th:selected="${emp.employeeId == receiverId}"></option>
-                   </select>
-               </div>
-
-               <div class="form-group">
-                   <label>내용</label>
-                   <textarea name="content" required 
-                             th:text="${originalMessage != null ? 'RE: ' + originalMessage.content : ''}"></textarea>
-               </div>
-
-               <div class="btn-group">
-                   <button type="submit" class="btn btn-primary">보내기</button>
-                   <a href="/messages" class="btn btn-secondary">취소</a>
-               </div>
-           </form>
-       </div>
-   </div>
 </body>
 </html>

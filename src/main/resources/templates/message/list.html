@@ -2,43 +2,16 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>메시지함</title>
+    <link rel="stylesheet" type="text/css" href="/css/dashboard.css">
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { display: flex; min-height: 100vh; }
-
-        .sidebar {
-            width: 200px;
-            background-color: #333;
-            padding: 20px;
-        }
-
-        .sidebar .logo {
-            width: 100px;
-            height: 100px;
-            background-color: #666;
-            border-radius: 50%;
-            margin: 0 auto 20px;
-        }
-
-        .sidebar .menu-item {
-            padding: 10px 0;
-            color: white;
-            text-decoration: none;
-            display: block;
-        }
-
-        .main-content {
-            flex: 1;
-            padding: 20px;
-        }
-
-        /* 채팅 컨테이너 스타일 */
         .chat-container {
             display: flex;
             height: calc(100vh - 100px);
             margin: 20px;
             border: 1px solid #ddd;
             border-radius: 8px;
+            background-color: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
         }
 
         .user-list {
@@ -57,6 +30,7 @@
             padding: 15px;
             border-bottom: 1px solid #eee;
             cursor: pointer;
+            transition: background-color 0.3s ease;
         }
 
         .user-item:hover {
@@ -133,6 +107,11 @@
             border: none;
             border-radius: 20px;
             cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .chat-input button:hover {
+            background-color: #0073e6;
         }
 
         .user-info {
@@ -146,6 +125,11 @@
             height: 40px;
             border-radius: 50%;
             background-color: #ddd;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-weight: bold;
         }
 
         .user-name {
@@ -158,7 +142,6 @@
             margin-top: 5px;
         }
 
-        /* 채팅방 헤더 */
         .chat-header {
             padding: 15px 20px;
             border-bottom: 1px solid #ddd;
@@ -176,53 +159,31 @@
     </style>
 </head>
 <body>
-    <div class="sidebar">
-        <div class="logo"></div>
-        <!-- 공통 메뉴 -->
-        <a href="/dashboard" class="menu-item">DashBoard</a>
-        <a href="/profile" class="menu-item">내 정보</a>
-        <a href="/management" class="menu-item">일정관리</a>
-        <a href="/notices" class="menu-item">공지사항</a>
-        <a href="/attendance" class="menu-item">급여 조회</a>
-        <a href="/messages" class="menu-item">메시지</a>
-        <a href="/approval" class="menu-item">업무공유</a>
+    <!-- 사이드바 fragment 적용 -->
+    <div th:replace="~{layout/sidebar :: sidebar}"></div>
 
-        <!-- 관리자 전용 메뉴 -->
-<!-- 		<div th:if="${session.userRole != null and (#strings.toString(session.userRole).equals('Admin') or #strings.toString(session.userRole).equals('HR'))}">
-		    <a href="/attendance/manage" class="menu-item">근퇴 관리</a>
-		    <a href="/employee/manage" class="menu-item">인사 관리</a>
-		</div> -->
-    </div>
-
-    <div class="main-content">
+    <div class="content">
         <div class="chat-container">
             <!-- 사용자 목록 -->
-			<div class="user-list">
-			    <div th:each="emp : ${employees}" 
-			         th:if="${emp.employeeId != currentUserId}"
-			         class="user-item"
-			         th:attr="data-user-id=${emp.employeeId}"
-			         onclick="goToChat(this.getAttribute('data-user-id'))">
-			        <div class="user-info">
-			            <div class="user-avatar" th:text="${#strings.substring(emp.name, 0, 1)}"></div>
-			            <div>
-			                <div class="user-name">
-			                    <span class="user-status" th:classappend="'status-online'"></span>
-			                    <span th:text="${emp.name}"></span>
-			                </div>
-			                <div class="last-message" th:text="${emp.lastMessage != null ? emp.lastMessage : '새로운 메시지를 보내보세요'}">
-			                </div>
-			            </div>
-			        </div>
-			    </div>
-			</div>
-			
-			<script>
-			function goToChat(userId) {
-			    window.location.href = '/messages/chat/' + userId;
-			}
-			</script>
-
+            <div class="user-list">
+                <div th:each="emp : ${employees}" 
+                     th:if="${emp.employeeId != currentUserId}"
+                     class="user-item"
+                     th:attr="data-user-id=${emp.employeeId}"
+                     onclick="goToChat(this.getAttribute('data-user-id'))">
+                    <div class="user-info">
+                        <div class="user-avatar" th:text="${#strings.substring(emp.name, 0, 1)}"></div>
+                        <div>
+                            <div class="user-name">
+                                <span th:text="${emp.name}"></span>
+                            </div>
+                            <div class="last-message" th:text="${emp.lastMessage != null ? emp.lastMessage : '새로운 메시지를 보내보세요'}">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
             <!-- 채팅 내용 -->
             <div class="chat-content">
                 <!-- 채팅방 헤더 -->
@@ -260,5 +221,11 @@
             </div>
         </div>
     </div>
+
+    <script>
+        function goToChat(userId) {
+            window.location.href = '/messages/chat/' + userId;
+        }
+    </script>
 </body>
 </html>

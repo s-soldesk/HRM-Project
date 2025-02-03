@@ -1,0 +1,111 @@
+
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>로그인</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f8f9fa;
+        }
+
+        .login-container {
+            text-align: center;
+            width: 400px;
+            padding: 30px;
+            background-color: #ffffff;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            border-radius: 8px;
+        }
+
+        .logo {
+            font-size: 24px;
+            color: #0066ff;
+            font-weight: bold;
+            margin-bottom: 20px;
+        }
+
+        .title {
+            font-size: 22px;
+            margin-bottom: 30px;
+            color: #333333;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+            text-align: left;
+        }
+
+        .form-group label {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 5px;
+            color: #555555;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            font-size: 14px;
+            border: 1px solid #cccccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #0066ff;
+            box-shadow: 0 0 4px rgba(0, 102, 255, 0.2);
+        }
+
+        .error-message {
+            color: red;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        .login-btn {
+            width: 100%;
+            padding: 10px;
+            font-size: 16px;
+            color: #ffffff;
+            background-color: #0066ff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .login-btn:hover {
+            background-color: #004db3;
+        }
+    </style>
+</head>
+<body>
+    <div class="login-container">
+        <div class="logo">[ SOLDESK ]</div>
+        <div class="title">인사 관리 시스템</div>
+        <form th:action="@{/login}" method="post">
+            <div class="form-group">
+                <label for="employeeId">사원번호</label>
+                <input type="text" id="employeeId" name="employeeId" placeholder="사원번호 입력" required>
+                <!-- 에러 메시지 -->
+                <div th:if="${param.error}" class="error-message">사원번호 또는 비밀번호가 잘못 입력되었습니다.</div>
+            </div>
+            <div class="form-group">
+                <label for="password">비밀번호</label>
+                <input type="password" id="password" name="password" placeholder="비밀번호 입력" required>
+            </div>
+            <button type="submit" class="login-btn">로그인</button>
+        </form>
+    </div>
+</body>
+</html>

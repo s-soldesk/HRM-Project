@@ -118,9 +118,10 @@
             </tbody>
        </table>
 
-<div class="floating-button">
-    <a href="/notices/new" class="write-btn">작성</a>
-</div>
+		<!-- ADMIN만 작성 버튼 표시 -->
+        <div th:if="${isAdmin}" class="floating-button">
+            <a href="/notices/new" class="write-btn">작성</a>
+        </div>
     </div>
 </body>
 </html>

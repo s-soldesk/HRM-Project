@@ -18,5 +18,5 @@ public interface MessageMapper {
     void markAsRead(Integer messageId);
     List<EmployeeDto> getAllEmployees();
     List<MessageDto> getChatMessages(@Param("senderId") Integer senderId, @Param("receiverId") Integer receiverId);
-    MessageDto getLastMessageBetweenUsers(@Param("user1Id") String string, @Param("user2Id") String string2);
-}
+    MessageDto getLastMessageBetweenUsers(@Param("user1Id") Integer user1Id, @Param("user2Id") Integer user2Id);
+    }

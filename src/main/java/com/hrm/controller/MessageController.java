@@ -15,7 +15,8 @@ import com.hrm.dto.MessageDto;
 import com.hrm.dto.UserAccountDto;
 import com.hrm.service.EmployeeService;
 import com.hrm.service.MessageService;
-
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import jakarta.servlet.http.HttpSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -27,11 +28,18 @@ public class MessageController {
     private final MessageService messageService;
     private final EmployeeService employeeService;
 
+    private Integer getCurrentUserId() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated()) {
+            return Integer.valueOf(auth.getName());
+        }
+        throw new RuntimeException("No authenticated user found");
+    }
+
     @GetMapping("/messages")
     public String getMessages(Model model) {
         try {
-            // 임시로 employeeId를 1로 설정
-            Integer currentUserId = 1;  // 기본 사용자 ID
+            Integer currentUserId = getCurrentUserId();
             
             EmployeeDto employee = employeeService.getEmployeeById(currentUserId);
             
@@ -55,7 +63,7 @@ public class MessageController {
     @GetMapping("/messages/chat/{userId}")
     public String chatRoom(@PathVariable("userId") Integer userId, Model model) {
         try {
-            Integer currentUserId = 1;  // 기본 사용자 ID
+            Integer currentUserId = getCurrentUserId();
             
             EmployeeDto employee = employeeService.getEmployeeById(currentUserId);
             
@@ -81,7 +89,7 @@ public class MessageController {
     @PostMapping("/messages/send")
     public String sendMessage(@ModelAttribute MessageDto message) {
         try {
-            Integer currentUserId = 1;  // 기본 사용자 ID
+            Integer currentUserId = getCurrentUserId();
             
             if (message.getReceiverId() == null) {
                 log.error("Invalid receiver");

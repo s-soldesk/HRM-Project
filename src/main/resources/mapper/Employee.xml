@@ -14,11 +14,9 @@
 	        e.PhoneNumber as phoneNumber,
 	        e.Email as email,
 	        e.ProfileImage as profileImage,
-	        d.DepartmentName as departmentName,
-	        ua.Role as role     <!-- useraccounts 테이블의 role 추가 -->
+	        d.DepartmentName as departmentName
 	    FROM employee e
 	    LEFT JOIN department d ON e.DepartmentID = d.DepartmentID
-	    LEFT JOIN useraccounts ua ON e.EmployeeID = ua.EmployeeID
 	    WHERE e.EmployeeID = #{employeeId}
 	</select>
 

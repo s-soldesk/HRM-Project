@@ -10,11 +10,11 @@
         <li><a href="/profile">프로필</a></li>
 
         <!-- HR 또는 Admin만 볼 수 있음 -->
-        <li th:if="${#authorization.expression('hasAnyRole(''Admin'', ''HR'')')}">
+        <li th:if="${#authorization.expression('hasAnyRole(''ADMIN'', ''HR'')')}">
             <a href="/employees">인사 관리</a>
         </li>
         <!-- Admin만 볼 수 있음 -->
-        <li th:if="${#authorization.expression('hasRole(''Admin'')')}">
+        <li th:if="${#authorization.expression('hasRole(''ADMIN'')')}">
             <a href="/dailyworker">일용직 관리</a>
         </li>
         <li>

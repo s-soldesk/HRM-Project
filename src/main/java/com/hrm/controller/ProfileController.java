@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 
 import com.hrm.dto.EmployeeDto;
 import com.hrm.service.ProfileService;
@@ -26,20 +28,28 @@ import lombok.extern.slf4j.Slf4j;
 @Controller
 @RequiredArgsConstructor
 public class ProfileController {
-	
+    
     private final ProfileService profileService;
     private final UserAccountService userAccountService;
     
     @Value("${file.upload.dir:uploads/profiles}")
     private String uploadDir;
-    
-    // 테스트용 기본 employeeId
-    private static final Integer DEFAULT_EMPLOYEE_ID = 1;
+
+    // 현재 로그인한 사용자의 ID를 가져오는 메소드
+    private Integer getCurrentUserId() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        if (auth != null && auth.isAuthenticated()) {
+            log.info("Current user: {}", auth.getName());
+            return Integer.valueOf(auth.getName());
+        }
+        throw new RuntimeException("No authenticated user found");
+    }
 
     @GetMapping("/profile")
     public String getProfile(Model model) {
         try {
-            EmployeeDto employee = profileService.getEmployeeById(DEFAULT_EMPLOYEE_ID);
+            Integer currentUserId = getCurrentUserId();
+            EmployeeDto employee = profileService.getEmployeeById(currentUserId);
             model.addAttribute("employee", employee);
             return "profile/profile";
         } catch (Exception e) {
@@ -53,14 +63,16 @@ public class ProfileController {
             @RequestParam(value = "profileImage", required = false) MultipartFile file,
             RedirectAttributes redirectAttributes) {
         try {
-            EmployeeDto employee = profileService.getEmployeeById(DEFAULT_EMPLOYEE_ID);
+            Integer currentUserId = getCurrentUserId();
+            EmployeeDto employee = profileService.getEmployeeById(currentUserId);
+            
             if (employee == null) {
                 redirectAttributes.addFlashAttribute("error", "프로필을 찾을 수 없습니다.");
                 return "redirect:/profile?error";
             }
 
             if (file != null && !file.isEmpty()) {
-                String imagePath = saveProfileImage(file, String.valueOf(DEFAULT_EMPLOYEE_ID));
+                String imagePath = saveProfileImage(file, String.valueOf(currentUserId));
                 employee.setProfileImage(imagePath);
                 profileService.updateProfile(employee);
             }
@@ -80,8 +92,11 @@ public class ProfileController {
             @RequestParam("newPassword") String newPassword,
             RedirectAttributes redirectAttributes) {
         try {
-            boolean success = userAccountService.changePassword(DEFAULT_EMPLOYEE_ID, currentPassword, newPassword);
+            Integer currentUserId = getCurrentUserId();
+            boolean success = userAccountService.changePassword(currentUserId, currentPassword, newPassword);
+            
             if (success) {
+                redirectAttributes.addFlashAttribute("success", "비밀번호가 성공적으로 변경되었습니다.");
                 return "redirect:/profile?pwSuccess";
             } else {
                 redirectAttributes.addFlashAttribute("error", "현재 비밀번호가 일치하지 않습니다.");

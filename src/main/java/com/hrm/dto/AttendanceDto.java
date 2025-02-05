@@ -8,7 +8,6 @@ import lombok.Data;
 
 @Data
 public class AttendanceDto {
-	
 	private Integer attendanceId; // 근태 id
 	private Integer employeeId; // 사원 id
 	private String employeeName; // 사원 이름
@@ -19,6 +18,4 @@ public class AttendanceDto {
 	private BigDecimal overtimeHours; // 초과근무시간
 	private String attendanceType; // 근태 유형
 	private String remarks; // 근태 사유
-	
-	
 }

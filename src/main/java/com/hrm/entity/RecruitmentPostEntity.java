@@ -1,9 +1,6 @@
 package com.hrm.entity;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
-
-import org.springframework.data.annotation.CreatedDate;
 
 import com.hrm.enums.PostStatus;
 
@@ -14,6 +11,7 @@ import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.PrePersist;
 import jakarta.persistence.Table;
 import lombok.Getter;
 import lombok.Setter;
@@ -25,7 +23,7 @@ import lombok.Setter;
 public class RecruitmentPostEntity {
 	@Id // 기본 키
 	@GeneratedValue(strategy = GenerationType.IDENTITY) // 기본키 생성 전략. IDENTITY는 자동 증가
-	private Long id;
+	private Integer id;
 
 	private String title;
 
@@ -35,12 +33,15 @@ public class RecruitmentPostEntity {
 	@Enumerated(EnumType.STRING) // enum 값을 문자열로 저장
 	private PostStatus status;
 
-	private LocalDate startDate;
 	private LocalDate endDate;
 
 	private String createdBy;
 
-	@CreatedDate // 엔터티가 생성될 때 자동으로 현재시간 저장
-	private LocalDateTime createdAt;
+	private LocalDate createdAt;
+
+	@PrePersist // 엔터티가 생성될 때 자동으로 현재시간 저장
+	protected void onCreate() {
+		this.createdAt = LocalDate.now();
+	}
 
 }

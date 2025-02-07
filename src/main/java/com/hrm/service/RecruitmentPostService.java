@@ -45,7 +45,6 @@ public class RecruitmentPostService {
 		post.setTitle(updatedPost.getTitle());
 		post.setContent(updatedPost.getContent());
 		post.setStatus(updatedPost.getStatus());
-		post.setStartDate(updatedPost.getStartDate());
 		post.setEndDate(updatedPost.getEndDate());
 		return post;
 	}

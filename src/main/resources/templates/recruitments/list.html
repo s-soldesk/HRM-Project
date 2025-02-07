@@ -45,8 +45,8 @@
                                    th:text="${post.title}">제목</a>
                             </td>
                             <td th:text="${post.status.status}">상태</td>
-                            <td th:text="${#temporals.format(post.startDate, 'yyyy-MM-dd')}">시작일</td>
-                            <td th:text="${#temporals.format(post.endDate, 'yyyy-MM-dd')}">마감일</td>
+                            <td th:text="${post.createdAt}">시작일</td>
+                            <td th:text="${post.endDate}">마감일</td>
                             <td th:text="${post.createdBy}">작성자</td>
                         </tr>
                     </tbody>

@@ -65,3 +65,7 @@ out/
 ### VS Code ###
 .vscode/
 >>>>>>> branch 'main' of https://github.com/s-soldesk/HRM-Project.git
+
+# Spring Boot 환경설정 파일 제외
+application.properties
+application.yml

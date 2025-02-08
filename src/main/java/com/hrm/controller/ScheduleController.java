@@ -10,6 +10,7 @@ import java.time.ZonedDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
@@ -49,21 +50,23 @@ public class ScheduleController {
         String startStr = (String) map.get("start");
         String endStr = (String) map.get("end");
 
-        if (startStr.length() == 10) { // 날짜만 있는 경우
+        if (startStr.contains("T")) { // ✅ ISO 8601 형식
+            OffsetDateTime offsetDateTime = OffsetDateTime.parse(startStr);
+            LocalDateTime startDateTime = offsetDateTime.atZoneSameInstant(ZoneId.of("Asia/Seoul")).toLocalDateTime();
+            schedule.setStartDate(startDateTime.format(dateTimeFormatter));
+        } else {
             LocalDate startDate = LocalDate.parse(startStr, dateFormatter);
             schedule.setStartDate(startDate.atStartOfDay().format(dateTimeFormatter));
-        } else { // 시간까지 포함된 경우
-            LocalDateTime startDateTime = LocalDateTime.parse(startStr, dateTimeFormatter);
-            schedule.setStartDate(startDateTime.format(dateTimeFormatter));
         }
 
         if (endStr != null) {
-            if (endStr.length() == 10) { // 날짜만 있는 경우
+            if (endStr.contains("T")) {
+                OffsetDateTime offsetDateTime = OffsetDateTime.parse(endStr);
+                LocalDateTime endDateTime = offsetDateTime.atZoneSameInstant(ZoneId.of("Asia/Seoul")).toLocalDateTime();
+                schedule.setEndDate(endDateTime.format(dateTimeFormatter));
+            } else {
                 LocalDate endDate = LocalDate.parse(endStr, dateFormatter);
                 schedule.setEndDate(endDate.atStartOfDay().format(dateTimeFormatter));
-            } else { // 시간까지 포함된 경우
-                LocalDateTime endDateTime = LocalDateTime.parse(endStr, dateTimeFormatter);
-                schedule.setEndDate(endDateTime.format(dateTimeFormatter));
             }
         } else {
             schedule.setEndDate(null);
@@ -72,7 +75,6 @@ public class ScheduleController {
         scheduleService.createSchedule(schedule);
         return schedule;
     }
-
 
     /**
      * ✅ 일정 삭제

@@ -2,81 +2,118 @@ package com.hrm.controller;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.security.access.prepost.PreAuthorize;
 
-import com.hrm.dto.EmployeeDto;
 import com.hrm.dto.SalaryDto;
 import com.hrm.service.SalaryService;
-
-import jakarta.servlet.http.HttpSession;
 
 @Controller
 @RequestMapping("/salary")
 public class SalaryController {
 
 	@Autowired
-	SalaryService salaryService;
-	
-	// security 구현 안 해서 임시방편
+	private SalaryService salaryService;
+
+	// 메인 급여 페이지 - 권한에 따른 리다이렉션
 	@GetMapping
-	public String redirectToSalaryPage(@RequestParam(required = false) Boolean isHR) {
-	    if (Boolean.TRUE.equals(isHR)) {
-	        return "redirect:/salary/manage";  // 인사부서용 페이지
-	    }
-	    return "redirect:/salary/employee";  // 일반사원용 페이지
+	public String salaryMain() {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		boolean isAdminOrHR = auth.getAuthorities().stream()
+				.anyMatch(r -> r.getAuthority().equals("ROLE_ADMIN") || r.getAuthority().equals("ROLE_HR"));
+
+		return isAdminOrHR ? "redirect:/salary/manage" : "redirect:/salary/employee";
 	}
-	
-	// 인사 전용 - 모든 사원 급여 조회
+
+	// 인사팀 전용 - 전체 사원 급여 조회
 	@GetMapping("/manage")
-	public String manageSalaries(
-	        @RequestParam(name = "searchType", required = false) String searchType,
-	        @RequestParam(name = "keyword", required = false) String keyword,
-	        Model model) {
-	    
-	    List<SalaryDto> salaries = new ArrayList<>();
-	    
-	    if (searchType != null && keyword != null && !keyword.trim().isEmpty()) {
-	        salaries = salaryService.searchSalaries(searchType, keyword);
-	    }
-	    
-	    model.addAttribute("salaries", salaries);
-	    return "salary/manage";
+	@PreAuthorize("hasAnyRole('HR', 'ADMIN')")
+	public String manageSalaries(@RequestParam(name = "searchType", required = false) String searchType,
+			@RequestParam(name = "keyword", required = false) String keyword, Model model) {
+
+		List<SalaryDto> salaries;
+		if (searchType != null && keyword != null && !keyword.trim().isEmpty()) {
+			salaries = salaryService.searchSalaries(searchType, keyword);
+		} else {
+			salaries = salaryService.getAllSalaries();
+		}
+
+		model.addAttribute("salaries", salaries);
+		return "salary/manage";
 	}
-	
-	// 사원 전용 - 개인 사원 급여 조회
+
+	// 일반 사원 - 개인 급여 조회
 	@GetMapping("/employee")
-	public String viewEmployeeSalary(
-	        @RequestParam(name = "employeeId", required = false) Integer employeeId,
-	        Model m) {
-	    
-	    // 임시로 직원 ID 설정 (나중에 로그인 정보에서 가져올 예정)
-	    if (employeeId == null) {
-	        employeeId = 1001; // 테스트용 ID
-	    }
-	    
-	    List<SalaryDto> salaries = salaryService.getSalariesByEmployeeId(employeeId);
-	    if (!salaries.isEmpty()) {
-	        m.addAttribute("employee", salaries.get(0).getEmployee());
-	    }
-	    m.addAttribute("salaries", salaries);
-	    
-	    return "salary/employee";
+	@PreAuthorize("hasRole('EMPLOYEE')")
+	public String viewEmployeeSalary(Model model) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+
+		// admin이나 임시 계정이 아닌 경우에만 처리
+		if (auth != null && !auth.getName().equals("admin")) {
+			try {
+				// 현재 로그인한 사용자의 employeeId 가져오기
+				Integer employeeId = Integer.parseInt(auth.getName());
+
+				// 해당 사원의 급여 정보 조회
+				List<SalaryDto> salaries = salaryService.getSalariesByEmployeeId(employeeId);
+
+				if (!salaries.isEmpty()) {
+					// 사원 정보 설정
+					model.addAttribute("employee", salaries.get(0).getEmployee());
+					model.addAttribute("salaries", salaries);
+				} else {
+					// 급여 정보가 없는 경우
+					model.addAttribute("salaries", new ArrayList<>());
+				}
+
+				return "salary/employee";
+			} catch (NumberFormatException e) {
+				// employeeId가 숫자가 아닌 경우의 처리
+				return "redirect:/";
+			}
+		}
+
+		// admin이나 다른 예외적인 경우의 처리
+		return "redirect:/";
 	}
-	
-	// 급여 명세서
+
+	// 급여 명세서 상세 조회
 	@GetMapping("/detail/{salaryId}")
-	public String getSalaryDetail(@PathVariable("salaryId") Integer salaryId, Model m) {
+	public String getSalaryDetail(@PathVariable("salaryId") Integer salaryId, Model model) {
+		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+		String currentUsername = auth.getName();
+
 		SalaryDto salary = salaryService.getSalaryById(salaryId);
-		m.addAttribute("salary", salary);
+
+		// admin이나 HR인 경우 모든 급여 정보 조회 가능
+		if (hasHRorAdminRole(auth)) {
+			model.addAttribute("salary", salary);
+			return "salary/salaryDetail";
+		}
+
+		// 일반 사원의 경우 자신의 급여 정보만 조회 가능
+		try {
+			Integer employeeId = Integer.parseInt(currentUsername);
+			if (!salary.getEmployeeId().equals(employeeId)) {
+				return "redirect:/salary/employee";
+			}
+		} catch (NumberFormatException e) {
+			// admin 계정등 employeeId가 숫자가 아닌 경우
+			return "redirect:/salary/employee";
+		}
+
+		model.addAttribute("salary", salary);
 		return "salary/salaryDetail";
+	}
+
+	private boolean hasHRorAdminRole(Authentication auth) {
+		return auth.getAuthorities().stream()
+				.anyMatch(r -> r.getAuthority().equals("ROLE_ADMIN") || r.getAuthority().equals("ROLE_HR"));
 	}
 }

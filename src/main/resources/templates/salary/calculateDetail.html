@@ -1,162 +1,137 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org"
-	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
-	layout:decorate="~{layout/default}">
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
 <head>
-<title>근태 상세 정보</title>
-<link rel="stylesheet" th:href="@{/css/common.css}">
-<link rel="stylesheet" th:href="@{/css/salary.css}">
-
-<script th:inline="javascript">
-function confirmAttendance(employeeId, yearMonth) {
-    if(confirm('근태를 확정하시겠습니까?')) {
-        fetch(`/salary/calculate/confirm/${employeeId}/${yearMonth}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-        .then(response => {
-            if(response.ok) {
-                alert('근태가 확정되었습니다.');
-                window.location.href = '/salary/calculate';
-            } else {
-                return response.text().then(text => {
-                    throw new Error(text || '근태 확정에 실패했습니다.');
-                });
-            }
-        })
-        .catch(error => {
-            alert(error.message);
-        });
+    <meta charset="UTF-8">
+    <title>근태 상세 정보</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/dashboard.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/salary.css}">
+    
+    <script th:inline="javascript">
+    function confirmAttendance(employeeId, yearMonth) {
+        if(confirm('근태를 확정하시겠습니까?')) {
+            fetch(`/salary/calculate/confirm/${employeeId}/${yearMonth}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if(response.ok) {
+                    alert('근태가 확정되었습니다.');
+                    window.location.href = '/salary/calculate';
+                } else {
+                    return response.text().then(text => {
+                        throw new Error(text || '근태 확정에 실패했습니다.');
+                    });
+                }
+            })
+            .catch(error => {
+                alert(error.message);
+            });
+        }
     }
-}
 
-function calculateSalary(employeeId, yearMonth) {
-    if(confirm('급여를 계산하시겠습니까?')) {
-        fetch(`/salary/calculate/salary/${employeeId}/${yearMonth}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            }
-        })
-        .then(response => {
-            if(response.ok) {
-                alert('급여 계산이 완료되었습니다.');
-                location.reload();
-            } else {
-                return response.text().then(text => {
-                    throw new Error(text || '급여 계산에 실패했습니다.');
-                });
-            }
-        })
-        .catch(error => {
-            alert(error.message);
-        });
+    function calculateSalary(employeeId, yearMonth) {
+        if(confirm('급여를 계산하시겠습니까?')) {
+            fetch(`/salary/calculate/salary/${employeeId}/${yearMonth}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => {
+                if(response.ok) {
+                    alert('급여 계산이 완료되었습니다.');
+                    location.reload();
+                } else {
+                    return response.text().then(text => {
+                        throw new Error(text || '급여 계산에 실패했습니다.');
+                    });
+                }
+            })
+            .catch(error => {
+                alert(error.message);
+            });
+        }
     }
-}
-</script>
+    </script>
 </head>
 <body>
-	<div layout:fragment="content">
-		<div class="payslip-container">
-			<h2 class="payslip-title">근태 상세 정보</h2>
+    <!-- 사이드바 -->
+    <div th:replace="~{layout/sidebar :: sidebar}"></div>
+    
+    <div class="content">
+        <div class="payslip-container">
+            <h2 class="payslip-title">근태 상세 정보</h2>
 
-			<div class="employee-info">
-				<table class="info-table">
-					<tr>
-						<th>사원명</th>
-						<td th:text="${attendances[0].employeeName}"></td>
-						<th>부서</th>
-						<td th:text="${attendances[0].departmentName}"></td>
-					</tr>
-					<tr>
-						<th>직급</th>
-						<td th:text="${attendances[0].position}"></td>
-						<th>근무월</th>
-						<td th:text="${yearMonth}"></td>
-					</tr>
-				</table>
-			</div>
+            <div class="employee-info">
+                <table class="info-table">
+                    <tr>
+                        <th>사원명</th>
+                        <td th:text="${attendances[0].employeeName}"></td>
+                        <th>부서</th>
+                        <td th:text="${attendances[0].departmentName}"></td>
+                    </tr>
+                    <tr>
+                        <th>직급</th>
+                        <td th:text="${attendances[0].position}"></td>
+                        <th>근무월</th>
+                        <td th:text="${yearMonth}"></td>
+                    </tr>
+                </table>
+            </div>
 
-			<div class="salary-summary">
-				<h3>근태 및 급여 요약</h3>
-				<br>
-				<p>
-					총 근무시간: <span th:text="${totalWorkHours} + 시간"></span>
-				</p>
-				<p>
-					총 초과근무시간: <span th:text="${totalOvertimeHours} + 시간"></span>
-				</p>
-				<p>
-					기본 급여: <span
-						th:text="${#numbers.formatInteger(salaryInfo.baseSalary, 0, 'COMMA')}"></span>
-					원
-				</p>
-				<p>
-					식대: <span
-						th:text="${#numbers.formatInteger(salaryInfo.mealAllowance, 0, 'COMMA')}"></span>
-					원
-				</p>
-				<p>
-					직급수당: <span
-						th:text="${#numbers.formatInteger(salaryInfo.positionAllowance, 0, 'COMMA')}"></span>
-					원
-				</p>
-				<p>
-					초과근무수당: <span
-						th:text="${#numbers.formatInteger(salaryInfo.overtimePay, 0, 'COMMA')}"></span>
-					원
-				</p>
-				<p>
-					총 공제액: <span
-						th:text="${#numbers.formatInteger(salaryInfo.deductionTotal, 0, 'COMMA')}"></span>
-					원
-				</p>
-				<p>
-					실수령액: <span
-						th:text="${#numbers.formatInteger(salaryInfo.netPay, 0, 'COMMA')}"></span>
-					원
-				</p>
-			</div>
+            <div class="salary-summary">
+                <h3>근태 및 급여 요약</h3>
+                <br>
+                <p>총 근무시간: <span th:text="${totalWorkHours} + 시간"></span></p>
+                <p>총 초과근무시간: <span th:text="${totalOvertimeHours} + 시간"></span></p>
+                <p>기본 급여: <span th:text="${#numbers.formatInteger(salaryInfo.baseSalary, 0, 'COMMA')}"></span> 원</p>
+                <p>식대: <span th:text="${#numbers.formatInteger(salaryInfo.mealAllowance, 0, 'COMMA')}"></span> 원</p>
+                <p>직급수당: <span th:text="${#numbers.formatInteger(salaryInfo.positionAllowance, 0, 'COMMA')}"></span> 원</p>
+                <p>초과근무수당: <span th:text="${#numbers.formatInteger(salaryInfo.overtimePay, 0, 'COMMA')}"></span> 원</p>
+                <p>총 공제액: <span th:text="${#numbers.formatInteger(salaryInfo.deductionTotal, 0, 'COMMA')}"></span> 원</p>
+                <p>실수령액: <span th:text="${#numbers.formatInteger(salaryInfo.netPay, 0, 'COMMA')}"></span> 원</p>
+            </div>
 
-			<div class="salary-list">
-				<table>
-					<thead>
-						<tr>
-							<th>날짜</th>
-							<th>출근시간</th>
-							<th>퇴근시간</th>
-							<th>근무시간</th>
-							<th>초과근무시간</th>
-							<th>상태</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr th:each="detail : ${attendances}">
-							<td th:text="${#temporals.format(detail.date, 'yyyy-MM-dd')}"></td>
-							<td th:text="${#temporals.format(detail.checkInTime, 'HH:mm')}"></td>
-							<td th:text="${#temporals.format(detail.checkOutTime, 'HH:mm')}"></td>
-							<td th:text="${detail.hoursWorked}"></td>
-							<td th:text="${detail.overtimeHours}"></td>
-							<td th:text="${detail.status}"></td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
+            <div class="salary-list">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>날짜</th>
+                            <th>출근시간</th>
+                            <th>퇴근시간</th>
+                            <th>근무시간</th>
+                            <th>초과근무시간</th>
+                            <th>상태</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="detail : ${attendances}">
+                            <td th:text="${#temporals.format(detail.date, 'yyyy-MM-dd')}"></td>
+                            <td th:text="${#temporals.format(detail.checkInTime, 'HH:mm')}"></td>
+                            <td th:text="${#temporals.format(detail.checkOutTime, 'HH:mm')}"></td>
+                            <td th:text="${detail.hoursWorked}"></td>
+                            <td th:text="${detail.overtimeHours}"></td>
+                            <td th:text="${detail.status}"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
 
-			<div class="button-group">
-				<button class="btn" onclick="history.back()">돌아가기</button>
-				<button class="btn primary"
-					th:attr="data-employee-id=${attendances[0].employeeId}, data-year-month=${yearMonth}"
-					onclick="confirmAttendance(this.getAttribute('data-employee-id'), this.getAttribute('data-year-month'))">
-					근태 확정</button>
-				<button class="btn primary"
-					th:attr="data-employee-id=${attendances[0].employeeId}, data-year-month=${yearMonth}"
-					onclick="calculateSalary(this.getAttribute('data-employee-id'), this.getAttribute('data-year-month'))">
-					급여 계산 확정</button>
-			</div>
-		</div>
-	</div>
+            <div class="button-group">
+                <button class="btn" onclick="history.back()">돌아가기</button>
+                <button class="btn primary"
+                    th:attr="data-employee-id=${attendances[0].employeeId}, data-year-month=${yearMonth}"
+                    onclick="confirmAttendance(this.getAttribute('data-employee-id'), this.getAttribute('data-year-month'))">
+                    근태 확정</button>
+                <button class="btn primary"
+                    th:attr="data-employee-id=${attendances[0].employeeId}, data-year-month=${yearMonth}"
+                    onclick="calculateSalary(this.getAttribute('data-employee-id'), this.getAttribute('data-year-month'))">
+                    급여 계산 확정</button>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

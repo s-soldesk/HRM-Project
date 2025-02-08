@@ -7,6 +7,7 @@
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales/ko.js"></script>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <link rel="stylesheet" href="/css/schedule.css">
+    <link rel="stylesheet" href="/css/sidebar.css">
 </head>
 <body>
     <div class="container">
@@ -22,156 +23,8 @@
         </div>
     </div>
 
-    <script>
-    $(document).ready(function () {
-        let calendarTag = $('#calendar')[0];
-        let calendar = new FullCalendar.Calendar(calendarTag, {
-            height: '550px',
-            expandRows: true,
-            slotMinTime: '00:00',
-            slotMaxTime: '23:59',
-            headerToolbar: {
-                left: 'prevYear,prev,next,nextYear today',
-                center: 'title',
-                right: 'dayGridMonth,timeGridWeek,timeGridDay,listWeek'
-            },
-            initialView: 'dayGridMonth',
-            navLinks: true,
-            editable: true,
-            selectable: true,
-            nowIndicator: true,
-            dayMaxEvents: true,
-            locale: 'ko',
-
-            // ✅ 모든 직원의 일정 조회
-            events: function(fetchInfo, successCallback, failureCallback) {
-                $.ajax({
-                    url: "/api/schedules",
-                    type: "GET",
-                    dataType: "json",
-                    success: function(response) {
-                        let events = response.map(schedule => ({
-                            id: schedule.scheduleId,
-                            title: schedule.title + " (직원: " + schedule.employeeId + ")",
-                            start: schedule.startDate,
-                            end: schedule.endDate,
-                            allDay: true
-                        }));
-                        successCallback(events);
-                    },
-                    error: function(xhr, status, error) {
-                        console.error("🚨 일정 불러오기 실패:", error);
-                        failureCallback(error);
-                    }
-                });
-            },
-
-            // ✅ 일정 추가
-            select: function(arg) {
-                let title = prompt("새로운 일정 제목을 입력하세요:");
-                if (title) {
-                    let newEvent = {
-                        title: title,
-                        start: arg.startStr,
-                        end: arg.endStr
-                    };
-
-                    $.ajax({
-                        url: "/api/schedules/add",
-                        type: "POST",
-                        contentType: "application/json",
-                        data: JSON.stringify(newEvent),
-                        success: function(data) {
-                            calendar.addEvent({
-                                id: data.scheduleId,
-                                title: data.title + " (직원: " + data.employeeId + ")",
-                                start: data.startDate,
-                                end: data.endDate,
-                                allDay: true
-                            });
-                            alert("일정이 추가되었습니다.");
-                        },
-                        error: function() {
-                            alert("일정 추가에 실패했습니다.");
-                        }
-                    });
-                }
-                calendar.unselect();
-            },
-
-         // ✅ 일정 이동 (드래그 & 드롭)
-            eventDrop: function(info) {
-                let updatedEvent = {
-                    scheduleId: info.event.id,
-                    title: info.event.title,
-                    start: info.event.start ? info.event.start.toISOString() : null,  // ✅ null 방지
-                    end: info.event.end ? info.event.end.toISOString() : info.event.start.toISOString()
-                };
-
-                $.ajax({
-                    url: "/api/schedules/update/" + updatedEvent.scheduleId,
-                    type: "PUT",
-                    contentType: "application/json",
-                    data: JSON.stringify(updatedEvent),
-                    success: function() {
-                        alert("일정이 이동되었습니다."); // ✅ 이동 메시지
-                    },
-                    error: function(xhr, status, error) {
-                        console.error("🚨 이동 실패:", error);
-                        alert("일정 이동에 실패했습니다.");
-                    }
-                });
-            },
-
-            // ✅ 일정 크기 조정 (Resize)
-            eventResize: function(info) {
-                let updatedEvent = {
-                    scheduleId: info.event.id,
-                    title: info.event.title,
-                    start: info.event.start.toISOString(),
-                    end: info.event.end ? info.event.end.toISOString() : info.event.start.toISOString()
-                };
-
-                $.ajax({
-                    url: "/api/schedules/update/" + updatedEvent.scheduleId,
-                    type: "PUT",
-                    contentType: "application/json",
-                    data: JSON.stringify(updatedEvent),
-                    success: function() {
-                        alert("일정 시간이 변경되었습니다."); // ✅ 크기 조정 메시지
-                    },
-                    error: function(xhr, status, error) {
-                        console.error("🚨 크기 조정 실패:", error);
-                        alert("일정 크기 변경에 실패했습니다.");
-                    }
-                });
-            },
-
-
-
-            // ✅ 일정 삭제 (일정 클릭 시)
-            eventClick: function(info) {
-                if (confirm("이 일정을 삭제하시겠습니까?")) {
-                    $.ajax({
-                        url: "/api/schedules/delete/" + info.event.id,  // ✅ 올바른 URL 경로
-                        type: "DELETE",
-                        success: function() {
-                            alert("일정이 삭제되었습니다.");
-                            info.event.remove(); // UI에서 즉시 삭제
-                        },
-                        error: function(xhr, status, error) {
-                            console.error("🚨 삭제 실패:", error);
-                            alert("일정 삭제에 실패했습니다.");
-                        }
-                    });
-                }
-            }
-        });
-
-        // 캘린더 랜더링
-        calendar.render();
-    });
-    </script>
+    <!-- ✅ 분리된 JavaScript 파일 로드 -->
+    <script src="/js/calenderUI.js"></script>
 
 </body>
 </html>

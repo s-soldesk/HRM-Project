@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>휴가 신청 목록</title>
+    <meta charset="UTF-8">
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100">
+    <div class="max-w-7xl mx-auto mt-10 bg-white p-8 rounded-lg shadow-lg">
+        <h1 class="text-2xl font-bold mb-6">휴가 신청 목록</h1>
+
+        <!-- 메시지 표시 -->
+        <p th:if="${message}" th:text="${message}" class="text-green-500 mb-4"></p>
+
+        <!-- 휴가 신청 목록 테이블 -->
+        <table class="w-full border-collapse border border-gray-200">
+            <thead>
+                <tr class="bg-blue-500 text-white">
+                    <th class="border border-gray-300 py-2 px-4">사원 ID</th>
+                    <th class="border border-gray-300 py-2 px-4">사원 이름</th>
+                    <th class="border border-gray-300 py-2 px-4">제목</th>
+                    <th class="border border-gray-300 py-2 px-4">휴가 유형</th>
+                    <th class="border border-gray-300 py-2 px-4">사유</th>
+                    <th class="border border-gray-300 py-2 px-4">시작일</th>
+                    <th class="border border-gray-300 py-2 px-4">종료일</th>
+                    <th class="border border-gray-300 py-2 px-4">상태</th>
+                    <th class="border border-gray-300 py-2 px-4">승인</th>
+                    <th class="border border-gray-300 py-2 px-4">삭제</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="leave : ${leaves}" class="text-center">
+                    <td class="border border-gray-300 py-2 px-4" th:text="${leave.employeeId}"></td>
+                    <td class="border border-gray-300 py-2 px-4" th:text="${leave.employeeName}"></td>
+                    <td class="border border-gray-300 py-2 px-4" th:text="${leave.title}"></td>
+                    <td class="border border-gray-300 py-2 px-4" th:text="${leave.leaveType}"></td>
+                    <td class="border border-gray-300 py-2 px-4" th:text="${leave.reason}"></td>
+                    <td class="border border-gray-300 py-2 px-4" th:text="${leave.startDate}"></td>
+                    <td class="border border-gray-300 py-2 px-4" th:text="${leave.endDate}"></td>
+                    <td class="border border-gray-300 py-2 px-4" th:text="${leave.status}"></td>
+                    <td class="border border-gray-300 py-2 px-4">
+                        <form th:action="@{/attendance/leave/approve}" method="post">
+                            <input type="hidden" name="scheduleId" th:value="${leave.scheduleId}">
+                            <select name="status" class="border rounded-lg px-2 py-1">
+                                <option value="CONFIRMED">승인</option>
+                                <option value="REJECTED">거절</option>
+                            </select>
+                            <button type="submit" class="bg-green-500 text-white px-2 py-1 rounded-lg">변경</button>
+                        </form>
+                    </td>
+                    <td class="border border-gray-300 py-2 px-4">
+                        <form th:action="@{/attendance/leave/delete/{scheduleId}(scheduleId=${leave.scheduleId})}" method="post">
+                            <button type="submit" class="bg-red-500 text-white px-2 py-1 rounded-lg" onclick="return confirm('정말 삭제하시겠습니까?')">삭제</button>
+                        </form>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+
+        <!-- 메인 페이지로 돌아가기 버튼 -->
+        <div class="mt-6">
+            <a href="/attendance" class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600">메인 페이지로 돌아가기</a>
+        </div>
+    </div>
+</body>
+</html>

@@ -27,7 +27,18 @@ public class ScheduleController {
      */
     @GetMapping
     public List<ScheduleDto> getAllSchedules() {
-        return scheduleService.getAllSchedules(); // 모든 일정 가져옴
+        List<ScheduleDto> schedules = scheduleService.getAllSchedules();
+        
+        // ✅ 날짜가 시간 정보 없이 "00:00:00"이면 allDay로 처리
+        for (ScheduleDto schedule : schedules) {
+            if (schedule.getStartDate().endsWith("00:00:00") && (schedule.getEndDate() == null || schedule.getEndDate().endsWith("00:00:00"))) {
+                schedule.setAllDay(true);
+            } else {
+                schedule.setAllDay(false);
+            }
+        }
+
+        return schedules;
     }
 
     /**

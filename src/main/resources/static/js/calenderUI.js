@@ -62,61 +62,39 @@ $(document).ready(function () {
         },
 
         // ✅ 일정 추가
-        select: function(arg) {
-            let title = prompt("새로운 일정 제목을 입력하세요:");
-            if (title) {
-                let newEvent = {
-                    title: title,
-                    start: arg.startStr,
-                    end: arg.endStr
-                };
+		select: function(arg) {
+		    let title = prompt("새로운 일정 제목을 입력하세요:");
+		    if (title) {
+		        let isAllDay = arg.allDay; // ✅ 사용자가 날짜만 선택한 경우 true
+		        let newEvent = {
+		            title: title,
+		            start: arg.startStr,
+		            end: arg.endStr,
+		            allDay: isAllDay // ✅ 종일 여부 추가
+		        };
 
-                $.ajax({
-                    url: "/api/schedules/add",
-                    type: "POST",
-                    contentType: "application/json",
-                    data: JSON.stringify(newEvent),
-                    success: function(data) {
-                        calendar.addEvent({
-                            id: data.scheduleId,
-                            title: data.title + " (직원: " + data.employeeId + ")",
-                            start: data.startDate,
-                            end: data.endDate,
-                            allDay: true
-                        });
-                        alert("일정이 추가되었습니다.");
-                    },
-                    error: function() {
-                        alert("일정 추가에 실패했습니다.");
-                    }
-                });
-            }
-            calendar.unselect();
-        },
-
-        // ✅ 일정 이동 (드래그 & 드롭)
-        eventDrop: function(info) {
-            let updatedEvent = {
-                scheduleId: info.event.id,
-                title: info.event.title,
-                start: info.event.start ? info.event.start.toISOString() : null,
-                end: info.event.end ? info.event.end.toISOString() : info.event.start.toISOString()
-            };
-
-            $.ajax({
-                url: "/api/schedules/update/" + updatedEvent.scheduleId,
-                type: "PUT",
-                contentType: "application/json",
-                data: JSON.stringify(updatedEvent),
-                success: function() {
-                    alert("일정이 이동되었습니다.");
-                },
-                error: function(xhr, status, error) {
-                    console.error("🚨 이동 실패:", error);
-                    alert("일정 이동에 실패했습니다.");
-                }
-            });
-        },
+		        $.ajax({
+		            url: "/api/schedules/add",
+		            type: "POST",
+		            contentType: "application/json",
+		            data: JSON.stringify(newEvent),
+		            success: function(data) {
+		                calendar.addEvent({
+		                    id: data.scheduleId,
+		                    title: data.title + " (직원: " + data.employeeId + ")",
+		                    start: data.startDate,
+		                    end: data.endDate,
+		                    allDay: data.allDay // ✅ 서버에서 받은 종일 여부 반영
+		                });
+		                alert("일정이 추가되었습니다.");
+		            },
+		            error: function() {
+		                alert("일정 추가에 실패했습니다.");
+		            }
+		        });
+		    }
+		    calendar.unselect();
+		},
 
         // ✅ 일정 크기 조정 (Resize)
         eventResize: function(info) {

@@ -25,7 +25,6 @@ $(document).ready(function () {
                 type: "GET",
                 dataType: "json",
                 success: function(response) {
-                    let events = [];
                     let eventsMap = new Map(); // ✅ `scheduleId` 기준으로 그룹화
 
                     response.forEach(schedule => {
@@ -47,7 +46,7 @@ $(document).ready(function () {
                                 title: `${schedule.title} (${employeeInfo})`,
                                 start: schedule.startDate,
                                 end: schedule.endDate,
-                                allDay: true
+                                allDay: schedule.allDay // ✅ 서버에서 받은 allDay 유지
                             });
                         }
                     });
@@ -65,10 +64,12 @@ $(document).ready(function () {
         select: function(arg) {
             let title = prompt("새로운 일정 제목을 입력하세요:");
             if (title) {
+                let isAllDay = arg.allDay; // ✅ 종일 여부 반영
                 let newEvent = {
                     title: title,
                     start: arg.startStr,
-                    end: arg.endStr
+                    end: arg.endStr,
+                    allDay: isAllDay // ✅ allDay 값 서버로 전송
                 };
 
                 $.ajax({
@@ -82,7 +83,7 @@ $(document).ready(function () {
                             title: data.title + " (직원: " + data.employeeId + ")",
                             start: data.startDate,
                             end: data.endDate,
-                            allDay: true
+                            allDay: data.allDay // ✅ 서버에서 받은 allDay 반영
                         });
                         alert("일정이 추가되었습니다.");
                     },
@@ -100,7 +101,8 @@ $(document).ready(function () {
                 scheduleId: info.event.id,
                 title: info.event.title,
                 start: info.event.start ? info.event.start.toISOString() : null,
-                end: info.event.end ? info.event.end.toISOString() : info.event.start.toISOString()
+                end: info.event.end ? info.event.end.toISOString() : info.event.start.toISOString(),
+                allDay: info.event.allDay // ✅ 이동 시 allDay 값 유지
             };
 
             $.ajax({
@@ -124,7 +126,8 @@ $(document).ready(function () {
                 scheduleId: info.event.id,
                 title: info.event.title,
                 start: info.event.start.toISOString(),
-                end: info.event.end ? info.event.end.toISOString() : info.event.start.toISOString()
+                end: info.event.end ? info.event.end.toISOString() : info.event.start.toISOString(),
+                allDay: info.event.allDay // ✅ 크기 조정 시 allDay 값 유지
             };
 
             $.ajax({

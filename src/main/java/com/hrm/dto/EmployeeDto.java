@@ -22,6 +22,5 @@ public class EmployeeDto {
 	// ------------------------- 추가
 	
 	private String departmentName; // 부서 이름
-	
 	private DepartmentDto department; // 부서정보 매핑
 }

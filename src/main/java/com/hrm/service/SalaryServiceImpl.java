@@ -143,7 +143,8 @@ public class SalaryServiceImpl implements SalaryService {
 
 		return salary;
 	}
-
+	
+	// 이름 or 직급 or 부서로 사원 검색하기
 	@Override
 	public List<SalaryDto> searchSalaries(String searchType, String keyword) {
 		switch (searchType) {

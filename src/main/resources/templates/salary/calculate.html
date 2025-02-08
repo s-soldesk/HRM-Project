@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+	layout:decorate="~{layout/default}">
+<head>
+<title>급여 계산</title>
+<script th:inline="javascript">
+	function changeMonth() {
+		const select = document.getElementById('yearMonth');
+		const value = select.value;
+		if (value) {
+			window.location.href = '/salary/calculate/status/'
+					+ value.replace('/', '-');
+		}
+	}
+
+	function handleButtonClick(button) {
+		const employeeId = button.getAttribute('data-employee-id');
+		const yearMonth = button.getAttribute('data-year-month');
+		if (!employeeId || !yearMonth) {
+			alert('데이터가 누락되었습니다.');
+			return;
+		}
+		window.location.href = `/salary/calculate/detail/${employeeId}/${yearMonth}`;
+	}
+</script>
+</head>
+<body>
+	<div layout:fragment="content">
+		<div class="salary-calculate-container">
+			<h2 class="title">급여 계산</h2>
+
+			<div class="month-selector">
+				<select id="yearMonth" onchange="changeMonth()">
+					<option value="">귀속 연월 선택</option>
+					<option th:each="month : ${months}" th:value="${month}"
+						th:text="${month}"></option>
+				</select>
+			</div>
+
+			<div class="calculate-content">
+				<h3>근태 확인</h3>
+				<div class="selected-month">
+					<p th:if="${selectedMonth != null}"
+						th:text="'선택한 날짜 : ' + ${selectedMonth}"></p>
+					<p th:if="${selectedMonth == null}">날짜를 선택해 주세요.</p>
+				</div>
+				<div class="attendance-list">
+					<table>
+						<thead>
+							<tr>
+								<th>사원번호</th>
+								<th>이름</th>
+								<th>부서</th>
+								<th>직급</th>
+								<th>근무일수</th>
+								<th>총근무시간</th>
+								<th>연장근무시간</th>
+								<th>근태 확정</th>
+								
+								<th>상세보기</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr
+								th:if="${attendances != null and not #lists.isEmpty(attendances)}"
+								th:each="attendance : ${attendances}">
+								<td th:text="${attendance.employeeId}"></td>
+								<td th:text="${attendance.employeeName}"></td>
+								<td th:text="${attendance.departmentName}"></td>
+								<td th:text="${attendance.position}"></td>
+								<td th:text="${attendance.workingDays} + days"></td>
+								<td th:text="${attendance.totalWorkedHours} + h"></td>
+								<td th:text="${attendance.totalOvertimeHours} + h"></td>
+								<td th:text="${attendance.salaryStatus == 'CONFIRMED' ? '✔️' : '❌'}"></td>
+								<td>
+									<button class="btn btn-primary"
+										th:attr="data-employee-id=${attendance.employeeId}, data-year-month=${yearMonth}"
+										onclick="handleButtonClick(this)">상세보기</button>
+								</td>
+							</tr>
+							<tr th:if="${attendances == null or #lists.isEmpty(attendances)}">
+								<td colspan="8" class="no-data">해당 월의 근태 데이터가 없습니다.</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+</html>
+</html>

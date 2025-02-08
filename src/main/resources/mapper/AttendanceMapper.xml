@@ -1,0 +1,208 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hrm.dao.AttendanceDao">
+	<resultMap id="AttendanceResultMap"
+		type="com.hrm.dto.AttendanceDto">
+		<id property="attendanceId" column="AttendanceID" />
+		<result property="employeeId" column="EmployeeID" />
+		<result property="date" column="Date" />
+		<result property="checkInTime" column="CheckInTime" />
+		<result property="checkOutTime" column="CheckOutTime" />
+		<result property="hoursWorked" column="HoursWorked" />
+		<result property="overtimeHours" column="OvertimeHours" />
+		<result property="status" column="Status" />
+		<result property="employeeName" column="employeeName" />
+		<result property="departmentName" column="DepartmentName" />
+		<result property="position" column="Position" />
+		<result property="workingDays" column="workingDays" />
+		<result property="totalWorkedHours" column="totalWorkedHours" />
+		<result property="totalOvertimeHours"
+			column="totalOvertimeHours" />
+	</resultMap>
+
+	<!-- 근태 데이터 저장 -->
+	<insert id="insertAttendance"
+		parameterType="com.hrm.dto.AttendanceDto">
+		INSERT INTO Attendance (
+		EmployeeID,
+		Date,
+		CheckInTime,
+		CheckOutTime,
+		HoursWorked,
+		OvertimeHours,
+		Status
+		) VALUES (
+		#{employeeId},
+		#{date},
+		#{checkInTime},
+		#{checkOutTime},
+		#{hoursWorked},
+		#{overtimeHours},
+		#{status}
+		)
+	</insert>
+
+	<!-- 근태 데이터 수정 -->
+	<update id="updateAttendance"
+		parameterType="com.hrm.dto.AttendanceDto">
+		UPDATE Attendance
+		SET
+		CheckInTime = #{checkInTime},
+		CheckOutTime = #{checkOutTime},
+		HoursWorked = #{hoursWorked},
+		OvertimeHours = #{overtimeHours},
+		Status = #{status}
+		WHERE
+		EmployeeID =
+		#{employeeId}
+		AND Date = #{date}
+	</update>
+
+	<!-- 근태 마감 처리 -->
+	<update id="closeAttendance" parameterType="string">
+		INSERT INTO
+		AttendanceStatus (YearMonth, Status)
+		VALUES (#{yearMonth}, 'CLOSED')
+		ON
+		DUPLICATE KEY UPDATE Status = 'CLOSED'
+	</update>
+
+	<!-- 월별 사원 근태 통계 -->
+	<select id="getMonthlyAttendanceSummary"
+		resultMap="AttendanceResultMap">
+		SELECT
+		e.EmployeeID,
+		e.Name AS employeeName,
+		d.DepartmentName,
+		e.Position,
+		COALESCE(COUNT(DISTINCT a.Date), 0) AS workingDays,
+		COALESCE(SUM(a.HoursWorked), 0) AS totalWorkedHours,
+		COALESCE(SUM(a.OvertimeHours), 0) AS totalOvertimeHours
+		FROM Employee e
+		JOIN Department d ON e.DepartmentID = d.DepartmentID
+		LEFT JOIN
+		Attendance a ON e.EmployeeID = a.EmployeeID
+		AND DATE_FORMAT(a.Date,
+		'%Y-%m') = #{yearMonth}
+		GROUP BY e.EmployeeID, e.Name,
+		d.DepartmentName, e.Position
+	</select>
+
+
+	<!-- 특정 사원의 월별 상세 근태 -->
+	<select id="getEmployeeMonthlyAttendance"
+		resultMap="AttendanceResultMap">
+		SELECT
+		a.*,
+		e.Name AS employeeName,
+		e.Position,
+		d.DepartmentName
+		FROM Attendance a
+		JOIN Employee e ON a.EmployeeID =
+		e.EmployeeID
+		JOIN Department d ON e.DepartmentID = d.DepartmentID
+		WHERE
+		a.EmployeeID = #{employeeId}
+		AND DATE_FORMAT(a.Date, '%Y-%m') =
+		#{yearMonth}
+		ORDER BY a.Date
+	</select>
+
+
+	<!-- 전체 직원의 근태 데이터 조회 -->
+	<select id="getAllEmployeeAttendance" parameterType="string"
+		resultMap="AttendanceResultMap">
+		SELECT
+		a.*,
+		e.Name as employeeName,
+		e.Position,
+		d.DepartmentName,
+		a.Date as attendanceDate,
+		(
+		SELECT COUNT(DISTINCT
+		sub_a.Date)
+		FROM Attendance sub_a
+		WHERE sub_a.EmployeeID = a.EmployeeID
+		AND DATE_FORMAT(sub_a.Date, '%Y-%m') = DATE_FORMAT(a.Date, '%Y-%m')
+		)
+		as workingDays
+		FROM Attendance a
+		JOIN Employee e ON a.EmployeeID =
+		e.EmployeeID
+		JOIN Department d ON e.DepartmentID = d.DepartmentID
+		WHERE
+		DATE_FORMAT(a.Date, '%Y-%m') = #{yearMonth}
+		ORDER BY a.EmployeeID,
+		a.Date
+	</select>
+
+	<!-- 특정 직원의 특정 날짜 근태 상세 조회 -->
+	<select id="getAttendanceDetail" resultMap="AttendanceResultMap">
+		SELECT
+		a.*,
+		e.Name as
+		employeeName,
+		e.Position as position,
+		d.DepartmentName
+		FROM Attendance a
+		JOIN Employee e ON a.EmployeeID = e.EmployeeID
+		JOIN Department d ON
+		e.DepartmentID = d.DepartmentID
+		WHERE a.EmployeeID = #{employeeId}
+		AND
+		a.Date = #{date}
+	</select>
+
+	<!-- 부서별 근태 데이터 조회 -->
+	<select id="getAttendanceByDepartment"
+		resultMap="AttendanceResultMap">
+		SELECT
+		a.*,
+		e.Name as employeeName,
+		e.Position as position,
+		d.DepartmentName
+		FROM Attendance a
+		JOIN Employee e ON a.EmployeeID =
+		e.EmployeeID
+		JOIN Department d ON e.DepartmentID = d.DepartmentID
+		WHERE
+		DATE_FORMAT(a.Date, '%Y-%m') = #{yearMonth}
+		AND d.DepartmentName =
+		#{department}
+		ORDER BY e.EmployeeID, a.Date
+	</select>
+
+	<!-- 근태 확정 처리 -->
+	<update id="confirmAttendance" parameterType="string">
+		UPDATE Attendance
+		SET Status = 'Confirmed'
+		WHERE DATE_FORMAT(Date, '%Y-%m') =
+		#{yearMonth}
+	</update>
+
+	<!-- 근태 마감 확인 -->
+	<select id="isAttendanceClosed" parameterType="map"
+		resultType="boolean">
+		SELECT EXISTS (
+		SELECT 1
+		FROM Attendance
+		WHERE EmployeeID =
+		#{employeeId}
+		AND DATE_FORMAT(Date, '%Y-%m') = #{yearMonth}
+		AND Status =
+		'OnTime'
+		)
+	</select>
+
+	<!-- 특정 사원의 근태 마감 -->
+	<update id="closeAttendanceForEmployee">
+		UPDATE Attendance
+		SET Status = 'OnTime'
+		WHERE EmployeeID = #{employeeId}
+		AND DATE_FORMAT(Date, '%Y-%m') = #{yearMonth}
+	</update>
+
+</mapper>

@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+    PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="com.hrm.dao.SalaryDao">
+	<resultMap id="SalaryResultMap" type="com.hrm.dto.SalaryDto">
+		<!-- SalaryDto 매핑 -->
+		<id property="salaryId" column="SalaryID" />
+		<result property="employeeId" column="EmployeeID" />
+		<result property="baseSalary" column="BaseSalary" />
+		<result property="overtimePay" column="OvertimePay" />
+		<result property="totalSalary" column="TotalSalary" />
+		<result property="incomeTax" column="IncomeTax" />
+		<result property="localIncomeTax" column="LocalIncomeTax" />
+		<result property="nationalPension" column="NationalPension" />
+		<result property="healthInsurance" column="HealthInsurance" />
+		<result property="employmentInsurance"
+			column="EmploymentInsurance" />
+		<result property="longTermCareInsurance"
+			column="LongTermCareInsurance" />
+		<result property="mealAllowance" column="MealAllowance" />
+		<result property="positionAllowance" column="PositionAllowance" />
+		<result property="paymentDate" column="PaymentDate" />
+		<result property="status" column="Status" />
+
+		<!-- EmployeeDto 매핑 -->
+		<association property="employee"
+			javaType="com.hrm.dto.EmployeeDto">
+			<id property="employeeId" column="EmployeeID" />
+			<result property="name" column="employeeName" />
+			<result property="departmentId" column="DepartmentID" />
+			<result property="position" column="Position" />
+			<result property="departmentName" column="DepartmentName" />
+		</association>
+	</resultMap>
+
+	<!-- 모든 급여 조회 -->
+	<select id="getAllSalaries" resultMap="SalaryResultMap">
+		SELECT
+		s.*,
+		e.EmployeeID AS
+		employeeId,
+		e.Name AS employeeName,
+		e.DepartmentID AS departmentId,
+		e.Position AS position,
+		d.DepartmentName AS departmentName
+		FROM Salary s
+		JOIN Employee e ON s.EmployeeID = e.EmployeeID
+		JOIN Department d ON
+		e.DepartmentID = d.DepartmentID
+	</select>
+
+	<!-- 특정 직원의 모든 급여 기록 조회 -->
+	<select id="getSalariesByEmployeeId" parameterType="int"
+		resultMap="SalaryResultMap">
+		SELECT
+		s.*,
+		e.EmployeeID AS employeeId,
+		e.Name AS employeeName,
+		e.DepartmentID AS departmentId,
+		e.Position AS position,
+		d.DepartmentName AS departmentName
+		FROM Salary s
+		JOIN Employee e ON
+		s.EmployeeID = e.EmployeeID
+		JOIN Department d ON e.DepartmentID =
+		d.DepartmentID
+		WHERE s.EmployeeID = #{employeeId}
+		ORDER BY s.PaymentDate
+		DESC
+	</select>
+
+	<!-- 급여 상세 조회 -->
+	<select id="getSalaryById" parameterType="int"
+		resultMap="SalaryResultMap">
+		SELECT
+		s.*,
+		e.EmployeeID AS employeeId,
+		e.Name AS employeeName,
+		e.DepartmentID AS departmentId,
+		e.Position AS position,
+		d.DepartmentName AS departmentName
+		FROM Salary s
+		JOIN Employee e ON
+		s.EmployeeID = e.EmployeeID
+		JOIN Department d ON e.DepartmentID =
+		d.DepartmentID
+		WHERE s.SalaryID = #{salaryId}
+	</select>
+
+	<!-- 급여 데이터 추가 -->
+	<insert id="addSalary" parameterType="com.hrm.dto.SalaryDto">
+		INSERT INTO Salary (
+		EmployeeID,
+		BaseSalary,
+		OvertimePay,
+		TotalSalary,
+		IncomeTax,
+		LocalIncomeTax,
+		NationalPension,
+		HealthInsurance,
+		EmploymentInsurance,
+		LongTermCareInsurance,
+		MealAllowance,
+		PositionAllowance,
+		Status,
+		PaymentDate
+		) VALUES (
+		#{employeeId},
+		#{baseSalary},
+		#{overtimePay},
+		#{totalSalary},
+		#{incomeTax},
+		#{localIncomeTax},
+		#{nationalPension},
+		#{healthInsurance},
+		#{employmentInsurance},
+		#{longTermCareInsurance},
+		#{mealAllowance},
+		#{positionAllowance},
+		'CONFIRMED',
+		#{paymentDate}
+		)
+	</insert>
+
+
+	<!-- 급여 데이터 수정 -->
+	<update id="updateSalary" parameterType="com.hrm.dto.SalaryDto">
+		UPDATE Salary
+		SET
+		BaseSalary = #{baseSalary},
+		OvertimePay = #{overtimePay},
+		TotalSalary =
+		#{totalSalary},
+		PaymentDate = #{paymentDate},
+		IncomeTax = #{incomeTax},
+		LocalIncomeTax = #{localIncomeTax},
+		NationalPension =
+		#{nationalPension},
+		HealthInsurance = #{healthInsurance},
+		EmploymentInsurance = #{employmentInsurance},
+		LongTermCareInsurance =
+		#{longTermCareInsurance},
+		MealAllowance = #{mealAllowance},
+		PositionAllowance = #{positionAllowance}
+		WHERE SalaryID = #{salaryId}
+	</update>
+
+	<!-- 급여 데이터 삭제 -->
+	<delete id="deleteSalary" parameterType="int">
+		DELETE FROM Salary WHERE
+		SalaryID = #{salaryId}
+	</delete>
+
+	<!-- 검색 사원이름 -->
+	<select id="getSalariesByEmployeeName" parameterType="string"
+		resultMap="SalaryResultMap">
+		SELECT
+		s.*,
+		e.EmployeeID AS employeeId,
+		e.Name AS employeeName,
+		e.DepartmentID AS departmentId,
+		e.Position AS position,
+		d.DepartmentName AS departmentName
+		FROM Salary s
+		JOIN Employee e ON
+		s.EmployeeID = e.EmployeeID
+		JOIN Department d ON e.DepartmentID =
+		d.DepartmentID
+		WHERE e.Name LIKE CONCAT('%', #{name}, '%')
+	</select>
+
+	<!-- 검색 사원 직급 -->
+	<select id="getSalariesByPosition" parameterType="string"
+		resultMap="SalaryResultMap">
+		SELECT
+		s.*,
+		e.EmployeeID AS employeeId,
+		e.Name AS employeeName,
+		e.DepartmentID AS departmentId,
+		e.Position AS position,
+		d.DepartmentName AS departmentName
+		FROM Salary s
+		JOIN Employee e ON
+		s.EmployeeID = e.EmployeeID
+		JOIN Department d ON e.DepartmentID =
+		d.DepartmentID
+		WHERE e.Position LIKE CONCAT('%', #{position}, '%')
+	</select>
+
+	<!-- 검색 부서 -->
+	<select id="getSalariesByDepartment" parameterType="string"
+		resultMap="SalaryResultMap">
+		SELECT
+		s.*,
+		e.EmployeeID AS employeeId,
+		e.Name AS employeeName,
+		e.DepartmentID AS departmentId,
+		e.Position AS position,
+		d.DepartmentName AS departmentName
+		FROM Salary s
+		JOIN Employee e ON
+		s.EmployeeID = e.EmployeeID
+		JOIN Department d ON e.DepartmentID =
+		d.DepartmentID
+		WHERE d.DepartmentName LIKE CONCAT('%', #{department},
+		'%')
+	</select>
+
+	<!-- 해당 월의 급여 계산 여부 확인 -->
+	<select id="isSalaryCalculated" parameterType="string"
+		resultType="boolean">
+		SELECT COUNT(*) > 0
+		FROM Salary
+		WHERE
+		DATE_FORMAT(PaymentDate, '%Y/%m') = #{yearMonth}
+	</select>
+
+	<!-- 해당 월의 계산된 급여 목록 조회 -->
+	<select id="getCalculatedSalaries" parameterType="string"
+		resultMap="SalaryResultMap">
+		SELECT s.*, e.*, d.DepartmentName, s.Status
+		FROM Salary s
+		JOIN Employee
+		e ON s.EmployeeID = e.EmployeeID
+		JOIN Department d ON
+		e.DepartmentID =
+		d.DepartmentID
+		WHERE DATE_FORMAT(s.PaymentDate,
+		'%Y/%m') = #{yearMonth}
+		ORDER BY s.EmployeeID
+	</select>
+
+	<!-- 근태 확정 처리 -->
+	<update id="confirmSalaries" parameterType="map">
+		UPDATE Salary
+		SET
+		Status = 'CONFIRMED'
+		WHERE PaymentDate BETWEEN CONCAT(#{yearMonth},
+		'-01') AND
+		LAST_DAY(CONCAT(#{yearMonth}, '-01'))
+		AND EmployeeID =
+		#{employeeId}
+	</update>
+
+	<select id="getEmployeeSalaryByMonth"
+		resultMap="SalaryResultMap">
+		SELECT
+		s.*,
+		s.Status AS status,
+		e.EmployeeID AS employeeId,
+		e.Name AS employeeName,
+		e.DepartmentID AS departmentId,
+		e.Position AS position,
+		d.DepartmentName AS departmentName
+		FROM Salary s
+		JOIN Employee e ON s.EmployeeID = e.EmployeeID
+		JOIN Department d ON e.DepartmentID = d.DepartmentID
+		WHERE s.PaymentDate BETWEEN CONCAT(#{yearMonth}, '-01') AND
+		LAST_DAY(CONCAT(#{yearMonth}, '-01'))
+		AND s.EmployeeID = #{employeeId}
+
+	</select>
+</mapper>

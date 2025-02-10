@@ -193,7 +193,7 @@ td a:hover {
 	font-size: 1.8rem;
 }
 
-.detail-meta, .detail-period {
+.detail-meta {
 	display: flex;
 	gap: 2rem;
 	color: #666;

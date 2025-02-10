@@ -18,7 +18,12 @@
 						<a th:href="@{/recruitments}" class="btn btn-secondary">목록</a> <a
 							th:href="@{/recruitments/edit/{id}(id=${post.id})}"
 							class="btn btn-primary">수정</a>
-						<button onclick="confirmDelete()" class="btn btn-danger">삭제</button>
+						<form th:action="@{/recruitments/{id}(id=${post.id})}"
+							method="post" style="display: inline;"
+							onsubmit="return confirm('정말로 이 채용공고를 삭제하시겠습니까?');">
+							<input type="hidden" name="_method" value="delete" />
+							<button type="submit" class="btn btn-danger">삭제</button>
+						</form>
 					</div>
 				</div>
 			</div>
@@ -29,16 +34,11 @@
 					<div class="detail-meta">
 						<span class="meta-item"> <strong>작성자:</strong> <span
 							th:text="${post.createdBy}">작성자명</span>
-						</span> <span class="meta-item"> <strong>작성일:</strong> <span
-							th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm')}">작성일</span>
 						</span> <span class="meta-item"> <strong>상태:</strong> <span
-							th:text="${post.status}" class="status-badge"
+							th:text="${post.status.status}" class="status-badge"
 							th:classappend="${'status-' + post.status}">상태</span>
-						</span>
-					</div>
-					<div class="detail-period">
-						<span class="period-item"> <strong>시작일:</strong> <span
-							th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd')}">시작일</span>
+						</span> <span class="meta-item"> <strong>작성일:</strong> <span
+							th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd')}">작성일</span>
 						</span> <span class="period-item"> <strong>마감일:</strong> <span
 							th:text="${#temporals.format(post.endDate, 'yyyy-MM-dd')}">마감일</span>
 						</span>
@@ -54,27 +54,5 @@
 		</div>
 	</div>
 
-	<script th:inline="javascript">
-        function confirmDelete() {
-            if (confirm('정말로 이 채용공고를 삭제하시겠습니까?')) {
-                const postId = [[${post.id}]];
-                fetch(`/recruitments/${postId}`, {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    }
-                }).then(response => {
-                    if (response.ok) {
-                        window.location.href = '/recruitments';
-                    } else {
-                        alert('삭제 중 오류가 발생했습니다.');
-                    }
-                }).catch(error => {
-                    console.error('Error:', error);
-                    alert('삭제 중 오류가 발생했습니다.');
-                });
-            }
-        }
-    </script>
 </body>
 </html>

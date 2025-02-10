@@ -1,7 +1,9 @@
 package com.hrm.service;
 
+import java.time.LocalDate;
 import java.util.List;
 
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -32,6 +34,21 @@ public class RecruitmentPostService {
 
 	public RecruitmentPostEntity getPost(Integer id) {
 		return recruitmentPostRepository.findById(id).orElseThrow(() -> new IllegalArgumentException());
+	}
+
+	/*
+	 * 마감 날짜가 지나면 자동으로 상태를 변경하기 위한 스케줄러 설정
+	 */
+	@Scheduled(cron = "0 0 0 * * *") // 매일 자정에 실행
+	public void updateStatus() {
+		LocalDate today = LocalDate.now();
+
+		List<RecruitmentPostEntity> expired = recruitmentPostRepository.findByEndDate(today);
+
+		expired.forEach(post -> {
+			post.setStatus(PostStatus.CLOSED);
+			recruitmentPostRepository.save(post);
+		});
 	}
 
 	@Transactional // 데이터를 변경하는 작업. (삽입)

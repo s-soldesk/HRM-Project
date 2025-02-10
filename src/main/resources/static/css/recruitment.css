@@ -1,0 +1,271 @@
+/* 공통 레이아웃 */
+.content {
+	margin-left: 250px;
+	padding: 20px;
+	min-height: 100vh;
+	background-color: #f8f9fa;
+}
+
+.container-flex {
+	display: flex;
+	flex-direction: column;
+	width: 100%;
+}
+
+/* 공통 컨테이너 스타일 */
+.recruitment-header, .form-container, .detail-container,
+	.table-container {
+	background-color: white;
+	border-radius: 8px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.recruitment-header {
+	margin-bottom: 10px;
+	padding: 20px;
+}
+
+.header-content {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 20px;
+}
+
+.recruitment-header h1 {
+	margin: 0;
+	color: #333;
+	font-size: 1.8rem;
+	font-weight: bold;
+}
+
+/* 공통 버튼 스타일 */
+.btn {
+	display: inline-block;
+	padding: 0.5rem 1.5rem;
+	border-radius: 4px;
+	font-weight: 500;
+	border: none;
+	cursor: pointer;
+	transition: background-color 0.2s;
+	text-decoration: none;
+}
+
+.btn-primary {
+	background-color: #007bff;
+	color: white;
+}
+
+.btn-primary:hover {
+	background-color: #0056b3;
+}
+
+.btn-secondary {
+	background-color: #6c757d;
+	color: white;
+}
+
+.btn-secondary:hover {
+	background-color: #5a6268;
+}
+
+.btn-danger {
+	background-color: #dc3545;
+	color: white;
+}
+
+.btn-danger:hover {
+	background-color: #c82333;
+}
+
+/* 공통 폼 스타일 */
+.form-container, .detail-container {
+	padding: 2rem;
+	margin: 1rem;
+}
+
+.form-group {
+	margin-bottom: 1.5rem;
+}
+
+.form-group label {
+	display: block;
+	margin-bottom: 0.5rem;
+	font-weight: 500;
+	color: #333;
+}
+
+.form-group input[type="text"], .form-group input[type="date"],
+	.form-group select, .form-group textarea {
+	width: 100%;
+	padding: 0.5rem;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+	font-size: 1rem;
+}
+
+.form-group textarea {
+	resize: vertical;
+	min-height: 150px;
+}
+
+.form-group input:focus, .form-group select:focus, .form-group textarea:focus
+	{
+	outline: none;
+	border-color: #007bff;
+	box-shadow: 0 0 0 2px rgba(0, 123, 255, 0.25);
+}
+
+.form-row {
+	display: flex;
+	gap: 1rem;
+	margin-bottom: 1.5rem;
+}
+
+.form-row .form-group {
+	flex: 1;
+	margin-bottom: 0;
+}
+
+.button-group {
+	display: flex;
+	gap: 1rem;
+	justify-content: flex-end;
+	margin-top: 2rem;
+}
+
+/* 목록 페이지 스타일 */
+.filter-section {
+	margin-bottom: 20px;
+}
+
+#statusFilter {
+	padding: 8px 12px;
+	border: 1px solid #ddd;
+	border-radius: 5px;
+	font-size: 0.9rem;
+	width: 200px;
+	background-color: white;
+}
+
+/* 테이블 스타일 */
+table {
+	width: 100%;
+	border-collapse: collapse;
+}
+
+th {
+	background-color: #f8f9fa;
+	color: #495057;
+	font-weight: bold;
+	padding: 15px;
+	text-align: left;
+	border-bottom: 2px solid #dee2e6;
+}
+
+td {
+	padding: 15px;
+	border-bottom: 1px solid #dee2e6;
+	color: #333;
+}
+
+td a {
+	color: #007bff;
+	text-decoration: none;
+	transition: color 0.2s;
+}
+
+td a:hover {
+	color: #0056b3;
+	text-decoration: underline;
+}
+
+/* 상세 페이지 스타일 */
+.detail-header {
+	border-bottom: 1px solid #eee;
+	padding-bottom: 1.5rem;
+	margin-bottom: 1.5rem;
+}
+
+.detail-header h2 {
+	margin: 0 0 1rem 0;
+	color: #333;
+	font-size: 1.8rem;
+}
+
+.detail-meta {
+	display: flex;
+	gap: 2rem;
+	color: #666;
+}
+
+.detail-meta {
+	margin-bottom: 1rem;
+}
+
+.meta-item strong, .period-item strong {
+	margin-right: 0.5rem;
+}
+
+.detail-content {
+	line-height: 1.6;
+	color: #333;
+}
+
+.status-badge {
+	padding: 0.25rem 0.75rem;
+	border-radius: 4px;
+	font-size: 0.9rem;
+	font-weight: 500;
+}
+
+.status-DRAFT {
+	background-color: #e9ecef;
+	color: #495057;
+}
+
+.status-ACTIVE {
+	background-color: #d4edda;
+	color: #155724;
+}
+
+.status-CLOSED {
+	background-color: #f8d7da;
+	color: #721c24;
+}
+
+.header-buttons {
+	display: flex;
+	gap: 0.5rem;
+}
+
+/* 반응형 디자인 */
+@media screen and (max-width: 1024px) {
+	.header-content {
+		flex-direction: column;
+		align-items: flex-start;
+		gap: 15px;
+	}
+	.filter-section {
+		width: 100%;
+	}
+	#statusFilter {
+		width: 100%;
+	}
+}
+
+@media screen and (max-width: 768px) {
+	.content {
+		margin-left: 0;
+		padding: 15px;
+	}
+	.recruitment-header {
+		padding: 15px;
+	}
+	th, td {
+		padding: 10px;
+	}
+	.table-container {
+		overflow-x: auto;
+	}
+}

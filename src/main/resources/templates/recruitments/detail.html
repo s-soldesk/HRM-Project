@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>채용공고 상세</title>
+<link rel="stylesheet" href="/css/sidebar.css">
+<link rel="stylesheet" href="/css/recruitment.css">
+</head>
+<body>
+	<!-- 사이드바 -->
+	<div th:replace="~{layout/sidebar :: sidebar}"></div>
+
+	<div class="content">
+		<div class="container-flex">
+			<div class="recruitment-header">
+				<div class="header-content">
+					<h1>채용공고 상세</h1>
+					<div class="header-buttons">
+						<a th:href="@{/recruitments}" class="btn btn-secondary">목록</a> <a
+							th:href="@{/recruitments/edit/{id}(id=${post.id})}"
+							class="btn btn-primary">수정</a>
+						<button onclick="confirmDelete()" class="btn btn-danger">삭제</button>
+					</div>
+				</div>
+			</div>
+
+			<div class="detail-container">
+				<div class="detail-header">
+					<h2 th:text="${post.title}">제목</h2>
+					<div class="detail-meta">
+						<span class="meta-item"> <strong>작성자:</strong> <span
+							th:text="${post.createdBy}">작성자명</span>
+						</span> <span class="meta-item"> <strong>작성일:</strong> <span
+							th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd HH:mm')}">작성일</span>
+						</span> <span class="meta-item"> <strong>상태:</strong> <span
+							th:text="${post.status}" class="status-badge"
+							th:classappend="${'status-' + post.status}">상태</span>
+						</span>
+					</div>
+					<div class="detail-period">
+						<span class="period-item"> <strong>시작일:</strong> <span
+							th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd')}">시작일</span>
+						</span> <span class="period-item"> <strong>마감일:</strong> <span
+							th:text="${#temporals.format(post.endDate, 'yyyy-MM-dd')}">마감일</span>
+						</span>
+					</div>
+				</div>
+
+				<div class="detail-content">
+					<div
+						th:utext="${#strings.replace(#strings.escapeXml(post.content), '&#10;', '&lt;br&gt;')}">
+						내용</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script th:inline="javascript">
+        function confirmDelete() {
+            if (confirm('정말로 이 채용공고를 삭제하시겠습니까?')) {
+                const postId = [[${post.id}]];
+                fetch(`/recruitments/${postId}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }).then(response => {
+                    if (response.ok) {
+                        window.location.href = '/recruitments';
+                    } else {
+                        alert('삭제 중 오류가 발생했습니다.');
+                    }
+                }).catch(error => {
+                    console.error('Error:', error);
+                    alert('삭제 중 오류가 발생했습니다.');
+                });
+            }
+        }
+    </script>
+</body>
+</html>

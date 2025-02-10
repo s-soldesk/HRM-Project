@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>채용공고 작성</title>
+<link rel="stylesheet" href="/css/sidebar.css">
+<link rel="stylesheet" href="/css/recruitment.css">
+</head>
+<body>
+	<!-- 사이드바 -->
+	<div th:replace="~{layout/sidebar :: sidebar}"></div>
+
+	<div class="content">
+		<div class="container-flex">
+			<div class="recruitment-header">
+				<div class="header-content">
+					<h1>채용공고 작성</h1>
+				</div>
+			</div>
+
+			<div class="form-container">
+				<form th:action="@{/recruitments/add}" th:object="${post}"
+					method="post">
+					<div class="form-group">
+						<label for="title">제목</label> <input type="text" id="title"
+							th:field="*{title}" required>
+					</div>
+
+					<div class="form-group">
+						<label for="content">내용</label>
+						<textarea id="content" th:field="*{content}" rows="10" required></textarea>
+					</div>
+
+					<div class="form-row">
+
+						<div class="form-group">
+							<label for="endDate">마감일</label> <input type="date" id="endDate"
+								th:field="*{endDate}"
+								th:min="${#temporals.format(#temporals.createToday(), 'yyyy-MM-dd')}"
+								required>
+						</div>
+					</div>
+
+					<div class="form-group">
+						<label for="createdBy">작성자</label> <input type="text"
+							id="createdBy" th:field="*{createdBy}" required>
+					</div>
+
+					<div class="button-group">
+						<button type="submit" class="btn btn-primary">등록</button>
+						<a th:href="@{/recruitments}" class="btn btn-secondary">취소</a>
+					</div>
+				</form>
+			</div>
+		</div>
+	</div>
+
+</body>
+</html>

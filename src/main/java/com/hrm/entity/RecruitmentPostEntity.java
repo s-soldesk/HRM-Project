@@ -42,6 +42,7 @@ public class RecruitmentPostEntity {
 	@PrePersist // 엔터티가 생성될 때 자동으로 현재시간 저장
 	protected void onCreate() {
 		this.createdAt = LocalDate.now();
+		this.status = PostStatus.ACTIVE;
 	}
 
 }

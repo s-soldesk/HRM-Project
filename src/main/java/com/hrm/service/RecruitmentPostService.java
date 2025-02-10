@@ -11,6 +11,7 @@ import com.hrm.entity.RecruitmentPostEntity;
 import com.hrm.enums.PostStatus;
 import com.hrm.repository.RecruitmentPostRepository;
 
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -34,6 +35,14 @@ public class RecruitmentPostService {
 
 	public RecruitmentPostEntity getPost(Integer id) {
 		return recruitmentPostRepository.findById(id).orElseThrow(() -> new IllegalArgumentException());
+	}
+
+	/*
+	 * 서버 시작하면 게시글 상태 함수 초기화 (서버를 항상 켜놓지 않는 개발 시에만)
+	 */
+	@PostConstruct
+	public void initializeStatus() {
+		updateStatus();
 	}
 
 	/*

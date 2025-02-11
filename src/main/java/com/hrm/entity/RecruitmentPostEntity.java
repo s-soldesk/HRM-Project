@@ -21,8 +21,8 @@ import lombok.Setter;
 @Setter
 @Table(name = "RecruitmentPost")
 public class RecruitmentPostEntity {
-	@Id // 기본 키
-	@GeneratedValue(strategy = GenerationType.IDENTITY) // 기본키 생성 전략. IDENTITY는 자동 증가
+	@Id // 기본 키 (직접 할당)
+	@GeneratedValue(strategy = GenerationType.IDENTITY) // 기본키 생성 전략(자동 할당). IDENTITY는 자동 증가
 	private Integer id;
 
 	private String title;

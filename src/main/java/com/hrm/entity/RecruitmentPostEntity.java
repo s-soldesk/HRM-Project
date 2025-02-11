@@ -34,7 +34,6 @@ public class RecruitmentPostEntity {
 	private PostStatus status;
 
 	private LocalDate endDate;
-
 	private String createdBy;
 
 	private LocalDate createdAt;

@@ -21,6 +21,7 @@
 		<li
 			th:if="${#authorization.expression('hasAnyRole(''ADMIN'', ''HR'')')}">
 			<a href="/employees">인사 관리</a>
+			<a href="/recruitments">채용 게시판</a>
 		</li>
 		<!-- Admin만 볼 수 있음 -->
 		<li th:if="${#authorization.expression('hasRole(''ADMIN'')')}"><a

@@ -61,7 +61,8 @@ public class RecruitmentPostService {
 	}
 
 	/*
-	 * 데이터를 변경하는 작업. (삽입) 화면에서 입력받은 데이터를 DB에 저장 (dto -> entity)
+	 * 데이터를 변경하는 작업. (삽입) 
+	 * 화면에서 입력받은 데이터를 DB에 저장
 	 */
 	@Transactional
 	public RecruitmentPostEntity createPost(RecruitmentPostEntity addPost, String username) {

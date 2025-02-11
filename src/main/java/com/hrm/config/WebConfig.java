@@ -14,7 +14,7 @@ import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import org.springframework.web.servlet.resource.PathResourceResolver;
 
-import com.hrm.interceptor.LoginCheckInterceptor;
+/*import com.hrm.interceptor.LoginCheckInterceptor;*/
 
 import jakarta.annotation.PostConstruct;
 import lombok.extern.slf4j.Slf4j;
@@ -27,15 +27,14 @@ public class WebConfig implements WebMvcConfigurer {
     @Value("${file.upload.dir}")
     private String uploadDir;
 
-    @Autowired
-    private LoginCheckInterceptor loginCheckInterceptor;
-
-    @Override
-    public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(loginCheckInterceptor)
-                .addPathPatterns("/**")
-                .excludePathPatterns("/css/**", "/js/**", "/images/**", "/error", "/uploads/**");
-    }
+	/*
+	 * @Autowired private LoginCheckInterceptor loginCheckInterceptor;
+	 * 
+	 * @Override public void addInterceptors(InterceptorRegistry registry) {
+	 * registry.addInterceptor(loginCheckInterceptor) .addPathPatterns("/**")
+	 * .excludePathPatterns("/css/**", "/js/**", "/images/**", "/error",
+	 * "/uploads/**"); }
+	 */
 
     @Override
     public void addResourceHandlers(ResourceHandlerRegistry registry) {

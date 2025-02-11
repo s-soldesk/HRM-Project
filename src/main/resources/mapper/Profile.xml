@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
-<mapper namespace="com.hrm.mapper.EmployeeMapper">
+<mapper namespace="com.hrm.mapper.ProfileMapper">
     
 	<select id="getEmployeeById" resultType="com.hrm.dto.EmployeeDto">
 	    SELECT 
@@ -14,9 +14,11 @@
 	        e.PhoneNumber as phoneNumber,
 	        e.Email as email,
 	        e.ProfileImage as profileImage,
-	        d.DepartmentName as departmentName
+	        d.DepartmentName as departmentName,
+	        ua.Role as role     <!-- useraccounts 테이블의 role 추가 -->
 	    FROM employee e
 	    LEFT JOIN department d ON e.DepartmentID = d.DepartmentID
+	    LEFT JOIN useraccounts ua ON e.EmployeeID = ua.EmployeeID
 	    WHERE e.EmployeeID = #{employeeId}
 	</select>
 

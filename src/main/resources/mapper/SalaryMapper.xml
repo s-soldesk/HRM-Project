@@ -121,7 +121,7 @@
 		#{longTermCareInsurance},
 		#{mealAllowance},
 		#{positionAllowance},
-		'CONFIRMED',
+		#{status},
 		#{paymentDate}
 		)
 	</insert>
@@ -205,9 +205,12 @@
 		e.Position AS position,
 		d.DepartmentName AS departmentName
 		FROM Salary s
-		JOIN Employee e ON s.EmployeeID = e.EmployeeID
-		JOIN Department d ON e.DepartmentID = d.DepartmentID
-		WHERE d.DepartmentName LIKE CONCAT('%', #{department}, '%')
+		JOIN Employee e ON
+		s.EmployeeID = e.EmployeeID
+		JOIN Department d ON e.DepartmentID =
+		d.DepartmentID
+		WHERE d.DepartmentName LIKE CONCAT('%', #{department},
+		'%')
 		ORDER BY s.PaymentDate DESC, s.EmployeeID ASC
 	</select>
 
@@ -255,19 +258,15 @@
 		e.EmployeeID AS employeeId,
 		e.Name AS employeeName,
 		e.DepartmentID AS departmentId,
-		e.Position AS
-		position,
+		e.Position AS position,
 		d.DepartmentName AS departmentName
 		FROM Salary s
-		JOIN Employee
-		e ON s.EmployeeID = e.EmployeeID
-		JOIN Department d ON e.DepartmentID =
-		d.DepartmentID
-		WHERE s.PaymentDate BETWEEN CONCAT(#{yearMonth}, '-01')
-		AND
-		LAST_DAY(CONCAT(#{yearMonth}, '-01'))
-		AND s.EmployeeID =
-		#{employeeId}
-
+		JOIN Employee e ON s.EmployeeID = e.EmployeeID
+		JOIN Department d ON e.DepartmentID = d.DepartmentID
+		WHERE DATE_FORMAT(s.PaymentDate, '%Y-%m') = #{yearMonth}
+		AND s.EmployeeID = #{employeeId}
+		ORDER BY s.PaymentDate DESC
+		LIMIT 1
 	</select>
+	
 </mapper>

@@ -7,7 +7,6 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.hrm.dto.RecruitmentDto;
 import com.hrm.entity.RecruitmentPostEntity;
 import com.hrm.enums.PostStatus;
 import com.hrm.repository.RecruitmentPostRepository;
@@ -62,24 +61,24 @@ public class RecruitmentPostService {
 	}
 
 	/*
-	 * 데이터를 변경하는 작업. (삽입)
-	 * 화면에서 입력받은 데이터를 DB에 저장 (dto -> entity)
+	 * 데이터를 변경하는 작업. (삽입) 화면에서 입력받은 데이터를 DB에 저장 (dto -> entity)
 	 */
 	@Transactional
-	public RecruitmentPostEntity createPost(RecruitmentDto postDto, String username) {
+	public RecruitmentPostEntity createPost(RecruitmentPostEntity addPost, String username) {
 		RecruitmentPostEntity post = new RecruitmentPostEntity();
-		
-		post.setTitle(postDto.getTitle());
-		post.setContent(postDto.getContent());
-		post.setEndDate(postDto.getEndDate());
+
+		post.setTitle(addPost.getTitle());
+		post.setContent(addPost.getContent());
+		post.setEndDate(addPost.getEndDate());
 		post.setCreatedBy(username);
-		
+
 		return recruitmentPostRepository.save(post);
 	}
 
 	@Transactional
 	public RecruitmentPostEntity updatePost(Integer id, RecruitmentPostEntity updatedPost) {
 		RecruitmentPostEntity post = getPost(id);
+
 		post.setTitle(updatedPost.getTitle());
 		post.setContent(updatedPost.getContent());
 		post.setEndDate(updatedPost.getEndDate());

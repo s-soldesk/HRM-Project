@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import com.hrm.dto.RecruitmentDto;
 import com.hrm.entity.RecruitmentPostEntity;
 import com.hrm.service.RecruitmentPostService;
 
@@ -48,12 +47,19 @@ public class RecruitmentPostController {
 	}
 
 	@PostMapping("/add")
-	public String createPost(@ModelAttribute RecruitmentDto post, Principal user) { // Principal 로 사용자 식별 정보 가져오기
+	public String createPost(@ModelAttribute RecruitmentPostEntity post, Principal user) { // Principal 로 사용자 식별 정보 가져오기
 		RecruitmentPostEntity savePost = recruitmentPostService.createPost(post, user.getName());
 		return "redirect:/recruitments/" + savePost.getId();
 	}
 
-	@PutMapping("/{id}")
+	@GetMapping("/edit/{id}")
+	public String updateForm(@PathVariable("id") int id, Model m) {
+		RecruitmentPostEntity post = recruitmentPostService.getPost(id);
+		m.addAttribute("post", post);
+		return "recruitments/form";
+	}
+
+	@PutMapping("/edit/{id}")
 	public String updatePost(@PathVariable("id") int id, @ModelAttribute RecruitmentPostEntity post) {
 		RecruitmentPostEntity savePost = recruitmentPostService.updatePost(id, post);
 		return "redirect:/recruitments/" + savePost.getId();

@@ -1,4 +1,4 @@
-package com.hrm.mapper;
+package com.hrm.dao;
 
 import com.hrm.dto.ScheduleDto;
 import org.apache.ibatis.annotations.Mapper;
@@ -7,7 +7,7 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 @Mapper
-public interface ScheduleMapper {
+public interface ScheduleDao {
 
     /**
      * ✅ 모든 일정 조회

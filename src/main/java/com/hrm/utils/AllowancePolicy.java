@@ -3,6 +3,8 @@ package com.hrm.utils;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.hrm.enums.Position;
+
 public class AllowancePolicy {
     private static final Map<String, Double> positionAllowances = new HashMap<>();
 
@@ -16,7 +18,7 @@ public class AllowancePolicy {
         positionAllowances.put("INTERN", 0.0);
     }
 
-    public static double getPositionAllowance(String position) {
+    public static double getPositionAllowance(Position position) {
         return positionAllowances.getOrDefault(position, 0.0);
     }
 

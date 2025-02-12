@@ -16,7 +16,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<result property="status" column="Status" />
 		<result property="employeeName" column="employeeName" />
 		<result property="departmentName" column="DepartmentName" />
-		<result property="position" column="Position" />
+		<result property="position" column="Position"
+			typeHandler="org.apache.ibatis.type.EnumTypeHandler" />
 		<result property="workingDays" column="workingDays" />
 		<result property="totalWorkedHours" column="totalWorkedHours" />
 		<result property="totalOvertimeHours"
@@ -201,8 +202,10 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 	<update id="closeAttendanceForEmployee">
 		UPDATE Attendance
 		SET Status = 'OnTime'
-		WHERE EmployeeID = #{employeeId}
-		AND DATE_FORMAT(Date, '%Y-%m') = #{yearMonth}
+		WHERE
+		EmployeeID = #{employeeId}
+		AND DATE_FORMAT(Date, '%Y-%m') =
+		#{yearMonth}
 	</update>
 
 </mapper>

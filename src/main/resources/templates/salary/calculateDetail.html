@@ -102,7 +102,7 @@
 					</tr>
 					<tr>
 						<th>직급</th>
-						<td th:text="${attendances[0].position}"></td>
+						<td th:text="${attendances[0].position?.getPosition()}"></td>
 						<th>근무월</th>
 						<td th:text="${yearMonth}"></td>
 					</tr>

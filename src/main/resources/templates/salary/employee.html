@@ -34,7 +34,7 @@
 						<th>부서</th>
 						<td th:text="${employee.departmentName}"></td>
 						<th>직급</th>
-						<td th:text="${employee.position}"></td>
+						<td th:text="${employee.position?.getPosition()}"></td>
 					</tr>
 				</table>
 			</div>

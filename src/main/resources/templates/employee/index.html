@@ -105,9 +105,17 @@
 	                    </select>
 	                </div>
 	                <div class="form-group">
-	                    <label for="position">직급</label>
-	                    <input type="text" id="position" name="position">
-	                </div>
+					    <label for="position">직급</label>
+					    <select id="position" name="position" required>
+					    	<option value="INTERN">인턴</option>
+					        <option value="STAFF">사원</option>
+					        <option value="SENIOR">주임</option>
+					        <option value="ASSISTANT_MANAGER">대리</option>
+					        <option value="MANAGER">과장</option>
+					        <option value="SENIOR_MANAGER">차장</option>
+					        <option value="DEPUTY_GENERAL_MANAGER">부장</option>
+					    </select>
+					</div>
 	                <div class="form-group">
 	                    <label for="hiredate">입사일</label>
 	                    <input type="date" id="hiredate" name="hiredate" required>

@@ -17,7 +17,7 @@ public class CommuteController {
     // 출퇴근 기록 페이지
     @GetMapping
     public String showCommutePage() {
-        return "commute";
+        return "/attendance/commute";
     }
 
     // 출근 기록

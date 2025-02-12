@@ -6,43 +6,43 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.hrm.dto.NoticeDto;
-import com.hrm.mapper.NoticeMapper;
+import com.hrm.dao.NoticeDao;
 
 import lombok.RequiredArgsConstructor;
 
 @Service
 @RequiredArgsConstructor
 public class NoticeService {
-    private final NoticeMapper noticeMapper;
+    private final NoticeDao noticeDao;
     
     public List<NoticeDto> getAllNotices() {
-        return noticeMapper.getAllNotices();
+        return noticeDao.getAllNotices();
     }
     
     public NoticeDto getNoticeById(int noticeId) {
-        return noticeMapper.getNoticeById(noticeId);
+        return noticeDao.getNoticeById(noticeId);
     }
     
     public void createNotice(NoticeDto notice) {
-        noticeMapper.insertNotice(notice);
+        noticeDao.insertNotice(notice);
     }
     
     public void updateNotice(NoticeDto notice) {
-        noticeMapper.updateNotice(notice);
+        noticeDao.updateNotice(notice);
     }
     
     public void deleteNotice(int noticeId) {
-        noticeMapper.deleteNotice(noticeId);
+        noticeDao.deleteNotice(noticeId);
     }
     
     public List<NoticeDto> searchNotices(String searchType, String keyword) {
-        return noticeMapper.searchNotices(searchType, keyword);
+        return noticeDao.searchNotices(searchType, keyword);
        
     }
     
     @Transactional
     public NoticeDto getNoticeWithIncreasedReadCount(int noticeId) {
-    	noticeMapper.increaseReadCount(noticeId);
-        return noticeMapper.getNoticeById(noticeId);
+    	noticeDao.increaseReadCount(noticeId);
+        return noticeDao.getNoticeById(noticeId);
     }
 }

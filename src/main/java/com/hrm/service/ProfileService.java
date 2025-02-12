@@ -3,8 +3,8 @@ package com.hrm.service;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.hrm.dao.ProfileDao;
 import com.hrm.dto.EmployeeDto;
-import com.hrm.mapper.ProfileMapper;
 
 import lombok.RequiredArgsConstructor;
 
@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 
 public class ProfileService {
-    private final ProfileMapper profileMapper;
+    private final ProfileDao profileMapper;
     
     public EmployeeDto getEmployeeById(Integer employeeId) {
         try {

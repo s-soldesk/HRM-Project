@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import com.hrm.dto.EmployeeDto;
 import com.hrm.dto.MessageDto;
-import com.hrm.mapper.MessageMapper;
+import com.hrm.dao.MessageDao;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +17,7 @@ import lombok.extern.slf4j.Slf4j;
 @Service
 @RequiredArgsConstructor
 public class MessageService {
-    private final MessageMapper messageMapper;
+    private final MessageDao messageDao;
     
     @Transactional
     public void sendMessage(MessageDto message) {
@@ -35,7 +35,7 @@ public class MessageService {
             message.setSentTime(LocalDateTime.now());
             message.setIsRead(false);
             
-            messageMapper.sendMessage(message);
+            messageDao.sendMessage(message);
             log.info("Message sent successfully");
             
         } catch (Exception e) {
@@ -47,7 +47,7 @@ public class MessageService {
     public List<MessageDto> getReceivedMessages(Integer receiverId) {
         try {
             log.info("Getting received messages for user: {}", receiverId);
-            return messageMapper.getReceivedMessages(receiverId);
+            return messageDao.getReceivedMessages(receiverId);
         } catch (Exception e) {
             log.error("Error getting received messages: ", e);
             throw new RuntimeException("Failed to get received messages", e);
@@ -57,7 +57,7 @@ public class MessageService {
     public List<MessageDto> getSentMessages(Integer senderId) {
         try {
             log.info("Getting sent messages for user: {}", senderId);
-            return messageMapper.getSentMessages(senderId);
+            return messageDao.getSentMessages(senderId);
         } catch (Exception e) {
             log.error("Error getting sent messages: ", e);
             throw new RuntimeException("Failed to get sent messages", e);
@@ -67,7 +67,7 @@ public class MessageService {
     public MessageDto getMessage(Integer messageId) {
         try {
             log.info("Getting message: {}", messageId);
-            return messageMapper.getMessage(messageId);
+            return messageDao.getMessage(messageId);
         } catch (Exception e) {
             log.error("Error getting message: ", e);
             throw new RuntimeException("Failed to get message", e);
@@ -77,7 +77,7 @@ public class MessageService {
     public List<EmployeeDto> getAllEmployees() {
         try {
             log.info("Getting all employees");
-            List<EmployeeDto> employees = messageMapper.getAllEmployees();
+            List<EmployeeDto> employees = messageDao.getAllEmployees();
             log.info("Found {} employees", employees.size());
             return employees;  // 일단 마지막 메시지 기능은 제거하고 직원 목록만 반환
         } catch (Exception e) {
@@ -90,7 +90,7 @@ public class MessageService {
     public void markAsRead(Integer messageId) {
         try {
             log.info("Marking message as read: {}", messageId);
-            messageMapper.markAsRead(messageId);
+            messageDao.markAsRead(messageId);
         } catch (Exception e) {
             log.error("Error marking message as read: ", e);
             throw new RuntimeException("Failed to mark message as read", e);
@@ -100,7 +100,7 @@ public class MessageService {
     public List<MessageDto> getChatMessages(Integer senderId, Integer receiverId) {
         try {
             log.info("Getting chat messages between {} and {}", senderId, receiverId);
-            return messageMapper.getChatMessages(senderId, receiverId);
+            return messageDao.getChatMessages(senderId, receiverId);
         } catch (Exception e) {
             log.error("Error getting chat messages: ", e);
             throw new RuntimeException("Failed to get chat messages", e);

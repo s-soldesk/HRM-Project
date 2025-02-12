@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<title>채용공고 목록</title>
+<link rel="stylesheet" href="/css/sidebar.css">
+<link rel="stylesheet" href="/css/recruitment.css">
+</head>
+<body>
+	<!-- 사이드바 -->
+	<div th:replace="~{layout/sidebar :: sidebar}"></div>
+
+	<div class="content">
+		<div class="container-flex">
+			<div class="recruitment-header">
+				<div class="header-content">
+					<h1>채용공고 목록</h1>
+					<a th:href="@{/recruitments/add}" class="btn btn-primary">새 공고
+						작성</a>
+				</div>
+
+				<div class="filter-section">
+					<select id="statusFilter">
+						<option value="">전체</option>
+						<option th:each="status : ${T(com.hrm.enums.PostStatus).values()}"
+							th:value="${status}" th:text="${status.status}">상태</option>
+					</select>
+				</div>
+			</div>
+
+			<div class="table-container">
+				<table>
+					<thead>
+						<tr>
+							<th>제목</th>
+							<th>상태</th>
+							<th>시작일</th>
+							<th>마감일</th>
+							<th>작성자</th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr th:each="post : ${posts}">
+							<td><a th:href="@{/recruitments/{id}(id=${post.id})}"
+								th:text="${post.title}">제목</a></td>
+							<td><span th:text="${post.status.status}"
+								class="status-badge" th:classappend="${'status-' + post.status}">
+									상태</span></td>
+							<td th:text="${post.createdAt}">시작일</td>
+							<td th:text="${post.endDate}">마감일</td>
+							<td th:text="${post.createdBy}">작성자</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
+		</div>
+	</div>
+</body>
+</html>

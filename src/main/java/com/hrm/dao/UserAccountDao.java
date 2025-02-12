@@ -18,12 +18,12 @@ public interface UserAccountDao {
 				Password,
 				Role
 			) VALUES(
-				#{EmployeeID},
-				#{Username},
-				#{Password},
-				#{Role}
+				#{employeeId},
+				#{username},
+				#{password},
+				#{role}
 			)
 			""" })
-	@Options(useGeneratedKeys = true, keyProperty = "UserID")
+	@Options(useGeneratedKeys = true, keyProperty = "userId")
 	int addUserAccount(UserAccountDto userAccountDto);
 }

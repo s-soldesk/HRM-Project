@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hrm.mapper.EmployeeMapper">
+    
+	<select id="getEmployeeById" resultType="com.hrm.dto.EmployeeDto">
+	    SELECT 
+	        e.EmployeeID as employeeId,
+	        e.Name as name,
+	        e.DateOfBirth as dateOfBirth,
+	        e.Gender as gender,
+	        e.Position as position,
+	        e.HireDate as hireDate,
+	        e.Status as status,
+	        e.PhoneNumber as phoneNumber,
+	        e.Email as email,
+	        e.ProfileImage as profileImage,
+	        d.DepartmentName as departmentName
+	    FROM employee e
+	    LEFT JOIN department d ON e.DepartmentID = d.DepartmentID
+	    WHERE e.EmployeeID = #{employeeId}
+	</select>
+
+    <select id="getAllEmployees" resultType="com.hrm.dto.EmployeeDto">
+        SELECT 
+            e.EmployeeID as employeeId,
+            e.Name as name,
+            e.Email as email,
+            e.PhoneNumber as phoneNumber,
+            e.Position as position,
+            d.DepartmentName as departmentName
+        FROM Employee e
+        LEFT JOIN Department d ON e.DepartmentID = d.DepartmentID
+        WHERE e.Status = 'Active'
+        ORDER BY e.Name ASC
+    </select>
+
+    <select id="getEmployeeByEmail" resultType="com.hrm.dto.EmployeeDto">
+        SELECT 
+            e.EmployeeID as employeeId,
+            e.Name as name,
+            e.DateOfBirth as dateOfBirth,
+            e.Gender as gender,
+            e.Position as position,
+            e.HireDate as hireDate,
+            e.Status as status,
+            e.PhoneNumber as phoneNumber,
+            e.Email as email,
+            d.DepartmentName as departmentName
+        FROM Employee e
+        LEFT JOIN Department d ON e.DepartmentID = d.DepartmentID
+        WHERE e.Email = #{email}
+    </select>
+
+	<update id="updateProfile" parameterType="com.hrm.dto.EmployeeDto">
+	    UPDATE employee 
+	    SET 
+	        Email = #{email},
+	        PhoneNumber = #{phoneNumber},
+	        ProfileImage = #{profileImage}
+	    WHERE EmployeeID = #{employeeId}
+	</update>
+
+    <update id="updatePassword">
+        UPDATE UserAccounts
+        SET Password = #{newPassword}
+        WHERE EmployeeID = #{employeeId}
+    </update>
+</mapper>

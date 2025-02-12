@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hrm.mapper.MessageMapper">
+   <insert id="sendMessage" parameterType="com.hrm.dto.MessageDto">
+       INSERT INTO Messages (SenderID, ReceiverID, Content, SentTime, IsRead)
+       VALUES (#{senderId}, #{receiverId}, #{content}, #{sentTime}, #{isRead})
+   </insert>
+
+   <select id="getReceivedMessages" resultType="com.hrm.dto.MessageDto">
+       SELECT m.*,
+           s.Name as senderName,
+           r.Name as receiverName
+       FROM Messages m
+       JOIN Employee s ON m.SenderID = s.EmployeeID
+       JOIN Employee r ON m.ReceiverID = r.EmployeeID
+       WHERE m.ReceiverID = #{receiverId}
+       ORDER BY m.SentTime DESC
+   </select>
+
+   <select id="getSentMessages" resultType="com.hrm.dto.MessageDto">
+       SELECT m.*,
+           s.Name as senderName,
+           r.Name as receiverName
+       FROM Messages m
+       JOIN Employee s ON m.SenderID = s.EmployeeID
+       JOIN Employee r ON m.ReceiverID = r.EmployeeID
+       WHERE m.SenderID = #{senderId}
+       ORDER BY m.SentTime DESC
+   </select>
+
+   <update id="markAsRead">
+       UPDATE Messages
+       SET IsRead = true
+       WHERE MessageID = #{messageId}
+   </update>
+
+   <select id="getAllEmployees" resultType="com.hrm.dto.EmployeeDto">
+       SELECT 
+           e.EmployeeID as employeeId,
+           e.Name as name,
+           e.Email as email,
+           e.Position as position,
+           d.DepartmentName as department
+       FROM Employee e
+       LEFT JOIN Department d ON e.DepartmentID = d.DepartmentID
+       WHERE e.Status = 'Active'
+       ORDER BY e.Name ASC
+   </select>
+
+   <select id="getMessage" resultType="com.hrm.dto.MessageDto">
+       SELECT m.*,
+           s.Name as senderName,
+           r.Name as receiverName
+       FROM Messages m
+       JOIN Employee s ON m.SenderID = s.EmployeeID
+       JOIN Employee r ON m.ReceiverID = r.EmployeeID
+       WHERE m.MessageID = #{messageId}
+   </select>
+
+   <select id="getChatMessages" resultType="com.hrm.dto.MessageDto">
+       SELECT m.*,
+           s.Name as senderName,
+           r.Name as receiverName
+       FROM Messages m
+       JOIN Employee s ON m.SenderID = s.EmployeeID
+       JOIN Employee r ON m.ReceiverID = r.EmployeeID
+       WHERE (m.SenderID = #{senderId} AND m.ReceiverID = #{receiverId})
+       OR (m.SenderID = #{receiverId} AND m.ReceiverID = #{senderId})
+       ORDER BY m.SentTime ASC
+   </select>
+
+	<select id="getLastMessageBetweenUsers" resultType="com.hrm.dto.MessageDto">
+	    SELECT m.*, 
+	           s.Name as senderName,
+	           r.Name as receiverName
+	    FROM Messages m
+	    JOIN Employee s ON m.SenderID = s.EmployeeID
+	    JOIN Employee r ON m.ReceiverID = r.EmployeeID
+	    WHERE (m.SenderID = #{user1Id} AND m.ReceiverID = #{user2Id})
+	       OR (m.SenderID = #{user2Id} AND m.ReceiverID = #{user1Id})
+	    ORDER BY m.SentTime DESC
+	    LIMIT 1
+	</select>
+</mapper>

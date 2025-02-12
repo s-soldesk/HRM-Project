@@ -1,6 +1,6 @@
 package com.hrm.service;
 
-import com.hrm.mapper.ScheduleMapper;
+import com.hrm.dao.ScheduleDao;
 import com.hrm.dto.ScheduleDto;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -11,33 +11,33 @@ import java.util.List;
 public class ScheduleService {
 
     @Autowired
-    private ScheduleMapper scheduleMapper;
+    private ScheduleDao scheduleDao;
 
     /**
      * ✅ 모든 직원의 일정 조회
      */
     public List<ScheduleDto> getAllSchedules() {
-        return scheduleMapper.getAllSchedules();
+        return scheduleDao.getAllSchedules();
     }
 
     /**
      * ✅ 일정 추가
      */
     public void createSchedule(ScheduleDto scheduleDto) {
-        scheduleMapper.createSchedule(scheduleDto);
+        scheduleDao.createSchedule(scheduleDto);
     }
 
     /**
      * ✅ 일정 수정
      */
     public void updateSchedule(ScheduleDto scheduleDto) {
-        scheduleMapper.updateSchedule(scheduleDto);
+        scheduleDao.updateSchedule(scheduleDto);
     }
 
     /**
      * ✅ 일정 삭제
      */
     public void deleteSchedule(int scheduleId) {
-        scheduleMapper.deleteSchedule(scheduleId);
+        scheduleDao.deleteSchedule(scheduleId);
     }
 }

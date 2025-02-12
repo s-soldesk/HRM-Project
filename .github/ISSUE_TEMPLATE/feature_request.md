@@ -1,7 +1,7 @@
 ---
 name: "✨ Feature Request"
 about: "새로운 기능을 제안하는 템플릿입니다."
-title: [Feature]
+title: "[Feature]"
 labels: feature
 assignees: ""
 ---

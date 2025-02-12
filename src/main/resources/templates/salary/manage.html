@@ -7,6 +7,56 @@
     <link rel="stylesheet" type="text/css" th:href="@{/css/dashboard.css}">
     <link rel="stylesheet" type="text/css" th:href="@{/css/salary.css}">
     <link rel="stylesheet" href="/css/sidebar.css">
+    <script th:inline="javascript">
+        // 직급 매핑 정보
+        const positionMapping = {
+            '인턴': 'INTERN',
+            '사원': 'STAFF',
+            '주임': 'SENIOR',
+            '대리': 'ASSISTANT_MANAGER',
+            '과장': 'MANAGER',
+            '차장': 'SENIOR_MANAGER',
+            '부장': 'DEPUTY_GENERAL_MANAGER'
+        };
+
+        // 검색 처리 함수
+        function handleSearch(event) {
+            event.preventDefault();
+            const form = document.getElementById('searchForm');
+            const searchType = form.searchType.value;
+            const keyword = form.keyword.value.trim();
+
+            if (searchType === 'position') {
+                const englishPosition = positionMapping[keyword];
+                if (englishPosition) {
+                    form.keyword.value = englishPosition;
+                } else {
+                    alert('올바른 직급명을 입력해주세요.\n(인턴, 사원, 주임, 대리, 과장, 차장, 부장)');
+                    return;
+                }
+            }
+
+            form.submit();
+        }
+
+        // 페이지 로드 시 이벤트 리스너 등록
+        document.addEventListener('DOMContentLoaded', function() {
+            const searchForm = document.getElementById('searchForm');
+            searchForm.addEventListener('submit', handleSearch);
+
+            // 직급 검색 시 placeholder 변경
+            const searchType = document.querySelector('select[name="searchType"]');
+            const searchInput = document.querySelector('input[name="keyword"]');
+            
+            searchType.addEventListener('change', function() {
+                if (this.value === 'position') {
+                    searchInput.placeholder = '직급명을 입력하세요 (예: 과장, 대리)';
+                } else {
+                    searchInput.placeholder = '검색어를 입력하세요';
+                }
+            });
+        });
+    </script>
 </head>
 <body>
     <!-- 사이드바 -->

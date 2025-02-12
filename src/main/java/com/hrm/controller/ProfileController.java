@@ -17,6 +17,7 @@ import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import com.hrm.dao.UserAccountDao;
 import com.hrm.dto.EmployeeDto;
 import com.hrm.service.ProfileService;
 import com.hrm.service.UserAccountService;
@@ -92,8 +93,15 @@ public class ProfileController {
             @RequestParam("newPassword") String newPassword,
             RedirectAttributes redirectAttributes) {
         try {
-            Integer currentUserId = getCurrentUserId();
-            boolean success = userAccountService.changePassword(currentUserId, currentPassword, newPassword);
+            // Integer를 String으로 변환
+            String currentUserId = String.valueOf(getCurrentUserId());
+            
+            // UserAccountService를 통해 비밀번호 변경
+            boolean success = userAccountService.changePassword(
+                currentUserId,
+                currentPassword, 
+                newPassword
+            );
             
             if (success) {
                 redirectAttributes.addFlashAttribute("success", "비밀번호가 성공적으로 변경되었습니다.");

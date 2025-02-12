@@ -105,7 +105,8 @@
                             <td class="border border-gray-300 py-3 px-4" th:text="${record.attendanceType}"></td>
                             <td class="border border-gray-300 py-3 px-4" th:text="${record.remarks}"></td>
                             <td class="border border-gray-300 py-3 px-4">
-                                <a th:href="@{/attendance/update/{id}(id=${record.attendanceId})}" class="text-blue-500 hover:underline">수정</a>
+								<a th:href="@{/attendance/update/{attendanceId}(attendanceId=${record.attendanceId})}" 
+   									class="text-blue-500 hover:underline">수정</a>
                             </td>
                         </tr>
                         <tr th:if="${#lists.isEmpty(records)}">

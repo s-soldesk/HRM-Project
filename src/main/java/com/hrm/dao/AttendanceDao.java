@@ -13,7 +13,7 @@ public interface AttendanceDao {
 
 	// 근태 기록 조회
 	 @Select("""
-	            SELECT a.EmployeeID, e.Name AS employeeName, a.CheckInTime, a.CheckOutTime, a.AttendanceType, a.Remarks, a.Date
+	            SELECT a.AttendanceID, a.EmployeeID, e.Name AS employeeName, a.CheckInTime, a.CheckOutTime, a.AttendanceType, a.Remarks, a.Date
 	            FROM Attendance a
 	            JOIN Employee e ON a.EmployeeID = e.EmployeeID
 	            WHERE (#{employeeId} IS NULL OR a.EmployeeID = #{employeeId})
@@ -22,7 +22,7 @@ public interface AttendanceDao {
 	              AND (#{endDate} IS NULL OR a.Date <= #{endDate})
 	              AND (#{attendanceType} IS NULL OR a.AttendanceType = #{attendanceType})
 	            UNION ALL
-	            SELECT s.EmployeeID, e.Name AS employeeName, NULL AS CheckInTime, NULL AS CheckOutTime, 'Leave' AS AttendanceType, s.Reason AS Remarks, s.StartDate AS Date
+	            SELECT NULL AS AttendanceID, s.EmployeeID, e.Name AS employeeName, NULL AS CheckInTime, NULL AS CheckOutTime, 'Leave' AS AttendanceType, s.Reason AS Remarks, s.StartDate AS Date
 	            FROM Schedule s
 	            JOIN Employee e ON s.EmployeeID = e.EmployeeID
 	            WHERE (#{employeeId} IS NULL OR s.EmployeeID = #{employeeId})

@@ -20,9 +20,9 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
+import com.hrm.dao.UserAccountDao;
 import com.hrm.dto.NoticeDto;
 import com.hrm.dto.UserAccountDto;
-import com.hrm.mapper.UserAccountsMapper;
 import com.hrm.service.NoticeService;
 
 import jakarta.servlet.http.HttpSession;
@@ -34,7 +34,7 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public class NoticeController {
    private final NoticeService noticeService;
-   private final UserAccountsMapper userAccountsMapper;
+   private final UserAccountDao userAccountsMapper;
 
    // 현재 로그인한 사용자의 ID를 가져오는 메소드
    private String getCurrentUserId() {

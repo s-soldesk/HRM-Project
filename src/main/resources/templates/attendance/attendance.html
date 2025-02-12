@@ -6,27 +6,43 @@
     <link rel="stylesheet" href="/css/dashboard.css">
     <link rel="stylesheet" href="/css/sidebar.css">
     <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-    function openModal(type) {
-        document.getElementById('modalTitle').innerText = type === 'checkIn' ? '출근 등록' : '퇴근 등록';
-        document.getElementById('modalForm').action = type === 'checkIn' ? '/attendance/commute/check_in' : '/attendance/commute/check_out';
-        document.getElementById('modalSubmitButton').innerText = type === 'checkIn' ? '출근하기' : '퇴근하기';
-        document.getElementById('modal').classList.remove('hidden');
-    }
-
-    function closeModal() {
-        document.getElementById('modal').classList.add('hidden');
-    }
     
-    window.onload = function() {
-        const messageElement = document.getElementById('message');
-        if (messageElement) {
-            setTimeout(() => {
-                messageElement.classList.add('hidden');
-            }, 5000);
-        }
-    }
-    </script>
+    <script>
+	function openModal(type) {
+    	document.getElementById('modalTitle').innerText = type === 'checkIn' ? '출근 등록' : '퇴근 등록';
+    	document.getElementById('modalForm').action = type === 'checkIn' ? '/attendance/commute/check_in' : '/attendance/commute/check_out';
+    	document.getElementById('modalSubmitButton').innerText = type === 'checkIn' ? '출근하기' : '퇴근하기';
+
+    	let modal = document.getElementById('modal');
+    	modal.classList.remove('hidden'); 
+    	modal.style.display = 'flex'; 
+	}
+
+	function closeModal() {
+    	let modal = document.getElementById('modal');
+    	modal.classList.add('hidden'); 
+    	modal.style.display = 'none';
+	}
+	</script>
+
+	<!-- 모달 HTML -->
+	<div id="modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    	<div class="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+        	<h2 id="modalTitle" class="text-xl font-bold mb-4"></h2>
+        	<form id="modalForm" method="post" class="space-y-4">
+            	<div>
+                	<label for="employeeId" class="block font-medium">사원 ID</label>
+                	<input type="number" name="employeeId" id="employeeId" class="border rounded-lg px-4 py-2 w-full" required>
+            	</div>
+            	<div class="flex justify-end space-x-4 mt-6">
+                	<button type="button" onclick="closeModal()" class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600">취소</button>
+                	<button id="modalSubmitButton" type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"></button>
+            	</div>
+        	</form>
+    	</div>
+	</div>
+
+
 </head>
 <body class="bg-gray-100">
 

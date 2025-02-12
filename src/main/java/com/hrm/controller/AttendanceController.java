@@ -27,7 +27,7 @@ public class AttendanceController {
     // 근태 관리 메인 페이지
     @GetMapping
     public String showAttendanceMainPage() {
-        return "attendance";
+        return "attendance/attendance";
     }
     
     
@@ -50,7 +50,7 @@ public class AttendanceController {
         // 근태 및 휴가 기록 조회
         List<AttendanceDto> records = attendanceService.searchAttendanceRecords(employeeId, name, startDate, endDate, attendanceType);
         model.addAttribute("records", records);
-        return "attendance";
+        return "attendance/attendance";
     }
     
     // 근태 기록 수정 페이지
@@ -61,7 +61,7 @@ public class AttendanceController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "근태 기록을 찾지 못했습니다");
         }
         model.addAttribute("attendance", attendance);
-        return "update";
+        return "attendance/update";
     }
 
     // 근태 기록 수정 처리

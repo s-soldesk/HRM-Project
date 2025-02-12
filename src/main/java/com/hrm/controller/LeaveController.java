@@ -21,7 +21,7 @@ public class LeaveController {
     @GetMapping("/add")
     public String showAddLeavePage(Model model) {
         model.addAttribute("scheduleDto", new ScheduleDto());
-        return "leave_add";  // 휴가 신청 페이지
+        return "attendance/leave_add";  // 휴가 신청 페이지
     }
 
     // 휴가 신청 처리
@@ -37,7 +37,7 @@ public class LeaveController {
     public String showLeaveListPage(Model model) {
         List<ScheduleDto> schedules = leaveService.getAllLeaves();
         model.addAttribute("leaves", schedules);
-        return "leave_list";  // 휴가 신청 목록 페이지
+        return "/attendance/leave_list";  // 휴가 신청 목록 페이지
     }
 
     // 특정 사원의 휴가 일정 조회

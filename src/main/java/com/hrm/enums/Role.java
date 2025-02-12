@@ -1,7 +1,7 @@
 package com.hrm.enums;
 
 public enum Role {
-    Admin, Employee, HR;
+    ADMIN, EMPLOYEE, HR;
 
     public String getAuthority() {
         return "ROLE_" + this.name();

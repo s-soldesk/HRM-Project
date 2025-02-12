@@ -124,7 +124,7 @@ export function updateDetailView(employee) {
 	document.getElementById('empDob').textContent = formatDate(employee.dateOfBirth) ?? '';
 	document.getElementById('empGender').textContent = formatGender(employee.gender) ?? '';
 	document.getElementById('empDepartment').textContent = employee.department?.departmentname ?? '(부서정보없음)';
-	document.getElementById('empPosition').textContent = employee.position ?? '';
+	document.getElementById('empPosition').textContent = employee.positionName ?? '';
 	document.getElementById('empHireDate').textContent = formatDate(employee.hiredate) ?? '';
 	document.getElementById('empStatus').textContent = formatStatus(employee.status) ?? '';
 	document.getElementById('empPhoneNumber').textContent = employee.phonenumber ?? '';

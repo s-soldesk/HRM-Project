@@ -61,8 +61,9 @@ public class AttendanceController {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "근태 기록을 찾지 못했습니다");
         }
         model.addAttribute("attendance", attendance);
-        return "attendance/update";
+        return "attendance/update";  
     }
+
 
     // 근태 기록 수정 처리
     @PostMapping("/update")

@@ -44,8 +44,8 @@ public class EmployeeService {
 	}
 
 	/*
-	 * 사원 추가. 
-	 * Employee, UserAccounts 두개의 테이블에 INSERT 해야하므로 트랜잭션 처리!
+	 * 사원 추가.
+	 *  Employee, UserAccounts 두개의 테이블에 INSERT 해야하므로 트랜잭션 처리!
 	 */
 	@Transactional
 	public EmployeeDto addEmployee(EmployeeDto employeeDto) {
@@ -55,17 +55,17 @@ public class EmployeeService {
 		if (result > 0) {
 			// UserAccount에 추가하기 위한 UserAccountsDto 생성하고
 			UserAccountDto userAccountDto = new UserAccountDto();
-			userAccountDto.setEmployeeId(employeeDto.getEmployeeId());
+			userAccountDto.setEmployeeId(employeeDto.getEmail());
 			userAccountDto.setUsername(employeeDto.getName());
 			userAccountDto.setPassword(passwordEncoder.encode("1234")); // PasswordEncoder를 이용한 비밀번호 암호화
 
 			// 인사부원은 "HR"권한 부여하고
-			if (employeeDto.getDepartment().getDepartmentname().equals("인사부")) {
+			if (employeeDto.getDepartmentId() != null && employeeDto.getDepartmentId() == 1) { // 인사부의 부서아이디는 1
 				userAccountDto.setRole(Role.HR);
 			} else {
-				userAccountDto.setRole(Role.Employee);
+				userAccountDto.setRole(Role.EMPLOYEE);
 			}
-			
+
 			// UserAccount 테이블에 사원 로그인정보 추가
 			userAccountDao.addUserAccount(userAccountDto);
 

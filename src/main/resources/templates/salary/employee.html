@@ -13,9 +13,17 @@
 
 	<div class="content">
 		<div class="emp-salary-container">
+			<h2>급여 조회</h2>
+
 			<!-- 사원 정보 -->
 			<div class="employee-info">
 				<table>
+					<colgroup>
+						<col width="15%">
+						<col width="35%">
+						<col width="15%">
+						<col width="35%">
+					</colgroup>
 					<tr>
 						<th>사원번호</th>
 						<td th:text="${employee.employeeId}"></td>
@@ -31,16 +39,29 @@
 				</table>
 			</div>
 
-			<!-- 급여 목록 -->
+			<!-- 급여 목록 테이블 -->
 			<div class="salary-list">
 				<table>
+					<colgroup>
+						<col width="15%">
+						<!-- 귀속월 -->
+						<col width="20%">
+						<!-- 총급여 -->
+						<col width="20%">
+						<!-- 공제총액 -->
+						<col width="25%">
+						<!-- 실수령액 -->
+						<col width="10%">
+						<!-- 확인 -->
+						<col width="10%">
+						<!-- 명세서 -->
+					</colgroup>
 					<thead>
 						<tr>
 							<th>귀속월</th>
 							<th>총급여</th>
 							<th>공제총액</th>
 							<th>실수령액</th>
-							<th>확인</th>
 							<th>명세서</th>
 						</tr>
 					</thead>
@@ -48,16 +69,16 @@
 						<tr th:if="${not #lists.isEmpty(salaries)}"
 							th:each="salary : ${salaries}">
 							<td th:text="${#temporals.format(salary.paymentDate, 'yyyy/MM')}"></td>
-							<td
+							<td class="text-right"
 								th:text="${#numbers.formatInteger(salary.totalSalary, 0, 'COMMA')} + '원'"></td>
-							<td
+							<td class="text-right"
 								th:text="${#numbers.formatInteger(salary.deductionTotal, 0, 'COMMA')} + '원'"></td>
-							<td
+							<td class="text-right"
 								th:text="${#numbers.formatInteger(salary.netPay, 0, 'COMMA')} + '원'"></td>
-							<td>✓</td>
-							<td>
+							<td class="text-center">
 								<button class="arrow-btn"
-									th:onclick="'location.href=\'/salary/detail/' + ${salary.salaryId} + '\''">→</button>
+									th:onclick="'location.href=\'/salary/detail/' + ${salary.salaryId} + '\''">
+									→</button>
 							</td>
 						</tr>
 						<tr th:if="${#lists.isEmpty(salaries)}">

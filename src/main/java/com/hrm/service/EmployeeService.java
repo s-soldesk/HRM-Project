@@ -2,11 +2,16 @@ package com.hrm.service;
 
 import java.util.List;
 
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import com.hrm.dao.EmployeeDao;
+import com.hrm.dao.UserAccountDao;
 import com.hrm.dto.DepartmentDto;
 import com.hrm.dto.EmployeeDto;
+import com.hrm.dto.UserAccountDto;
+import com.hrm.enums.Role;
 
 import lombok.RequiredArgsConstructor;
 
@@ -15,6 +20,8 @@ import lombok.RequiredArgsConstructor;
 public class EmployeeService {
 
 	private final EmployeeDao employeeDao;
+	private final UserAccountDao userAccountDao;
+	private final PasswordEncoder passwordEncoder;
 
 	// 사원 리스트 (사원번호, 사원이름, 부서이름)
 	public List<EmployeeDto> employeesList(int offset, int page) {
@@ -36,12 +43,32 @@ public class EmployeeService {
 		return employeeDao.departmentList();
 	}
 
-	// 사원 추가
+	/*
+	 * 사원 추가. 
+	 * Employee, UserAccounts 두개의 테이블에 INSERT 해야하므로 트랜잭션 처리!
+	 */
+	@Transactional
 	public EmployeeDto addEmployee(EmployeeDto employeeDto) {
 		// 사원을 추가하고
 		int result = employeeDao.addEmployee(employeeDto);
 
 		if (result > 0) {
+			// UserAccount에 추가하기 위한 UserAccountsDto 생성하고
+			UserAccountDto userAccountDto = new UserAccountDto();
+			userAccountDto.setEmployeeId(employeeDto.getEmployeeId());
+			userAccountDto.setUsername(employeeDto.getName());
+			userAccountDto.setPassword(passwordEncoder.encode("1234")); // PasswordEncoder를 이용한 비밀번호 암호화
+
+			// 인사부원은 "HR"권한 부여하고
+			if (employeeDto.getDepartment().getDepartmentname().equals("인사부")) {
+				userAccountDto.setRole(Role.HR);
+			} else {
+				userAccountDto.setRole(Role.Employee);
+			}
+			
+			// UserAccount 테이블에 사원 로그인정보 추가
+			userAccountDao.addUserAccount(userAccountDto);
+
 			// 추가된 사원의 정보를 반환
 			return employeeDao.employeesDetail(employeeDto.getEmployeeId());
 		}

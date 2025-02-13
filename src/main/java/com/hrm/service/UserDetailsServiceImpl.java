@@ -30,7 +30,7 @@ public class UserDetailsServiceImpl implements UserDetailsService {
 
         // Spring Security의 User 객체를 생성하여 반환
         return new User(
-            String.valueOf(user.getEmployeeId()),  // 사용자 ID
+           user.getEmployeeId(),  // 사용자 ID
             user.getPassword(),                    // 비밀번호
             Collections.singletonList(new SimpleGrantedAuthority(user.getRole().getAuthority())) // 권한 설정
         );

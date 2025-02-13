@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="ko" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>근태 관리</title>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="/css/dashboard.css">
+    <link rel="stylesheet" href="/css/sidebar.css">
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <script>
+	function openModal(type) {
+    	document.getElementById('modalTitle').innerText = type === 'checkIn' ? '출근 등록' : '퇴근 등록';
+    	document.getElementById('modalForm').action = type === 'checkIn' ? '/attendance/commute/check_in' : '/attendance/commute/check_out';
+    	document.getElementById('modalSubmitButton').innerText = type === 'checkIn' ? '출근하기' : '퇴근하기';
+
+    	let modal = document.getElementById('modal');
+    	modal.classList.remove('hidden'); 
+    	modal.style.display = 'flex'; 
+	}
+
+	function closeModal() {
+    	let modal = document.getElementById('modal');
+    	modal.classList.add('hidden'); 
+    	modal.style.display = 'none';
+	}
+	</script>
+
+	<!-- 모달 HTML -->
+	<div id="modal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    	<div class="bg-white p-6 rounded-lg shadow-lg max-w-md w-full">
+        	<h2 id="modalTitle" class="text-xl font-bold mb-4"></h2>
+        	<form id="modalForm" method="post" class="space-y-4">
+            	<div>
+                	<label for="employeeId" class="block font-medium">사원 ID</label>
+                	<input type="number" name="employeeId" id="employeeId" class="border rounded-lg px-4 py-2 w-full" required>
+            	</div>
+            	<div class="flex justify-end space-x-4 mt-6">
+                	<button type="button" onclick="closeModal()" class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600">취소</button>
+                	<button id="modalSubmitButton" type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600"></button>
+            	</div>
+        	</form>
+    	</div>
+	</div>
+
+
+</head>
+<body class="bg-gray-100">
+
+	 <div class="flex">
+        <!-- 사이드바 -->
+		<div th:replace="~{layout/sidebar :: sidebar}"></div>
+        
+        <div class="ml-64 w-full p-8">
+            <!-- 메시지 표시 -->
+            <p id="message" th:if="${message}" th:text="${message}" class="text-green-500 font-medium mb-6 text-center"></p>
+            
+            <!-- 필터 버튼 -->
+            <div class="flex justify-center space-x-4 mb-6">
+                <button onclick="openModal('checkIn')" class="w-40 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-lg">출근</button>
+                <button onclick="openModal('checkOut')" class="w-40 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-lg">퇴근</button>
+                <a href="/attendance/leave/add" class="w-40 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 text-lg flex justify-center items-center">휴가 신청</a>
+                <a href="/attendance/leave/list" class="w-40 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 text-lg flex justify-center items-center">휴가 신청 목록</a>                      
+            </div>
+            
+            <!-- 검색 필터 -->
+            <form method="get" action="/attendance/records" class="grid grid-cols-6 gap-4 mb-6">
+                <input type="text" name="employeeId" placeholder="사원 ID" class="border rounded-lg px-4 py-2 w-full">
+                <input type="text" name="name" placeholder="사원 이름" class="border rounded-lg px-4 py-2 w-full">
+                <input type="date" name="startDate" class="border rounded-lg px-4 py-2 w-full">
+                <input type="date" name="endDate" class="border rounded-lg px-4 py-2 w-full">
+                <select name="attendanceType" class="border rounded-lg px-4 py-2 w-full">
+                    <option value="">전체</option>
+                    <option value="Present">출근</option>
+                    <option value="Late">지각</option>
+                    <option value="Overtime">야근</option>
+                    <option value="EarlyLeave">조퇴</option>
+                    <option value="Leave">휴가</option>
+                    <option value="Absent">결근</option>
+                </select>
+                <button type="submit" class="w-full py-2 bg-blue-500 text-white rounded-lg text-lg">검색</button>
+            </form>
+
+            <!-- 근태 기록 테이블 -->
+            <div class="overflow-x-auto">
+                <table class="w-full border-collapse border border-gray-200 text-center shadow-lg">
+                    <thead>
+                        <tr class="bg-blue-500 text-white text-lg">
+                            <th class="border border-gray-300 py-3 px-4">사원 ID</th>
+                            <th class="border border-gray-300 py-3 px-4">사원 이름</th>
+                            <th class="border border-gray-300 py-3 px-4">날짜</th>
+                            <th class="border border-gray-300 py-3 px-4">출근 시간</th>
+                            <th class="border border-gray-300 py-3 px-4">퇴근 시간</th>
+                            <th class="border border-gray-300 py-3 px-4">근태 유형</th>
+                            <th class="border border-gray-300 py-3 px-4">비고</th>
+                            <th class="border border-gray-300 py-3 px-4">수정</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="record : ${records}" class="text-gray-700 text-lg">
+                            <td class="border border-gray-300 py-3 px-4" th:text="${record.employeeId}"></td>
+                            <td class="border border-gray-300 py-3 px-4" th:text="${record.employeeName}"></td>
+                            <td class="border border-gray-300 py-3 px-4" th:text="${record.date}"></td>
+                            <td class="border border-gray-300 py-3 px-4" th:text="${record.checkInTime}"></td>
+                            <td class="border border-gray-300 py-3 px-4" th:text="${record.checkOutTime}"></td>
+                            <td class="border border-gray-300 py-3 px-4" th:text="${record.attendanceType}"></td>
+                            <td class="border border-gray-300 py-3 px-4" th:text="${record.remarks}"></td>
+                            <td class="border border-gray-300 py-3 px-4">
+								<a th:href="@{/attendance/update/{attendanceId}(attendanceId=${record.attendanceId})}" 
+   									class="text-blue-500 hover:underline">수정</a>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(records)}">
+                            <td colspan="8" class="border border-gray-300 py-3 px-4 text-center text-lg text-gray-600">조회된 근태 기록이 없습니다.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- PDF 다운로드 버튼 -->
+            <div class="mt-6 text-center">
+                <form method="get" action="/attendance/records/pdf">
+                    <button type="submit" class="w-48 py-3 bg-green-500 text-white rounded-lg text-lg hover:bg-green-600">PDF 다운로드</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

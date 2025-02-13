@@ -1,0 +1,35 @@
+/* 전체 레이아웃 설정 */
+.container {
+    display: flex;
+    height: 100vh;
+    margin: 0; /* 기본 마진 제거 */
+    padding: 0; /* 기본 패딩 제거 */
+    background-color: #f4f4f4;
+}
+
+/* 본문 컨텐츠 */
+.content {
+    margin-left: 250px !important;
+    padding: 20px;
+    width: calc(100% - 250px);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+/* FullCalendar 스타일 */
+#calendar {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    width: 90%; /* 캘린더 크기 조정 */
+    max-width: 1000px;
+}
+
+/* 기본 마진 제거 */
+body, html {
+    margin: 0;
+    padding: 0;
+    overflow-x: hidden; /* 가로 스크롤 방지 */
+}

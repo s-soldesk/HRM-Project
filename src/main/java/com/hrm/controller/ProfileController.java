@@ -20,7 +20,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import com.hrm.dao.UserAccountDao;
 import com.hrm.dto.EmployeeDto;
 import com.hrm.service.ProfileService;
-import com.hrm.service.UserAccountService;
+import com.hrm.service.PasswordService;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -31,7 +31,7 @@ import lombok.extern.slf4j.Slf4j;
 public class ProfileController {
     
     private final ProfileService profileService;
-    private final UserAccountService userAccountService;
+    private final PasswordService passwordService;
     
     @Value("${file.upload.dir:uploads/profiles}")
     private String uploadDir;
@@ -97,7 +97,7 @@ public class ProfileController {
             String currentUserId = String.valueOf(getCurrentUserId());
             
             // UserAccountService를 통해 비밀번호 변경
-            boolean success = userAccountService.changePassword(
+            boolean success = passwordService.changePassword(
                 currentUserId,
                 currentPassword, 
                 newPassword

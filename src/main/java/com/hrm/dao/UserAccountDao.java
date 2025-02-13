@@ -10,4 +10,8 @@ import com.hrm.dto.UserAccountDto;
 public interface UserAccountDao {
 
 	UserAccountDto findByEmployeeId(@Param("employeeId") String employeeId);
+	
+	// 비밀번호 변경시 employeeId 와 패스워드 확인
+    int updatePassword(@Param("employeeId") String employeeId, 
+            @Param("newPassword") String newPassword);
 }

@@ -2,6 +2,7 @@ package com.hrm.service;
 
 import com.hrm.dao.SalaryDao;
 import com.hrm.dto.AttendanceDto;
+import com.hrm.dto.EmployeeDto;
 import com.hrm.dto.SalaryDto;
 import com.hrm.utils.AllowancePolicy;
 
@@ -79,6 +80,16 @@ public class SalaryServiceImpl implements SalaryService {
 			salaryDao.addSalary(salary);
 		}
 	}
+	
+	@Override
+	public Integer getEmployeeIdByEmail(String email) {
+	    return salaryMapper.findEmployeeIdByEmail(email);
+	}
+
+	@Override
+	public List<SalaryDto> getSalariesByEmployeeId(int employeeId) {
+	    return salaryMapper.getSalariesByEmployeeId(employeeId);
+	}
 
 	@Override
 	public List<SalaryDto> getSalariesByEmployeeId(Integer employeeId) {
@@ -142,7 +153,7 @@ public class SalaryServiceImpl implements SalaryService {
 
 		return salary;
 	}
-	
+
 	// 이름 or 직급 or 부서로 사원 검색하기
 	@Override
 	public List<SalaryDto> searchSalaries(String searchType, String keyword) {

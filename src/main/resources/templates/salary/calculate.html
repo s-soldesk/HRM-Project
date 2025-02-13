@@ -69,7 +69,7 @@
                                 <td th:text="${attendance.employeeId}"></td>
                                 <td th:text="${attendance.employeeName}"></td>
                                 <td th:text="${attendance.departmentName}"></td>
-                                <td th:text="${attendance.position}"></td>
+                                <td th:text="${attendance.position?.getPosition() ?: attendance.position}"></td>
                                 <td th:text="${attendance.workingDays} + days"></td>
                                 <td th:text="${attendance.totalWorkedHours} + h"></td>
                                 <td th:text="${attendance.totalOvertimeHours} + h"></td>

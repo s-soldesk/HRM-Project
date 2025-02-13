@@ -30,13 +30,29 @@ public class SalaryDto {
 
 	// 공제총액 계산 메서드
 	public BigDecimal getDeductionTotal() {
-		return incomeTax.add(localIncomeTax).add(nationalPension).add(healthInsurance).add(employmentInsurance)
-				.add(longTermCareInsurance);
+		BigDecimal total = BigDecimal.ZERO;
+
+		// null 체크를 하면서 각 값을 더함
+		if (incomeTax != null)
+			total = total.add(incomeTax);
+		if (localIncomeTax != null)
+			total = total.add(localIncomeTax);
+		if (nationalPension != null)
+			total = total.add(nationalPension);
+		if (healthInsurance != null)
+			total = total.add(healthInsurance);
+		if (employmentInsurance != null)
+			total = total.add(employmentInsurance);
+		if (longTermCareInsurance != null)
+			total = total.add(longTermCareInsurance);
+
+		return total;
 	}
 
-	// 실지급액 계산 메서드
+	// 실지급액 계산 메서드도 안전하게 수정
 	public BigDecimal getNetPay() {
-		return totalSalary.subtract(getDeductionTotal());
+		BigDecimal deductions = getDeductionTotal();
+		return totalSalary != null ? totalSalary.subtract(deductions) : BigDecimal.ZERO;
 	}
 
 	private EmployeeDto employee; // 사원 정보 매핑

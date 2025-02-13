@@ -32,6 +32,7 @@
 			<result property="departmentId" column="DepartmentID" />
 			<result property="position" column="Position" />
 			<result property="departmentName" column="DepartmentName" />
+			<result property="email" column="Email" />
 		</association>
 	</resultMap>
 
@@ -53,22 +54,25 @@
 		s.EmployeeID ASC
 	</select>
 
+	<select id="findEmployeeIdByEmail" parameterType="string"
+		resultType="int">
+		SELECT EmployeeID FROM Employee WHERE Email = #{email}
+	</select>
+	
 	<!-- 특정 직원의 모든 급여 기록 조회 -->
 	<select id="getSalariesByEmployeeId" parameterType="int"
 		resultMap="SalaryResultMap">
-		SELECT
-		s.*,
-		e.EmployeeID AS employeeId,
-		e.Name AS employeeName,
-		e.DepartmentID AS departmentId,
-		e.Position AS position,
-		d.DepartmentName AS departmentName
+		SELECT s.*, e.EmployeeID, e.Name AS employeeName, e.Position,
+		d.DepartmentName
 		FROM Salary s
 		JOIN Employee e ON
-		s.EmployeeID = e.EmployeeID
-		JOIN Department d ON e.DepartmentID =
+		s.EmployeeID =
+		e.EmployeeID
+		JOIN Department d
+		ON e.DepartmentID =
 		d.DepartmentID
-		WHERE s.EmployeeID = #{employeeId}
+		WHERE
+		s.EmployeeID = #{employeeId}
 		ORDER BY s.PaymentDate
 		DESC
 	</select>
@@ -121,7 +125,7 @@
 		#{longTermCareInsurance},
 		#{mealAllowance},
 		#{positionAllowance},
-		'CONFIRMED',
+		#{status},
 		#{paymentDate}
 		)
 	</insert>
@@ -205,9 +209,12 @@
 		e.Position AS position,
 		d.DepartmentName AS departmentName
 		FROM Salary s
-		JOIN Employee e ON s.EmployeeID = e.EmployeeID
-		JOIN Department d ON e.DepartmentID = d.DepartmentID
-		WHERE d.DepartmentName LIKE CONCAT('%', #{department}, '%')
+		JOIN Employee e ON
+		s.EmployeeID = e.EmployeeID
+		JOIN Department d ON e.DepartmentID =
+		d.DepartmentID
+		WHERE d.DepartmentName LIKE CONCAT('%', #{department},
+		'%')
 		ORDER BY s.PaymentDate DESC, s.EmployeeID ASC
 	</select>
 
@@ -263,11 +270,10 @@
 		e ON s.EmployeeID = e.EmployeeID
 		JOIN Department d ON e.DepartmentID =
 		d.DepartmentID
-		WHERE s.PaymentDate BETWEEN CONCAT(#{yearMonth}, '-01')
-		AND
-		LAST_DAY(CONCAT(#{yearMonth}, '-01'))
-		AND s.EmployeeID =
-		#{employeeId}
-
+		WHERE DATE_FORMAT(s.PaymentDate, '%Y-%m') = #{yearMonth}
+		AND s.EmployeeID = #{employeeId}
+		ORDER BY s.PaymentDate DESC
+		LIMIT 1
 	</select>
+
 </mapper>

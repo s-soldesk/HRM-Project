@@ -111,7 +111,7 @@ public class AttendanceService {
                                          .setFont(font)
                                          .setPadding(5));
 
-                table.addCell(new Cell().add(new Paragraph(record.getAttendanceType() != null ? record.getAttendanceType() : "N/A"))
+                table.addCell(new Cell().add(new Paragraph(record.getStatus() != null ? record.getStatus() : "N/A"))
                                          .setFont(font)
                                          .setPadding(5)
                                          .setTextAlignment(TextAlignment.CENTER));

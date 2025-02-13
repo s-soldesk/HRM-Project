@@ -10,7 +10,7 @@ import com.hrm.dto.UserAccountDto;
 @Mapper
 public interface UserAccountDao {
 	UserAccountDto findByEmployeeId(@Param("employeeId") String employeeId);
-
+    
 	@Insert({ """
 			INSERT INTO UserAccounts(
 				EmployeeID,

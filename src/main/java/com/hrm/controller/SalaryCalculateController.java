@@ -1,6 +1,7 @@
 package com.hrm.controller;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.YearMonth;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
@@ -20,124 +21,168 @@ import com.hrm.service.SalaryService;
 
 @Controller
 @RequestMapping("/salary")
-@PreAuthorize("hasAnyRole('HR', 'ADMIN')")  // 클래스 레벨에서 권한 체크
+@PreAuthorize("hasAnyRole('HR', 'ADMIN')") // 클래스 레벨에서 권한 체크
 public class SalaryCalculateController {
 
-    @Autowired
-    private SalaryService salaryService;
+	@Autowired
+	private SalaryService salaryService;
 
-    @Autowired
-    private AttendanceBatisService attendanceService;
+	@Autowired
+	private AttendanceBatisService attendanceService;
 
-    // 급여 계산 페이지
-    @GetMapping("/calculate")
-    public String calculatePage(Model model) {
-        List<String> months = getRecentMonths(12);
-        model.addAttribute("months", months);
-        model.addAttribute("canCloseAttendance", false);
-        model.addAttribute("attendanceClosed", false);
-        model.addAttribute("salaryCalculated", false);
-        return "salary/calculate";
-    }
+	// 급여 계산 페이지
+	@GetMapping("/calculate")
+	public String calculatePage(Model model) {
+		List<String> months = getRecentMonths(12);
+		model.addAttribute("months", months);
+		model.addAttribute("canCloseAttendance", false);
+		model.addAttribute("attendanceClosed", false);
+		model.addAttribute("salaryCalculated", false);
+		return "salary/calculate";
+	}
 
-    // 특정 월 급여 계산 현황 조회
-    @GetMapping("/calculate/status/{yearMonth}")
-    public String getCalculationStatus(@PathVariable("yearMonth") String yearMonth, Model model) {
-        List<AttendanceDto> monthlySummary = attendanceService.getMonthlyAttendanceSummary(yearMonth);
+	// 특정 월 급여 계산 현황 조회
+	@GetMapping("/calculate/status/{yearMonth}")
+	public String getCalculationStatus(@PathVariable("yearMonth") String yearMonth, Model model) {
+		List<AttendanceDto> monthlySummary = attendanceService.getMonthlyAttendanceSummary(yearMonth);
 
-        for (AttendanceDto attendance : monthlySummary) {
-            SalaryDto salary = salaryService.getEmployeeSalaryByMonth(attendance.getEmployeeId(), yearMonth);
-            attendance.setSalaryStatus(salary != null ? salary.getStatus() : "NOT_CALCULATED");
-        }
+		for (AttendanceDto attendance : monthlySummary) {
+			SalaryDto salary = salaryService.getEmployeeSalaryByMonth(attendance.getEmployeeId(), yearMonth);
+			attendance.setSalaryStatus(salary != null ? salary.getStatus() : "NOT_CALCULATED");
+		}
 
-        model.addAttribute("attendances", monthlySummary);
-        model.addAttribute("selectedMonth", yearMonth);
-        model.addAttribute("months", getRecentMonths(12));
-        return "salary/calculate";
-    }
+		model.addAttribute("attendances", monthlySummary);
+		model.addAttribute("selectedMonth", yearMonth);
+		model.addAttribute("months", getRecentMonths(12));
+		return "salary/calculate";
+	}
 
-    // 사원별 월간 상세 페이지
-    @GetMapping("/calculate/detail/{employeeId}/{yearMonth}")
-    public String getEmployeeMonthlyDetail(
-            @PathVariable("employeeId") Integer employeeId,
-            @PathVariable("yearMonth") String yearMonth, 
-            Model model) {
-        
-        List<AttendanceDto> details = attendanceService.getEmployeeMonthlyAttendance(employeeId, yearMonth);
-        if (details.isEmpty()) {
-            return "redirect:/salary/calculate?error=noAttendanceData";
-        }
+	// 사원별 월간 상세 페이지
+	@GetMapping("/calculate/detail/{employeeId}/{yearMonth}")
+	public String getEmployeeMonthlyDetail(@PathVariable("employeeId") Integer employeeId,
+			@PathVariable("yearMonth") String yearMonth, Model model) {
 
-        SalaryDto salaryInfo = salaryService.getEmployeeSalaryByMonth(employeeId, yearMonth);
-        if (salaryInfo == null) {
-            salaryInfo = createEmptySalaryDto(employeeId);
-        }
+		List<AttendanceDto> details = attendanceService.getEmployeeMonthlyAttendance(employeeId, yearMonth);
+		if (details.isEmpty()) {
+			return "redirect:/salary/calculate?error=noAttendanceData";
+		}
 
-        double totalWorkHours = details.stream().mapToDouble(AttendanceDto::getHoursWorked).sum();
-        double totalOvertimeHours = details.stream().mapToDouble(AttendanceDto::getOvertimeHours).sum();
+		SalaryDto salaryInfo = salaryService.getEmployeeSalaryByMonth(employeeId, yearMonth);
+		if (salaryInfo == null) {
+			salaryInfo = createEmptySalaryDto(employeeId);
+		}
 
-        model.addAttribute("attendances", details);
-        model.addAttribute("salaryInfo", salaryInfo);
-        model.addAttribute("totalWorkHours", totalWorkHours);
-        model.addAttribute("totalOvertimeHours", totalOvertimeHours);
-        model.addAttribute("yearMonth", yearMonth);
-        model.addAttribute("employeeId", employeeId);
-        return "salary/calculateDetail";
-    }
+		double totalWorkHours = details.stream().mapToDouble(AttendanceDto::getHoursWorked).sum();
+		double totalOvertimeHours = details.stream().mapToDouble(AttendanceDto::getOvertimeHours).sum();
 
-    // 근태 확정
-    @PostMapping("/calculate/confirm/{employeeId}/{yearMonth}")
-    @ResponseBody
-    public ResponseEntity<?> confirmAttendance(
-            @PathVariable("employeeId") Integer employeeId,
-            @PathVariable("yearMonth") String yearMonth) {
-        try {
-            salaryService.confirmSalaries(employeeId.toString(), yearMonth);
-            return ResponseEntity.ok().body("근태가 확정되었습니다.");
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
+		model.addAttribute("attendances", details);
+		model.addAttribute("salaryInfo", salaryInfo);
+		model.addAttribute("totalWorkHours", totalWorkHours);
+		model.addAttribute("totalOvertimeHours", totalOvertimeHours);
+		model.addAttribute("yearMonth", yearMonth);
+		model.addAttribute("employeeId", employeeId);
+		return "salary/calculateDetail";
+	}
 
-    // 급여 계산
-    @PostMapping("/calculate/salary/{employeeId}/{yearMonth}")
-    @ResponseBody
-    public ResponseEntity<?> processSalary(
-            @PathVariable("employeeId") Integer employeeId,
-            @PathVariable("yearMonth") String yearMonth) {
-        try {
-            SalaryDto salary = salaryService.getEmployeeSalaryByMonth(employeeId, yearMonth);
-            if (salary == null || !"CONFIRMED".equals(salary.getStatus())) {
-                return ResponseEntity.badRequest().body("급여가 먼저 확정되어야 합니다.");
-            }
+	// 근태 확정
+	@PostMapping("/calculate/confirm/{employeeId}/{yearMonth}")
+	@ResponseBody
+	public ResponseEntity<?> confirmAttendance(@PathVariable("employeeId") Integer employeeId,
+			@PathVariable("yearMonth") String yearMonth) {
+		try {
+			salaryService.confirmSalaries(employeeId.toString(), yearMonth);
+			return ResponseEntity.ok().body("근태가 확정되었습니다.");
+		} catch (Exception e) {
+			return ResponseEntity.badRequest().body(e.getMessage());
+		}
+	}
 
-            salaryService.calculateSalaries(employeeId, yearMonth);
-            return ResponseEntity.ok().body("급여 계산이 완료되었습니다.");
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("오류 발생: " + e.getMessage());
-        }
-    }
+	// 급여 계산
+	@PostMapping("/calculate/salary/{employeeId}/{yearMonth}")
+	@ResponseBody
+	public ResponseEntity<?> processSalary(@PathVariable("employeeId") Integer employeeId,
+			@PathVariable("yearMonth") String yearMonth) {
+		try {
+			SalaryDto salary = salaryService.getEmployeeSalaryByMonth(employeeId, yearMonth);
+			if (salary == null || !"CONFIRMED".equals(salary.getStatus())) {
+				return ResponseEntity.badRequest().body("급여가 먼저 확정되어야 합니다.");
+			}
 
-    private SalaryDto createEmptySalaryDto(Integer employeeId) {
-        SalaryDto salaryInfo = new SalaryDto();
-        salaryInfo.setEmployeeId(employeeId);
-        salaryInfo.setBaseSalary(BigDecimal.ZERO);
-        salaryInfo.setMealAllowance(BigDecimal.ZERO);
-        salaryInfo.setPositionAllowance(BigDecimal.ZERO);
-        salaryInfo.setOvertimePay(BigDecimal.ZERO);
-        salaryInfo.setDeductionTotal(BigDecimal.ZERO);
-        salaryInfo.setNetPay(BigDecimal.ZERO);
-        return salaryInfo;
-    }
+			salaryService.calculateSalaries(employeeId, yearMonth);
+			return ResponseEntity.ok().body("급여 계산이 완료되었습니다.");
+		} catch (Exception e) {
+			return ResponseEntity.badRequest().body("오류 발생: " + e.getMessage());
+		}
+	}
 
-    private List<String> getRecentMonths(int count) {
-        List<String> months = new ArrayList<>();
-        YearMonth current = YearMonth.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM");
+	private SalaryDto createEmptySalaryDto(Integer employeeId) {
+		SalaryDto salaryInfo = new SalaryDto();
+		salaryInfo.setEmployeeId(employeeId);
+		salaryInfo.setBaseSalary(BigDecimal.ZERO);
+		salaryInfo.setMealAllowance(BigDecimal.ZERO);
+		salaryInfo.setPositionAllowance(BigDecimal.ZERO);
+		salaryInfo.setOvertimePay(BigDecimal.ZERO);
+		salaryInfo.setDeductionTotal(BigDecimal.ZERO);
+		salaryInfo.setNetPay(BigDecimal.ZERO);
+		return salaryInfo;
+	}
 
-        for (int i = 0; i < count; i++) {
-            months.add(current.minusMonths(i).format(formatter));
-        }
-        return months;
-    }
+	// 급여데이터 임의 초기화
+	@PostMapping("/calculate/initialize/{employeeId}/{yearMonth}")
+	@ResponseBody
+	public ResponseEntity<?> initializeSalary(@PathVariable("employeeId") Integer employeeId,
+			@PathVariable("yearMonth") String yearMonth) {
+		try {
+			// 날짜 처리
+			String[] parts = yearMonth.split("-");
+			LocalDate firstDayOfMonth = LocalDate.of(Integer.parseInt(parts[0]), Integer.parseInt(parts[1]), 1);
+
+			// 새로운 급여 정보 생성
+			SalaryDto newSalary = new SalaryDto();
+			newSalary.setEmployeeId(employeeId);
+			newSalary.setPaymentDate(firstDayOfMonth);
+
+			// 기본 금액 설정
+			BigDecimal baseSalary = new BigDecimal("3000000");
+			BigDecimal mealAllowance = new BigDecimal("200000");
+			BigDecimal positionAllowance = new BigDecimal("200000");
+			BigDecimal overtimePay = BigDecimal.ZERO;
+
+			newSalary.setBaseSalary(baseSalary);
+			newSalary.setMealAllowance(mealAllowance);
+			newSalary.setPositionAllowance(positionAllowance);
+			newSalary.setOvertimePay(overtimePay);
+
+			// 총 급여 계산 (기본급 + 식대 + 직책수당)
+			BigDecimal totalSalary = baseSalary.add(mealAllowance).add(positionAllowance).add(overtimePay);
+			newSalary.setTotalSalary(totalSalary);
+
+			// 공제액 초기화
+			newSalary.setIncomeTax(BigDecimal.ZERO);
+			newSalary.setLocalIncomeTax(BigDecimal.ZERO);
+			newSalary.setNationalPension(BigDecimal.ZERO);
+			newSalary.setHealthInsurance(BigDecimal.ZERO);
+			newSalary.setEmploymentInsurance(BigDecimal.ZERO);
+			newSalary.setLongTermCareInsurance(BigDecimal.ZERO);
+
+			newSalary.setStatus("PENDING");
+
+			salaryService.addSalary(newSalary);
+			return ResponseEntity.ok().body("급여 정보가 초기화되었습니다.");
+
+		} catch (Exception e) {
+			return ResponseEntity.badRequest().body("급여 초기화 중 오류가 발생했습니다: " + e.getMessage());
+		}
+	}
+
+	private List<String> getRecentMonths(int count) {
+		List<String> months = new ArrayList<>();
+		YearMonth current = YearMonth.now();
+		DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy/MM");
+
+		for (int i = 0; i < count; i++) {
+			months.add(current.minusMonths(i).format(formatter));
+		}
+		return months;
+	}
 }

@@ -35,3 +35,4 @@ public class AttendanceDto {
 	private DepartmentDto department; // 부서정보 매핑
 	private EmployeeDto employee; // 사원 정보 매핑
 }
+

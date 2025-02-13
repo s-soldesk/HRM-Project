@@ -40,7 +40,6 @@ public class AttendanceController {
                                  @RequestParam(value = "endDate", required = false) String endDate,
                                  @RequestParam(value = "attendanceType", required = false) String attendanceType,
                                  Model model) {
-    	
         // 빈 문자열을 null로 변환
         if (startDate != null && startDate.isEmpty()) startDate = null;
         if (endDate != null && endDate.isEmpty()) endDate = null;

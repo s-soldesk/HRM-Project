@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>급여 조회</title>
+    <link rel="stylesheet" type="text/css" th:href="@{/css/dashboard.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/salary.css}">
+    <link rel="stylesheet" href="/css/sidebar.css">
+</head>
+<body>
+    <!-- 사이드바 -->
+    <div th:replace="~{layout/sidebar :: sidebar}"></div>
+    
+    <div class="content">
+        <div class="emp-salary-container">
+            <!-- 사원 정보 -->
+            <div class="employee-info">
+                <table>
+                    <tr>
+                        <th>사원번호</th>
+                        <td th:text="${employee.employeeId}"></td>
+                        <th>성명</th>
+                        <td th:text="${employee.name}"></td>
+                    </tr>
+                    <tr>
+                        <th>부서</th>  
+                        <td th:text="${employee.departmentName}"></td>
+                        <th>직급</th>
+                        <td th:text="${employee.position}"></td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- 급여 목록 -->
+            <div class="salary-list">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>귀속월</th>
+                            <th>총급여</th>
+                            <th>공제총액</th>
+                            <th>실수령액</th>
+                            <th>확인</th>
+                            <th></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:if="${not #lists.isEmpty(salaries)}" th:each="salary : ${salaries}">
+                            <td th:text="${#temporals.format(salary.paymentDate, 'yyyy/MM')}"></td>
+                            <td th:text="${#numbers.formatInteger(salary.totalSalary, 0, 'COMMA')} + '원'"></td>
+                            <td th:text="${#numbers.formatInteger(salary.deductionTotal, 0, 'COMMA')} + '원'"></td>
+                            <td th:text="${#numbers.formatInteger(salary.netPay, 0, 'COMMA')} + '원'"></td>
+                            <td>✓</td>
+                            <td>
+                                <button class="arrow-btn" 
+                                        th:onclick="'location.href=\'/salary/detail/' + ${salary.salaryId} + '\''">
+                                    →
+                                </button>
+                            </td>
+                        </tr>
+                        <tr th:if="${#lists.isEmpty(salaries)}">
+                            <td colspan="6" class="no-data">급여 내역이 없습니다.</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

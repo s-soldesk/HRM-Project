@@ -11,7 +11,11 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.security.access.prepost.PreAuthorize;
 
+import com.hrm.dao.UserAccountDao;
+import com.hrm.dto.EmployeeDto;
 import com.hrm.dto.SalaryDto;
+import com.hrm.dto.UserAccountDto;
+import com.hrm.service.EmployeeService;
 import com.hrm.service.SalaryService;
 
 @Controller
@@ -20,6 +24,9 @@ public class SalaryController {
 
 	@Autowired
 	private SalaryService salaryService;
+
+	@Autowired
+	private UserAccountDao userAccountDao;
 
 	// 메인 급여 페이지 - 권한에 따른 리다이렉션
 	@GetMapping
@@ -54,32 +61,51 @@ public class SalaryController {
 	public String viewEmployeeSalary(Model model) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
 
-		// admin이나 임시 계정이 아닌 경우에만 처리
 		if (auth != null && !auth.getName().equals("admin")) {
+			String email = auth.getName(); // 로그인한 사용자의 이메일
+
 			try {
-				// 현재 로그인한 사용자의 employeeId 가져오기
-				Integer employeeId = Integer.parseInt(auth.getName());
+				// 이메일로 UserAccount 조회
+				UserAccountDto userAccount = userAccountDao.findByEmployeeId(email);
 
-				// 해당 사원의 급여 정보 조회
-				List<SalaryDto> salaries = salaryService.getSalariesByEmployeeId(employeeId);
-
-				if (!salaries.isEmpty()) {
-					// 사원 정보 설정
-					model.addAttribute("employee", salaries.get(0).getEmployee());
-					model.addAttribute("salaries", salaries);
-				} else {
-					// 급여 정보가 없는 경우
-					model.addAttribute("salaries", new ArrayList<>());
+				if (userAccount == null) {
+					System.out.println("UserAccount를 찾을 수 없음!");
+					return "redirect:/";
 				}
 
+				// Employee 테이블에서 이메일로 EmployeeID(정수형) 조회
+				Integer employeeId = salaryService.getEmployeeIdByEmail(email);
+
+				if (employeeId == null) {
+					System.out.println("EmployeeID를 찾을 수 없음!");
+					return "redirect:/";
+				}
+
+				// EmployeeID로 급여 조회
+				List<SalaryDto> salaries = salaryService.getSalariesByEmployeeId(employeeId);
+
+				// employee가 null인지 확인
+				EmployeeDto employee = null;
+				if (!salaries.isEmpty() && salaries.get(0).getEmployee() != null) {
+					employee = salaries.get(0).getEmployee();
+				}
+
+				if (employee == null) {
+					System.out.println("Employee 정보가 존재하지 않음!");
+					return "redirect:/"; // 오류 방지
+				}
+
+				model.addAttribute("employee", employee);
+				model.addAttribute("salaries", salaries);
+
 				return "salary/employee";
-			} catch (NumberFormatException e) {
-				// employeeId가 숫자가 아닌 경우의 처리
+
+			} catch (Exception e) {
+				e.printStackTrace();
 				return "redirect:/";
 			}
 		}
 
-		// admin이나 다른 예외적인 경우의 처리
 		return "redirect:/";
 	}
 
@@ -87,7 +113,7 @@ public class SalaryController {
 	@GetMapping("/detail/{salaryId}")
 	public String getSalaryDetail(@PathVariable("salaryId") Integer salaryId, Model model) {
 		Authentication auth = SecurityContextHolder.getContext().getAuthentication();
-		String currentUsername = auth.getName();
+		String currentEmail = auth.getName();
 
 		SalaryDto salary = salaryService.getSalaryById(salaryId);
 
@@ -99,17 +125,17 @@ public class SalaryController {
 
 		// 일반 사원의 경우 자신의 급여 정보만 조회 가능
 		try {
-			Integer employeeId = Integer.parseInt(currentUsername);
-			if (!salary.getEmployeeId().equals(employeeId)) {
-				return "redirect:/salary/employee";
-			}
-		} catch (NumberFormatException e) {
-			// admin 계정등 employeeId가 숫자가 아닌 경우
-			return "redirect:/salary/employee";
-		}
-
-		model.addAttribute("salary", salary);
-		return "salary/salaryDetail";
+	        // 이메일로 Employee ID 조회
+	        Integer employeeId = salaryService.getEmployeeIdByEmail(currentEmail);
+	        if (employeeId == null || !salary.getEmployeeId().equals(employeeId)) {
+	            return "redirect:/salary/employee";
+	        }
+	        
+	        model.addAttribute("salary", salary);
+	        return "salary/salaryDetail";
+	    } catch (Exception e) {
+	        return "redirect:/salary/employee";
+	    }
 	}
 
 	private boolean hasHRorAdminRole(Authentication auth) {

@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 import com.hrm.dto.EmployeeDto;
 import com.hrm.dto.MessageDto;
 import com.hrm.dao.MessageDao;
+import com.hrm.dao.ProfileDao;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 @RequiredArgsConstructor
 public class MessageService {
     private final MessageDao messageDao;
+    private final ProfileDao profileDao;
     
     @Transactional
     public void sendMessage(MessageDto message) {
@@ -106,4 +108,10 @@ public class MessageService {
             throw new RuntimeException("Failed to get chat messages", e);
         }
     }
+    
+	  // 메세지창에서 메세지 보낼 수 있는 사원 보여주기
+	  public EmployeeDto getEmployeeById(Integer employeeId) { try { return
+	  profileDao.getEmployeeById(employeeId); } catch (Exception e) { throw new
+	  RuntimeException("Failed to get employee with ID: " + employeeId, e); }
+	  }
 }

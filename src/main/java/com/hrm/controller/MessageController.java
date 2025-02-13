@@ -41,7 +41,7 @@ public class MessageController {
         try {
             Integer currentUserId = getCurrentUserId();
             
-            EmployeeDto employee = employeeService.getEmployeeById(currentUserId);
+            EmployeeDto employee = messageService.getEmployeeById(currentUserId);
             
             if (employee != null) {
                 model.addAttribute("currentUserId", currentUserId);
@@ -65,7 +65,7 @@ public class MessageController {
         try {
             Integer currentUserId = getCurrentUserId();
             
-            EmployeeDto employee = employeeService.getEmployeeById(currentUserId);
+            EmployeeDto employee = messageService.getEmployeeById(currentUserId);
             
             if (employee != null) {
                 model.addAttribute("currentUserId", currentUserId);

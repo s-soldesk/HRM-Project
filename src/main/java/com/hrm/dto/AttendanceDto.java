@@ -18,7 +18,7 @@ public class AttendanceDto {
 
 	private Double hoursWorked; // 근무 시간 
 	private Double overtimeHours; // 초과근무시간 
-	private String attendanceType; // 근태 유형
+	// private String attendanceType; // 근태 유형
 	private String remarks; // 근태 사유
 
 	// 추가된 필드 유지

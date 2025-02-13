@@ -12,12 +12,12 @@ public interface CommuteDao {
     boolean existsTodayRecord(@Param("employeeId") int employeeId, @Param("date") LocalDate date);
 
     // 출근 기록 추가
-    @Insert("INSERT INTO Attendance (EmployeeID, Date, CheckInTime, AttendanceType) " +
-            "VALUES (#{employeeId}, #{date}, #{checkInTime}, #{attendanceType})")
+    @Insert("INSERT INTO Attendance (EmployeeID, Date, CheckInTime, Status) " +
+            "VALUES (#{employeeId}, #{date}, #{checkInTime}, #{status})")
     void insertCheckIn(@Param("employeeId") int employeeId,
                        @Param("date") LocalDate date,
                        @Param("checkInTime") LocalTime checkInTime,
-                       @Param("attendanceType") String attendanceType);
+                       @Param("status") String status);
     
     // 출근 시간 가져오기
     @Select("SELECT CheckInTime FROM Attendance WHERE EmployeeID = #{employeeId} AND Date = #{date}")
@@ -28,14 +28,14 @@ public interface CommuteDao {
             "SET CheckOutTime = #{checkOutTime}, " +
             "HoursWorked = #{hoursWorked}, " +
             "OvertimeHours = #{overtimeHours}, " +
-            "AttendanceType = #{attendanceType} " +
+            "status = #{status} " +
             "WHERE EmployeeID = #{employeeId} AND Date = #{date}")
     void updateCheckOut(@Param("employeeId") int employeeId,
                         @Param("date") LocalDate date,
                         @Param("checkOutTime") LocalTime checkOutTime,
                         @Param("hoursWorked") double hoursWorked,
                         @Param("overtimeHours") double overtimeHours,
-                        @Param("attendanceType") String attendanceType);
+                        @Param("status") String status);
     
     // 이미 퇴근 기록이 있는지 확인
     @Select("SELECT COUNT(*) > 0 FROM Attendance WHERE EmployeeID = #{employeeId} AND Date = #{date} AND CheckOutTime IS NOT NULL")

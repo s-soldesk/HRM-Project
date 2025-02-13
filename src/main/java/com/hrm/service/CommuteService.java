@@ -26,9 +26,9 @@ public class CommuteService {
         }
 
         LocalTime checkInTime = LocalTime.now().truncatedTo(ChronoUnit.SECONDS);
-        String attendanceType = checkInTime.isAfter(STANDARD_CHECK_IN_TIME) ? "Late" : "Present";
+        String status = checkInTime.isAfter(STANDARD_CHECK_IN_TIME) ? "Late" : "Present";
 
-        attendanceDao.insertCheckIn(employeeId, LocalDate.now(), checkInTime, attendanceType);
+        attendanceDao.insertCheckIn(employeeId, LocalDate.now(), checkInTime, status);
         return true;
     }
 
@@ -44,18 +44,18 @@ public class CommuteService {
         // 근무 시간 계산
         double hoursWorked = ChronoUnit.MINUTES.between(checkInTime, checkOutTime) / 60.0;
         double overtimeHours = Math.max(0, hoursWorked - STANDARD_WORK_HOURS);
-        String attendanceType;
+        String status;
 
         // 근태 유형 설정
-        if (checkOutTime.isBefore(STANDARD_CHECK_OUT_TIME)) {
-            attendanceType = "EarlyLeave";
-        } else if (overtimeHours > 0) {
-            attendanceType = "Overtime";
+        if (checkOutTime.isAfter(STANDARD_CHECK_OUT_TIME)) {
+            status = "Late";
+//        } else if (overtimeHours > 0) {
+//            status = "Overtime";
         } else {
-            attendanceType = "Present";
+            status = "onTime";
         }
 
-        attendanceDao.updateCheckOut(employeeId, LocalDate.now(), checkOutTime, hoursWorked, overtimeHours, attendanceType);
+        attendanceDao.updateCheckOut(employeeId, LocalDate.now(), checkOutTime, hoursWorked, overtimeHours, status);
         return true;
     }
     	

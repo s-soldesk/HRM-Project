@@ -109,9 +109,15 @@ public class MessageService {
         }
     }
     
-	  // 메세지창에서 메세지 보낼 수 있는 사원 보여주기
-	  public EmployeeDto getEmployeeById(Integer employeeId) { try { return
-	  profileDao.getEmployeeById(employeeId); } catch (Exception e) { throw new
-	  RuntimeException("Failed to get employee with ID: " + employeeId, e); }
-	  }
+//	  // 메세지창에서 메세지 보낼 수 있는 사원 보여주기
+//	  public EmployeeDto getEmployeeByEmail(String email) { try { return
+//	  profileDao.getEmployeeByEmail(email); } catch (Exception e) { throw new
+//	  RuntimeException("Failed to get employee with ID: " + email, e); }
+//	  }
+	  
+	    public EmployeeDto getEmployeeByEmail(String email) {
+	        return profileDao.getEmployeeByEmail(email);
+	    }
+	  
+	  
 }

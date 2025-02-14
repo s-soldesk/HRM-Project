@@ -5,14 +5,14 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import com.hrm.dao.AttendanceDao;
+import com.hrm.dao.AttendanceBatisDao;
 import com.hrm.dto.AttendanceDto;
 
 @Service
 public class AttendanceServiceImpl implements AttendanceService {
 
 	@Autowired
-	private AttendanceDao attendanceMapper;
+	private AttendanceBatisDao attendanceMapper;
 
 	@Override
 	public List<AttendanceDto> getAllEmployeeAttendance(String yearMonth) {

@@ -34,18 +34,25 @@
        WHERE MessageID = #{messageId}
    </update>
 
-   <select id="getAllEmployees" resultType="com.hrm.dto.EmployeeDto">
-       SELECT 
-           e.EmployeeID as employeeId,
-           e.Name as name,
-           e.Email as email,
-           e.Position as position,
-           d.DepartmentName as department
-       FROM Employee e
-       LEFT JOIN Department d ON e.DepartmentID = d.DepartmentID
-       WHERE e.Status = 'Active'
-       ORDER BY e.Name ASC
-   </select>
+<select id="getAllEmployees" resultType="com.hrm.dto.EmployeeDto">
+    SELECT
+    e.EmployeeID as employeeId,
+    e.Name as name,
+    e.Email as email,
+    CASE 
+        WHEN e.Position = '사원' THEN 'STAFF'
+        WHEN e.Position = '대리' THEN 'ASSISTANT_MANAGER'
+        WHEN e.Position = '과장' THEN 'MANAGER'
+        WHEN e.Position = '차장' THEN 'SENIOR_MANAGER'
+        WHEN e.Position = '부장' THEN 'DIRECTOR'
+        ELSE 'STAFF'
+    END as position,
+    d.DepartmentName as department
+    FROM Employee e
+    LEFT JOIN Department d ON e.DepartmentID = d.DepartmentID
+    WHERE e.Status = 'Active'
+    ORDER BY e.Name ASC
+</select>
 
    <select id="getMessage" resultType="com.hrm.dto.MessageDto">
        SELECT m.*,

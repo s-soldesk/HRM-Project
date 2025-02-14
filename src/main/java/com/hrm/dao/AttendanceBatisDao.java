@@ -8,7 +8,7 @@ import org.apache.ibatis.annotations.Param;
 import com.hrm.dto.AttendanceDto;
 
 @Mapper
-public interface AttendanceDao {
+public interface AttendanceBatisDao {
 	// 특정 월의 모든 직원 근태 데이터 조회
 	List<AttendanceDto> getAllEmployeeAttendance(String yearMonth);
 

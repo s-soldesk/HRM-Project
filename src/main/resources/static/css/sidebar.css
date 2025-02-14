@@ -13,6 +13,7 @@
     display: flex;
     flex-direction: column;
     box-sizing: border-box;
+    overflow: hidden; /* 기본적으로 오버플로우 숨김 */
 }
 
 /* 사이드바 제목 */
@@ -32,6 +33,15 @@
     list-style: none;
     padding: 0;
     flex-grow: 1;
+    overflow-y: auto; /* 내부 리스트에만 스크롤 적용 */
+    scrollbar-width: none; /* Firefox에서 스크롤바 숨김 */
+    -ms-overflow-style: none; /* IE 및 Edge에서 스크롤바 숨김 */
+    max-height: calc(100vh - 120px); /* 사이드바 높이 제한 (로그아웃 버튼 공간 확보) */
+}
+
+/* Webkit 기반 브라우저 (Chrome, Safari, Edge)에서 스크롤바 숨김 */
+.sidebar ul::-webkit-scrollbar {
+    display: none;
 }
 
 .sidebar ul li {

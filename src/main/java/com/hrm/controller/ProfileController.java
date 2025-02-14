@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 
@@ -43,17 +44,48 @@ public class ProfileController {
         }
         throw new RuntimeException("No authenticated user found");
     }
+    
+    private boolean isAdmin() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        boolean isAdmin = auth != null && auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN") || 
+                          a.getAuthority().equals("ROLE_Admin") ||
+                          a.getAuthority().equals("ROLE_admin"));
+        log.info("Checking admin authority. User: {}, Authorities: {}, IsAdmin: {}", 
+                auth.getName(), auth.getAuthorities(), isAdmin);
+        return isAdmin;
+    }
 
     @GetMapping("/profile")
     public String getProfile(Model model) {
         try {
             String currentUserId = getCurrentUserId();
-            EmployeeDto employee = profileService.getEmployeeByEmail(currentUserId);
-            model.addAttribute("employee", employee);
+            boolean adminCheck = isAdmin();
+
+            if (adminCheck) {
+                EmployeeDto adminEmployee = new EmployeeDto();
+                adminEmployee.setEmail("admin");
+                adminEmployee.setName("관리자");
+                adminEmployee.setDepartmentName("시스템관리부");
+                adminEmployee.setRole("ROLE_ADMIN");
+                adminEmployee.setStatus("재직");
+                adminEmployee.setProfileImage("");
+                
+                model.addAttribute("employee", adminEmployee);
+                model.addAttribute("isAdmin", true);
+            } else {
+                EmployeeDto employee = profileService.getEmployeeByEmail(currentUserId);
+                model.addAttribute("employee", employee);
+                model.addAttribute("isAdmin", false);
+            }
+            
             return "profile/profile";
+            
         } catch (Exception e) {
             log.error("Error fetching profile: ", e);
-            return "error";
+            model.addAttribute("error", "프로필 정보를 불러오는 중 오류가 발생했습니다.");
+            model.addAttribute("employee", new EmployeeDto());
+            return "profile/profile";
         }
     }
 
@@ -63,22 +95,25 @@ public class ProfileController {
         RedirectAttributes redirectAttributes) {
         try {
             String currentUserId = getCurrentUserId();
-            log.info("Current User ID: {}", currentUserId);
+            boolean adminCheck = isAdmin();
             
-            EmployeeDto employee = profileService.getEmployeeByEmail(currentUserId);
-            log.info("Employee found: {}", employee);
+            if (adminCheck) {
+                if (file != null && !file.isEmpty()) {
+                    String imagePath = saveProfileImage(file, "admin");
+                    log.info("Admin profile image saved: {}", imagePath);
+                }
+            } else {
+                EmployeeDto employee = profileService.getEmployeeByEmail(currentUserId);
+                if (employee == null) {
+                    redirectAttributes.addFlashAttribute("error", "프로필을 찾을 수 없습니다.");
+                    return "redirect:/profile?error";
+                }
 
-            if (employee == null) {
-                log.error("No employee found for user ID: {}", currentUserId);
-                redirectAttributes.addFlashAttribute("error", "프로필을 찾을 수 없습니다.");
-                return "redirect:/profile?error";
-            }
-
-            if (file != null && !file.isEmpty()) {
-                String imagePath = saveProfileImage(file, currentUserId);
-                log.info("Image path: {}", imagePath);
-                employee.setProfileImage(imagePath);
-                profileService.updateProfile(employee);
+                if (file != null && !file.isEmpty()) {
+                    String imagePath = saveProfileImage(file, currentUserId);
+                    employee.setProfileImage(imagePath);
+                    profileService.updateProfile(employee);
+                }
             }
 
             redirectAttributes.addFlashAttribute("success", "프로필이 성공적으로 업데이트되었습니다.");
@@ -96,10 +131,8 @@ public class ProfileController {
             @RequestParam("newPassword") String newPassword,
             RedirectAttributes redirectAttributes) {
         try {
-            // Integer를 String으로 변환
-            String currentUserId = String.valueOf(getCurrentUserId());
+            String currentUserId = getCurrentUserId();
             
-            // UserAccountService를 통해 비밀번호 변경
             boolean success = passwordService.changePassword(
                 currentUserId,
                 currentPassword, 

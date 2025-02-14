@@ -36,12 +36,10 @@ public class ProfileController {
     @Value("${file.upload.dir:uploads/profiles}")
     private String uploadDir;
 
-    // 현재 로그인한 사용자의 ID를 가져오는 메소드
-    private Integer getCurrentUserId() {
+    private String getCurrentUserId() {
         Authentication auth = SecurityContextHolder.getContext().getAuthentication();
         if (auth != null && auth.isAuthenticated()) {
-            log.info("Current user: {}", auth.getName());
-            return Integer.valueOf(auth.getName());
+            return auth.getName();
         }
         throw new RuntimeException("No authenticated user found");
     }
@@ -49,8 +47,8 @@ public class ProfileController {
     @GetMapping("/profile")
     public String getProfile(Model model) {
         try {
-            Integer currentUserId = getCurrentUserId();
-            EmployeeDto employee = profileService.getEmployeeById(currentUserId);
+            String currentUserId = getCurrentUserId();
+            EmployeeDto employee = profileService.getEmployeeByEmail(currentUserId);
             model.addAttribute("employee", employee);
             return "profile/profile";
         } catch (Exception e) {
@@ -61,19 +59,24 @@ public class ProfileController {
 
     @PostMapping("/profile/update")
     public String updateProfile(
-            @RequestParam(value = "profileImage", required = false) MultipartFile file,
-            RedirectAttributes redirectAttributes) {
+        @RequestParam(value = "profileImage", required = false) MultipartFile file,
+        RedirectAttributes redirectAttributes) {
         try {
-            Integer currentUserId = getCurrentUserId();
-            EmployeeDto employee = profileService.getEmployeeById(currentUserId);
+            String currentUserId = getCurrentUserId();
+            log.info("Current User ID: {}", currentUserId);
             
+            EmployeeDto employee = profileService.getEmployeeByEmail(currentUserId);
+            log.info("Employee found: {}", employee);
+
             if (employee == null) {
+                log.error("No employee found for user ID: {}", currentUserId);
                 redirectAttributes.addFlashAttribute("error", "프로필을 찾을 수 없습니다.");
                 return "redirect:/profile?error";
             }
 
             if (file != null && !file.isEmpty()) {
-                String imagePath = saveProfileImage(file, String.valueOf(currentUserId));
+                String imagePath = saveProfileImage(file, currentUserId);
+                log.info("Image path: {}", imagePath);
                 employee.setProfileImage(imagePath);
                 profileService.updateProfile(employee);
             }

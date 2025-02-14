@@ -9,7 +9,7 @@ import com.hrm.dto.EmployeeDto;
 
 @Mapper
 public interface ProfileDao {
-    EmployeeDto getEmployeeById(Integer employeeId);
+    EmployeeDto getEmployeeById(String employeeId);
     void updateProfile(EmployeeDto employee);
     List<EmployeeDto> getAllEmployees();
     EmployeeDto getEmployeeByEmail(String email);

@@ -7,27 +7,21 @@ import com.hrm.dao.ProfileDao;
 import com.hrm.dto.EmployeeDto;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
-
 public class ProfileService {
-    private final ProfileDao profileMapper;
-    
-    public EmployeeDto getEmployeeById(Integer employeeId) {
-        try {
-            return profileMapper.getEmployeeById(employeeId);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to get employee with ID: " + employeeId, e);
-        }
+    private final ProfileDao profileDao;
+
+    public EmployeeDto getEmployeeByEmail(String email) {
+        return profileDao.getEmployeeByEmail(email);
     }
-    
-    @Transactional
+
     public void updateProfile(EmployeeDto employee) {
-        try {
-        	profileMapper.updateProfile(employee);
-        } catch (Exception e) {
-            throw new RuntimeException("Failed to update profile", e);
-        }
+        log.info("Attempting to update profile - Email: {}, ProfileImage: {}", 
+                 employee.getEmail(), employee.getProfileImage());
+        profileDao.updateProfile(employee);
     }
 }

@@ -5,7 +5,6 @@
 
 <!-- 특정 EmployeeID으로 사용자 정보를 조회하는 쿼리 -->
 <mapper namespace="com.hrm.dao.UserAccountDao">
-<<<<<<< HEAD
     <select id="findByEmployeeId" resultType="com.hrm.dto.UserAccountDto">
         SELECT 
             UserID AS userId,
@@ -47,22 +46,10 @@
         FROM useraccounts
         WHERE EmployeeID = #{employeeId}
     </select>
-=======
-	<select id="findByEmployeeId"
-		resultType="com.hrm.dto.UserAccountDto">
-		SELECT
-		UserID AS userId,
-		EmployeeID AS employeeId,
-		Username AS username,
-		Password AS password,
-		Role AS role
-		FROM useraccounts
-		WHERE EmployeeID = #{employeeId}
-	</select>
 
 	<select id="findByEmail" resultType="com.hrm.dto.UserAccountDto">
 		SELECT * FROM UserAccounts
 		WHERE Username = #{email}
 	</select>
->>>>>>> develop
+
 </mapper>

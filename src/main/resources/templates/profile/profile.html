@@ -158,11 +158,11 @@
             <form action="/profile/update" method="post" enctype="multipart/form-data" class="profile-box">
                 <div class="profile-header">
                     <div class="profile-image-container">
-						<img th:if="${employee != null and employee.profileImage != null and employee.profileImage != ''}" 
-						     th:src="@{'/uploads/' + ${employee.profileImage}}"
-						     alt="프로필 이미지" 
-						     class="profile-image"
-						     onerror="this.src='/uploads/default-profile.jpg'">
+                        <img th:if="${employee.profileImage != null and employee.profileImage != ''}" 
+                             th:src="@{'/uploads/' + ${employee.profileImage}}"
+                             alt="프로필 이미지" 
+                             class="profile-image"
+                             onerror="this.src='/uploads/default-profile.jpg'">
                         <img th:unless="${employee.profileImage != null and employee.profileImage != ''}" 
                              src="/uploads/default-profile.jpg"
                              alt="기본 프로필 이미지" 

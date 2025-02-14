@@ -39,6 +39,18 @@ public class MessageController {
         }
         throw new RuntimeException("No authenticated user found");
     }
+    
+    // 현재 사용자가 관리자인지 확인하는 메소드
+    private boolean isAdmin() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        boolean isAdmin = auth != null && auth.getAuthorities().stream()
+                .anyMatch(a -> a.getAuthority().equals("ROLE_ADMIN") || 
+                          a.getAuthority().equals("ROLE_Admin") ||
+                          a.getAuthority().equals("ROLE_admin"));
+        log.info("Checking admin authority. User: {}, Authorities: {}, IsAdmin: {}", 
+                auth.getName(), auth.getAuthorities(), isAdmin);
+        return isAdmin;
+    }
 
     @GetMapping("/messages")
     public String getMessages(Model model) {

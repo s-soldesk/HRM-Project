@@ -37,6 +37,7 @@ public interface CommuteDao {
                         @Param("overtimeHours") double overtimeHours,
                         @Param("status") String status);
     
+
     // 이미 퇴근 기록이 있는지 확인
     @Select("SELECT COUNT(*) > 0 FROM Attendance WHERE EmployeeID = #{employeeId} AND Date = #{date} AND CheckOutTime IS NOT NULL")
     boolean hasCheckOutRecord(@Param("employeeId") int employeeId, @Param("date") LocalDate date);

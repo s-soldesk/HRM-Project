@@ -1,6 +1,5 @@
 package com.hrm.dto;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
@@ -22,7 +21,6 @@ public class AttendanceDto {
 
 	
 	// ------------------------------------------ 추가
-	private String remarks; // 근태 사유
 	private String status; // 출근 상태
 	private String employeeName; // 사원이름 조인
 	private String departmentName; // 부서이름 조인 

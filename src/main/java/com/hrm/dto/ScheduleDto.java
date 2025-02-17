@@ -10,7 +10,7 @@ public class ScheduleDto {
     private Integer employeeId; // 사원 ID
     private String title; // 일정 제목
     private String type; // "Work" 또는 "Leave"
-    private String leaveType; // 휴가 유형 ("Annual", "Sick", "Personal", "Unpaid")
+    private String leaveType; // 휴가 유형 ("Annual", "Sick", "Personal")
     private String reason; // 휴가 사유 (Leave의 경우 필요)
     private String startDate; // 일정 시작 날짜
     private String endDate; // 일정 종료 날짜

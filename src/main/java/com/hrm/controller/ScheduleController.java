@@ -3,6 +3,8 @@ package com.hrm.controller;
 import com.hrm.dto.ScheduleDto;
 import com.hrm.service.ScheduleService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -95,15 +97,23 @@ public class ScheduleController {
      * ✅ 일정 삭제
      */
     @DeleteMapping("/delete/{scheduleId}")
-    public String deleteSchedule(@PathVariable("scheduleId") int scheduleId) {
-        try {
-            scheduleService.deleteSchedule(scheduleId);
-            return "success";
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "fail";
+    public ResponseEntity<?> deleteSchedule(@PathVariable("scheduleId") int scheduleId, Principal principal) {
+        String currentUserId = principal.getName(); // 현재 로그인한 사용자 ID
+        ScheduleDto scheduleDto = scheduleService.getScheduleById(scheduleId); // 일정 정보 조회
+
+        if (scheduleDto == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("해당 일정이 존재하지 않습니다.");
         }
+
+        // ✅ 일정 작성자와 로그인한 사용자가 같은지 확인
+        if (!scheduleDto.getEmployeeId().equals(currentUserId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("⚠️ 다른 사람의 일정을 삭제할 수 없습니다.");
+        }
+
+        scheduleService.deleteSchedule(scheduleId);
+        return ResponseEntity.ok("✅ 일정이 삭제되었습니다.");
     }
+
 
     /**
      * ✅ 일정 수정

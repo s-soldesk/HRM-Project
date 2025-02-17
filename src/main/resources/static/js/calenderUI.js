@@ -161,22 +161,25 @@ $(document).ready(function () {
         },
 
         // ✅ 일정 삭제 (일정 클릭 시)
-        eventClick: function(info) {
-            if (confirm("이 일정을 삭제하시겠습니까?")) {
-                $.ajax({
-                    url: "/api/schedules/delete/" + info.event.id,
-                    type: "DELETE",
-                    success: function() {
-                        alert("일정이 삭제되었습니다.");
-                        info.event.remove();
-                    },
-                    error: function(xhr, status, error) {
-                        console.error("🚨 삭제 실패:", error);
-                        alert("일정 삭제에 실패했습니다.");
-                    }
-                });
-            }
-        }
+		eventClick: function(info) {
+		    if (confirm("이 일정을 삭제하시겠습니까?")) {
+		        $.ajax({
+		            url: "/api/schedules/delete/" + info.event.id,
+		            type: "DELETE",
+		            success: function() {
+		                alert("일정이 삭제되었습니다.");
+		                info.event.remove();
+		            },
+		            error: function(xhr, status, error) {
+		                if (xhr.status === 403) {
+		                    alert("다른 사람의 일정은 삭제할 수 없습니다.");
+		                } else {
+		                    alert("일정 삭제에 실패했습니다.");
+		                }
+		            }
+		        });
+		    }
+		}
     });
 
     // ✅ 캘린더 렌더링

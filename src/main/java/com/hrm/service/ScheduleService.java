@@ -21,6 +21,14 @@ public class ScheduleService {
     }
 
     /**
+     * ✅ 특정 일정 조회 (ID 기준)
+     */
+    public ScheduleDto getScheduleById(int scheduleId) {
+        return scheduleDao.getScheduleById(scheduleId);
+    }
+
+    
+    /**
      * ✅ 일정 추가
      */
     public void createSchedule(ScheduleDto scheduleDto) {

@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>답장하기</title>
+    <link rel="stylesheet" href="/css/sidebar.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/dashboard.css}">
+	<style>
+	    .form-container {
+	        max-width: 700px;
+	        margin: 30px auto;
+	        padding: 30px;
+	        background-color: white;
+	        border-radius: 12px;
+	        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+	    }
+	
+	    .original-message {
+	        background-color: #f8f9fa;
+	        padding: 20px;
+	        margin-bottom: 24px;
+	        border-radius: 8px;
+	        border-left: 4px solid #4a90e2;
+	    }
+	
+	    .original-message h4 {
+	        color: #333;
+	        font-size: 16px;
+	        font-weight: 600;
+	        margin-bottom: 16px;
+	    }
+	
+	    .original-message p {
+	        margin: 8px 0;
+	        color: #666;
+	        font-size: 14px;
+	        line-height: 1.6;
+	    }
+	
+	    .form-group {
+	        margin-bottom: 24px;
+	    }
+	
+	    .form-group label {
+	        display: block;
+	        margin-bottom: 8px;
+	        font-weight: 500;
+	        color: #333;
+	        font-size: 14px;
+	    }
+	
+	    .form-group textarea {
+	        width: 100%;
+	        padding: 12px;
+	        border: 1px solid #e0e0e0;
+	        border-radius: 8px;
+	        font-size: 14px;
+	        line-height: 1.6;
+	        min-height: 200px;
+	        resize: vertical;
+	        transition: all 0.2s ease;
+	    }
+	
+	    .form-group textarea:focus {
+	        outline: none;
+	        border-color: #4a90e2;
+	        box-shadow: 0 0 0 2px rgba(74,144,226,0.2);
+	    }
+	
+	    .btn-group {
+	        display: flex;
+	        gap: 12px;
+	        justify-content: flex-end;
+	        margin-top: 30px;
+	    }
+	
+	    .btn {
+	        padding: 12px 24px;
+	        border: none;
+	        border-radius: 8px;
+	        cursor: pointer;
+	        font-size: 14px;
+	        font-weight: 500;
+	        transition: all 0.2s ease;
+	    }
+	
+	    .btn-primary {
+	        background-color: #4a90e2;
+	        color: white;
+	    }
+	
+	    .btn-secondary {
+	        background-color: #6c757d;
+	        color: white;
+	    }
+	
+	    .btn:hover {
+	        transform: translateY(-2px);
+	        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+	    }
+	
+	    h2 {
+	        color: #333;
+	        font-size: 24px;
+	        font-weight: 600;
+	        margin-bottom: 30px;
+	        text-align: center;
+	    }
+	</style>
+</head>
+<body>
+    <!-- 사이드바 fragment 적용 -->
+    <div th:replace="~{layout/sidebar :: sidebar}"></div>
+
+    <div class="content">
+        <h2>답장하기</h2>
+        
+        <div class="form-container">
+            <div class="original-message">
+                <h4>원본 메시지</h4>
+                <p><strong>보낸 사람:</strong> <span th:text="${originalMessage.senderName}"></span></p>
+                <p><strong>내용:</strong></p>
+                <p th:text="${originalMessage.content}"></p>
+            </div>
+
+            <form th:action="@{/messages/send}" method="post">
+                <input type="hidden" name="receiverId" th:value="${originalMessage.senderId}">
+                
+                <div class="form-group">
+                    <label>답장 내용</label>
+                    <textarea name="content" required></textarea>
+                </div>
+
+                <div class="btn-group">
+                    <button type="submit" class="btn btn-primary">보내기</button>
+                    <a href="/messages" class="btn btn-secondary">취소</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</body>
+</html>

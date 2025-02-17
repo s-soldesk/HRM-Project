@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <title>메시지 상세보기</title>
+    <link rel="stylesheet" href="/css/sidebar.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/dashboard.css}">
+	<style>
+	    .message-container {
+	        max-width: 700px;
+	        margin: 30px auto;
+	        padding: 30px;
+	        background-color: white;
+	        border-radius: 12px;
+	        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+	    }
+	
+	    .message-header {
+	        background-color: #f8f9fa;
+	        padding: 20px;
+	        margin-bottom: 24px;
+	        border-radius: 8px;
+	        border-left: 4px solid #4a90e2;
+	    }
+	
+	    .message-info {
+	        margin-bottom: 12px;
+	        color: #666;
+	        font-size: 14px;
+	        line-height: 1.6;
+	    }
+	
+	    .message-info strong {
+	        color: #333;
+	        margin-right: 8px;
+	        font-weight: 500;
+	    }
+	
+	    .message-content {
+	        padding: 24px;
+	        min-height: 200px;
+	        border: 1px solid #e0e0e0;
+	        border-radius: 8px;
+	        margin-bottom: 24px;
+	        background-color: white;
+	        line-height: 1.6;
+	        color: #333;
+	        font-size: 14px;
+	    }
+	
+	    .button-group {
+	        display: flex;
+	        gap: 12px;
+	        justify-content: flex-end;
+	    }
+	
+	    .btn {
+	        padding: 12px 24px;
+	        border: none;
+	        border-radius: 8px;
+	        cursor: pointer;
+	        font-size: 14px;
+	        font-weight: 500;
+	        transition: all 0.2s ease;
+	        text-decoration: none;
+	        display: inline-flex;
+	        align-items: center;
+	        justify-content: center;
+	    }
+	
+	    .btn-list {
+	        background-color: #6c757d;
+	        color: white;
+	    }
+	
+	    .btn-reply {
+	        background-color: #4a90e2;
+	        color: white;
+	    }
+	
+	    .btn:hover {
+	        transform: translateY(-2px);
+	        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+	    }
+	
+	    h2 {
+	        color: #333;
+	        font-size: 24px;
+	        font-weight: 600;
+	        margin-bottom: 30px;
+	        text-align: center;
+	    }
+	</style>
+</head>
+<body>
+    <!-- 사이드바 fragment 적용 -->
+    <div th:replace="~{layout/sidebar :: sidebar}"></div>
+
+    <div class="content">
+        <h2>메시지 상세보기</h2>
+
+        <div class="message-header">
+            <div class="message-info">
+                <strong>보낸 사람:</strong> <span th:text="${message.senderName}"></span>
+            </div>
+            <div class="message-info">
+                <strong>받는 사람:</strong> <span th:text="${message.receiverName}"></span>
+            </div>
+            <div class="message-info">
+                <strong>보낸 시간:</strong>
+                <span th:text="${#temporals.format(message.sentTime, 'yyyy-MM-dd HH:mm:ss')}"></span>
+            </div>
+        </div>
+
+        <div class="message-content" th:text="${message.content}">
+        </div>
+
+        <div class="button-group">
+            <a href="/messages" class="btn btn-list">목록으로</a>
+            <a th:href="@{/messages/reply/{id}(id=${message.messageId})}" class="btn btn-reply">답장하기</a>
+        </div>
+    </div>
+</body>
+</html>

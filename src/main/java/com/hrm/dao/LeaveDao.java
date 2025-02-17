@@ -24,10 +24,6 @@ public interface LeaveDao {
     })
     List<ScheduleDto> getAllLeaves();
 
-    // 특정 사원의 휴가 일정 조회
-    @Select("SELECT * FROM SCHEDULE WHERE EmployeeID = #{employeeId}")
-    List<ScheduleDto> getLeavesByEmployee(@Param("employeeId") int employeeId);
-
     // 휴가 일정 추가
     @Insert("INSERT INTO SCHEDULE (EmployeeID, Title, LeaveType, Reason, StartDate, EndDate, Status) " +
             "VALUES (#{employeeId}, #{title}, #{leaveType}, #{reason}, #{startDate}, #{endDate}, 'PENDING')")

@@ -4,6 +4,7 @@ import org.apache.ibatis.annotations.Insert;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Options;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 import com.hrm.dto.UserAccountDto;
 
@@ -26,4 +27,12 @@ public interface UserAccountDao {
 			""" })
 	@Options(useGeneratedKeys = true, keyProperty = "userId")
 	int addUserAccount(UserAccountDto userAccountDto);
+	
+	 @Select("""
+		        SELECT e.EmployeeID 
+		        FROM useraccounts ua
+		        JOIN Employee e ON ua.EmployeeID = e.Email
+		        WHERE ua.EmployeeID = #{employeeEmail}
+		    """)
+		    Integer findEmployeeIdByEmail(@Param("employeeEmail") String employeeEmail);
 }

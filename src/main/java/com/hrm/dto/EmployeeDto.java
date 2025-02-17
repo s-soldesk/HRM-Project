@@ -32,7 +32,6 @@ public class EmployeeDto {
 	private String departmentName; // 부서 이름
 	private DepartmentDto department; // 부서정보 매핑
 	private String lastMessage; // 전 메세지 
-	private String role;
 	private String profileImage; // 프로필 이미지
 }
 

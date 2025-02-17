@@ -69,7 +69,6 @@ public class ProfileController {
                 adminEmployee.setEmail("admin");
                 adminEmployee.setName("관리자");
                 adminEmployee.setDepartmentName("시스템관리부");
-                adminEmployee.setRole("ADMIN");
                 adminEmployee.setStatus("재직");
                 adminEmployee.setProfileImage("");
                 model.addAttribute("employee", adminEmployee);

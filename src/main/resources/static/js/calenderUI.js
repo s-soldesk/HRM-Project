@@ -17,6 +17,21 @@ $(document).ready(function () {
         nowIndicator: true,
         dayMaxEvents: true,
         locale: 'ko',
+		
+		// ✅ 툴팁 추가
+		        eventDidMount: function(info) {
+		            tippy(info.el, {
+		                content: `
+		                    <strong>📅 일정:</strong> ${info.event.title} <br>
+		                    <strong>🕒 시작:</strong> ${info.event.start.toLocaleString()} <br>
+		                    <strong>🏁 종료:</strong> ${info.event.end ? info.event.end.toLocaleString() : '미정'}
+		                `,
+		                allowHTML: true,
+		                placement: 'top',
+		                animation: 'scale',
+		                theme: 'light-border'
+		            });
+		        },
 
         // ✅ 모든 직원의 일정 조회 (중복 방지)
         events: function(fetchInfo, successCallback, failureCallback) {

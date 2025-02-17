@@ -27,6 +27,16 @@
     max-width: 1000px;
 }
 
+/* 토요일 글자색*/
+.fc-day-sat a {
+    color: #1565C0 !important;
+}
+
+/* 일요일 글자색*/
+.fc-day-sun a {
+    color: #D32F2F !important;
+}
+
 /* 기본 마진 제거 */
 body, html {
     margin: 0;

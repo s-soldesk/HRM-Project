@@ -21,4 +21,7 @@ public class EmployeeDto {
 	// 추가된 필드 유지
 	private String departmentName; // 부서 이름
 	private DepartmentDto department; // 부서정보 매핑
+	private String lastMessage; // 전 메세지
+	private String profileImage; // 프로필 이미지
 }
+

@@ -19,87 +19,88 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class EmployeeService {
 
-    private final EmployeeDao employeeDao;
-    private final UserAccountDao userAccountDao;
-    private final PasswordEncoder passwordEncoder;
+	private final EmployeeDao employeeDao;
+	private final UserAccountDao userAccountDao;
+	private final PasswordEncoder passwordEncoder;
 
-    // 사원 리스트 (사원번호, 사원이름, 부서이름)
-    public List<EmployeeDto> employeesList(int offset, int page) {
-        return employeeDao.employeesList(page, offset);
-    }
 
-    // 전체 사원 수
-    public int totalEmployees() {
-        return employeeDao.totalEmployees();
-    }
+	// 사원 리스트 (사원번호, 사원이름, 부서이름)
+	public List<EmployeeDto> employeesList(int offset, int page) {
+		return employeeDao.employeesList(page, offset);
+	}
 
-    // 사원 상세정보 (사원번호, 생년월일, 직급 등...)
-    public EmployeeDto employeesDetail(int employeeId) {
-        return employeeDao.employeesDetail(employeeId);
-    }
+	// 전체 사원 수
+	public int totalEmployees() {
+		return employeeDao.totalEmployees();
+	}
 
-    // 부서 리스트
-    public List<DepartmentDto> departmentsList() {
-        return employeeDao.departmentList();
-    }
+	// 사원 상세정보 (사원번호, 생년월일, 직급 등...)
+	public EmployeeDto employeesDetail(int EmployeeID) {
+		return employeeDao.employeesDetail(EmployeeID);
+	}
 
-    /*
-     * 사원 추가.
-     * Employee, UserAccounts 두 개의 테이블에 INSERT 해야 하므로 트랜잭션 처리!
-     */
-    @Transactional
-    public EmployeeDto addEmployee(EmployeeDto employeeDto) {
-        // 사원을 추가하고
-        int result = employeeDao.addEmployee(employeeDto);
+	// 부서 리스트
+	public List<DepartmentDto> departmentsList() {
+		return employeeDao.departmentList();
+	}
 
-        if (result > 0) {
-            // UserAccount에 추가하기 위한 UserAccountsDto 생성
-            UserAccountDto userAccountDto = new UserAccountDto();
-            userAccountDto.setEmployeeId(employeeDto.getEmail());
-            userAccountDto.setUsername(employeeDto.getName());
-            userAccountDto.setPassword(passwordEncoder.encode("1234")); // 기본 비밀번호 암호화
+	/*
+	 * 사원 추가.
+	 *  Employee, UserAccounts 두개의 테이블에 INSERT 해야하므로 트랜잭션 처리!
+	 */
+	@Transactional
+	public EmployeeDto addEmployee(EmployeeDto employeeDto) {
+		// 사원을 추가하고
+		int result = employeeDao.addEmployee(employeeDto);
 
-            // 인사부원은 "HR" 권한 부여
-            if (employeeDto.getDepartmentId() != null && employeeDto.getDepartmentId() == 1) { // 인사부의 부서 ID는 1
-                userAccountDto.setRole(Role.HR);
-            } else {
-                userAccountDto.setRole(Role.EMPLOYEE);
-            }
+		if (result > 0) {
+			// UserAccount에 추가하기 위한 UserAccountsDto 생성하고
+			UserAccountDto userAccountDto = new UserAccountDto();
+			userAccountDto.setEmployeeId(employeeDto.getEmail());
+			userAccountDto.setUsername(employeeDto.getName());
+			userAccountDto.setPassword(passwordEncoder.encode("1234")); // PasswordEncoder를 이용한 비밀번호 암호화
 
-            // UserAccount 테이블에 사원 로그인 정보 추가
-            userAccountDao.addUserAccount(userAccountDto);
+			// 인사부원은 "HR"권한 부여하고
+			if (employeeDto.getDepartmentId() != null && employeeDto.getDepartmentId() == 1) { // 인사부의 부서아이디는 1
+				userAccountDto.setRole(Role.HR);
+			} else {
+				userAccountDto.setRole(Role.EMPLOYEE);
+			}
 
-            // 추가된 사원의 정보를 반환
-            return employeeDao.employeesDetail(employeeDto.getEmployeeId());
-        }
-        return null;
-    }
+			// UserAccount 테이블에 사원 로그인정보 추가
+			userAccountDao.addUserAccount(userAccountDto);
 
-    // 사원 수정
-    public int updateEmployee(EmployeeDto employeeDto) {
-        return employeeDao.updateEmployee(employeeDto);
-    }
+			// 추가된 사원의 정보를 반환
+			return employeeDao.employeesDetail(employeeDto.getEmployeeId());
+		}
+		return null;
+	}
 
-    // 사원 검색
-    public List<EmployeeDto> searchEmployee(String searchType, String keyword, int offset, int limit) {
-        validateSearchInput(searchType, keyword);
-        return employeeDao.searchEmployees(searchType, keyword, offset, limit);
-    }
+	// 사원 수정
+	public int updateEmployee(EmployeeDto employeeDto) {
+		return employeeDao.updateEmployee(employeeDto);
+	}
 
-    // 검색된 사원의 수
-    public int totalSearchEmployees(String searchType, String keyword) {
-        validateSearchInput(searchType, keyword);
-        return employeeDao.countSearchEmployees(searchType, keyword);
-    }
+	// 사원 검색
+	public List<EmployeeDto> searchEmployee(String searchType, String keyword, int offset, int limit) {
+		validateSearchInput(searchType, keyword);
+		return employeeDao.searchEmployees(searchType, keyword, offset, limit);
+	}
 
-    // 검색 입력값 검증
-    private void validateSearchInput(String searchType, String keyword) {
-        if (searchType.equals("id")) {
-            try {
-                Integer.valueOf(keyword);
-            } catch (NumberFormatException e) {
-                throw new IllegalArgumentException("사원 ID는 숫자로 검색해야 합니다.");
-            }
-        }
-    }
+	// 검색된 사원의 수
+	public int totalSearchEmployees(String searchType, String keyword) {
+		validateSearchInput(searchType, keyword);
+		return employeeDao.countSearchEmployees(searchType, keyword);
+	}
+
+	// 검색 입력값 검증
+	private void validateSearchInput(String searchType, String keyword) {
+		if (searchType.equals("id")) {
+			try {
+				Integer.valueOf(keyword);
+			} catch (NumberFormatException e) {
+				throw new IllegalArgumentException("사원 ID는 숫자로 검색해야합니다.");
+			}
+		}
+	}
 }

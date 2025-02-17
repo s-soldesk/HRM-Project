@@ -72,20 +72,5 @@ public class AttendanceController {
         return "redirect:/attendance/records";
     }
     
-    // PDF 다운로드 메서드 추가
-    @GetMapping("/records/pdf")
-    public ResponseEntity<byte[]> generatePdfReport(@RequestParam(value = "employeeId", required = false) String employeeId,
-                                                    @RequestParam(value = "name", required = false) String name,
-                                                    @RequestParam(value = "startDate", required = false) String startDate,
-                                                    @RequestParam(value = "endDate", required = false) String endDate,
-                                                    @RequestParam(value = "attendanceType", required = false) String attendanceType) {
-        // PDF 생성 로직
-        List<AttendanceDto> records = attendanceService.searchAttendanceRecords(employeeId, name, startDate, endDate, attendanceType);
-        byte[] pdfData = attendanceService.generatePdf(records);
-        HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "attachment; filename=attendance_report.pdf");
-        headers.add("Content-Type", "application/pdf");
-
-        return ResponseEntity.ok().headers(headers).body(pdfData);
-    }
+    
 }

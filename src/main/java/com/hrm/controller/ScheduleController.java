@@ -50,7 +50,7 @@ public class ScheduleController {
 
         // 로그인한 직원의 employeeId 가져오기
         String employeeId = principal.getName();
-        schedule.setEmployeeId(Integer.parseInt(employeeId));
+        schedule.setEmployeeId(employeeId);
 
         schedule.setTitle((String) map.get("title"));
 

@@ -25,8 +25,8 @@ public class CommuteService {
             return false;
         }
 
-        LocalTime checkInTime = LocalTime.now().truncatedTo(ChronoUnit.SECONDS);
-        String status = checkInTime.isAfter(STANDARD_CHECK_IN_TIME) ? "Late" : "Present";
+        LocalTime checkInTime = LocalTime.now().truncatedTo(ChronoUnit.MINUTES);
+        String status = checkInTime.isAfter(STANDARD_CHECK_IN_TIME) ? "Late" : "OnTime";
 
         attendanceDao.insertCheckIn(employeeId, LocalDate.now(), checkInTime, status);
         return true;
@@ -38,26 +38,24 @@ public class CommuteService {
             return false;
         }
 
-        LocalTime checkOutTime = LocalTime.now().truncatedTo(ChronoUnit.SECONDS);
-        LocalTime checkInTime = STANDARD_CHECK_IN_TIME; // 기본 출근 시간 (DB 조회 필요 시 쿼리 추가 가능)
+        
+        LocalTime checkOutTime = LocalTime.now().truncatedTo(ChronoUnit.MINUTES);
+        LocalTime checkInTime = attendanceDao.getCheckInTime(employeeId, LocalDate.now());
 
-        // 근무 시간 계산
-        double hoursWorked = ChronoUnit.MINUTES.between(checkInTime, checkOutTime) / 60.0;
-        double overtimeHours = Math.max(0, hoursWorked - STANDARD_WORK_HOURS);
-        String status;
-
-        // 근태 유형 설정
-        if (checkOutTime.isAfter(STANDARD_CHECK_OUT_TIME)) {
-            status = "Late";
-//        } else if (overtimeHours > 0) {
-//            status = "Overtime";
-        } else {
-            status = "onTime";
+        if (checkInTime == null) {
+            checkInTime = STANDARD_CHECK_IN_TIME; // 출근 기록이 없으면 기본 출근 시간 설정
         }
+        
+        // 근무 시간 계산
+        double hoursWorked = Math.max(0, ChronoUnit.MINUTES.between(checkInTime, checkOutTime) / 60.0);
+        double overtimeHours = Math.max(0, hoursWorked - STANDARD_WORK_HOURS);
+        String status = checkOutTime.isAfter(STANDARD_CHECK_OUT_TIME) ? "OverTime" : "OnTime";
+
 
         attendanceDao.updateCheckOut(employeeId, LocalDate.now(), checkOutTime, hoursWorked, overtimeHours, status);
         return true;
     }
+    
     	
     // 이미 퇴근 기록이 있는지 확인
     public boolean hasCheckOutRecord(int employeeId) {

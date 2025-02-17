@@ -14,10 +14,16 @@
 
         <!-- 휴가 신청 폼 -->
         <form th:action="@{/attendance/leave/add}" method="post" class="space-y-4">
-            <div>
-                <label for="employeeId" class="block font-medium">사원 ID</label>
-                <input type="number" name="employeeId" id="employeeId" class="border rounded-lg px-4 py-2 w-full" required>
-            </div>
+        	<div>
+    			<label for="employeeId" class="block font-medium">사원 ID</label>
+    
+    			<!-- HR/Admin은 직접 입력 가능, Employee는 자신의 ID만 사용 -->
+    			<input type="text" name="employeeId" id="employeeId" 
+           			th:value="${scheduleDto.employeeId}" 
+           			class="border rounded-lg px-4 py-2 w-full"
+           			th:readonly="${#authorization.expression('hasRole(''EMPLOYEE'')')}"
+           			th:classappend="${#authorization.expression('hasRole(''EMPLOYEE'')')} ? 'bg-gray-200 cursor-not-allowed'">
+			</div>
             <div>
                 <label for="title" class="block font-medium">일정 제목</label>
                 <input type="text" name="title" id="title" class="border rounded-lg px-4 py-2 w-full" required>
@@ -25,20 +31,18 @@
             <div>
                 <label for="leaveType" class="block font-medium">휴가 유형</label>
                 <select name="leaveType" id="leaveType" class="border rounded-lg px-4 py-2 w-full">
-                    <option value="">선택 안함</option>
                     <option value="Annual">연차</option>
                     <option value="Sick">병가</option>
                     <option value="Personal">개인 사유</option>
-                    <option value="Unpaid">무급</option>
                 </select>
             </div>
             <div>
                 <label for="startDate" class="block font-medium">시작 날짜</label>
-                <input type="datetime-local" name="startDate" id="startDate" class="border rounded-lg px-4 py-2 w-full" required>
+                <input type="date" name="startDate" id="startDate" class="border rounded-lg px-4 py-2 w-full" required>
             </div>
             <div>
                 <label for="endDate" class="block font-medium">종료 날짜</label>
-                <input type="datetime-local" name="endDate" id="endDate" class="border rounded-lg px-4 py-2 w-full" required>
+                <input type="date" name="endDate" id="endDate" class="border rounded-lg px-4 py-2 w-full" required>
             </div>
             <div>
                 <label for="reason" class="block font-medium">사유</label>

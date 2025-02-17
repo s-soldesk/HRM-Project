@@ -18,11 +18,6 @@ public class LeaveService {
         return leaveDao.getAllLeaves();
     }
 
-    // 특정 사원의 휴가 일정 조회
-    public List<ScheduleDto> getLeavesByEmployee(int employeeId) {
-        return leaveDao.getLeavesByEmployee(employeeId);
-    }
-
     // 휴가 일정 추가
     public boolean addLeave(ScheduleDto scheduleDto) {
         return leaveDao.insertLeave(scheduleDto) > 0;
@@ -30,6 +25,18 @@ public class LeaveService {
 
     // 휴가 상태 업데이트
     public boolean updateLeaveStatus(int scheduleId, String status) {
+        return leaveDao.updateLeaveStatus(scheduleId, status) > 0;
+    }
+    
+    // 휴가 승인 시 CONFIRMED 상태로 변경
+    public boolean approveLeave(int scheduleId) {
+        String status = "CONFIRMED"; 
+        return leaveDao.updateLeaveStatus(scheduleId, status) > 0;
+    }
+
+    // 휴가 거절 시 REJECTED 상태로 변경
+    public boolean rejectLeave(int scheduleId) {
+        String status = "REJECTED"; 
         return leaveDao.updateLeaveStatus(scheduleId, status) > 0;
     }
 

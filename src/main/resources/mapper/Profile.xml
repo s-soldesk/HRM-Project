@@ -15,6 +15,7 @@
         e.Email as email,
         e.ProfileImage as profileImage,
         d.DepartmentName as departmentName,
+        d.DepartmentID as departmentId
         ua.Role as role
         FROM employee e
         LEFT JOIN department d ON e.DepartmentID = d.DepartmentID

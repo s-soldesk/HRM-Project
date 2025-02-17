@@ -5,7 +5,9 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDateTime;
 
+import org.apache.ibatis.jdbc.Null;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -67,10 +69,9 @@ public class ProfileController {
                 adminEmployee.setEmail("admin");
                 adminEmployee.setName("관리자");
                 adminEmployee.setDepartmentName("시스템관리부");
-                adminEmployee.setRole("ROLE_ADMIN");
+                adminEmployee.setRole("ADMIN");
                 adminEmployee.setStatus("재직");
                 adminEmployee.setProfileImage("");
-                
                 model.addAttribute("employee", adminEmployee);
                 model.addAttribute("isAdmin", true);
             } else {

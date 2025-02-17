@@ -155,25 +155,33 @@
             </div>
             
             <!-- 프로필 정보 -->
-            <form action="/profile/update" method="post" enctype="multipart/form-data" class="profile-box">
-                <div class="profile-header">
-                    <div class="profile-image-container">
-						<img th:if="${employee != null and employee.profileImage != null and employee.profileImage != ''}" 
-						     th:src="@{'/uploads/' + ${employee.profileImage}}"
-						     alt="프로필 이미지" 
-						     class="profile-image"
-						     onerror="this.src='/uploads/default-profile.jpg'">
-						<img th:unless="${employee != null and employee.profileImage != null and employee.profileImage != ''}" 
-						     src="/uploads/default-profile.jpg"
-						     alt="기본 프로필 이미지" 
-						     class="profile-image">
-                        <div class="image-upload">
-                            <label for="profile-upload">이미지 변경</label>
-                            <input id="profile-upload" type="file" 
-                                   name="profileImage" 
-                                   accept="image/jpeg, image/png, image/jpg">
-                        </div>
-                    </div>
+			<form action="/profile/update" method="post" enctype="multipart/form-data" class="profile-box">
+			    <div class="profile-header">
+			        <div class="profile-image-container">
+			            <!-- admin 체크를 먼저 수행 -->
+			            <img th:if="${isAdmin}"
+			                 src="/img/admin.png"
+			                 alt="관리자 프로필 이미지"
+			                 class="profile-image">
+			            
+			            <!-- admin이 아닐 경우의 이미지 처리 -->
+			            <img th:if="${!isAdmin and employee != null and employee.profileImage != null and employee.profileImage != ''}"
+			                 th:src="@{'/uploads/' + ${employee.profileImage}}"
+			                 alt="프로필 이미지"
+			                 class="profile-image">
+			                 
+			            <img th:if="${!isAdmin and (employee == null or employee.profileImage == null or employee.profileImage == '')}"
+			                 src="/img/basic.jpg"
+			                 alt="기본 프로필 이미지"
+			                 class="profile-image">
+			                 
+			            <div class="image-upload">
+			                <label for="profile-upload">이미지 변경</label>
+			                <input id="profile-upload" type="file"
+			                       name="profileImage"
+			                       accept="image/jpeg, image/png, image/jpg">
+			            </div>
+			        </div>
                     
                     <div class="profile-info">
                         <div class="info-row">

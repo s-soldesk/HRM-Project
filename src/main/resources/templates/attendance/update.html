@@ -18,6 +18,8 @@
         <!-- 근태 수정 폼 -->
         <form method="post" action="/attendance/update" class="space-y-4">
             <input type="hidden" name="attendanceId" th:value="${attendance.attendanceId}">
+            <input type="hidden" name="employeeId" th:value="${attendance.employeeId}" />
+    		<input type="hidden" name="date" th:value="${attendance.date}" />		
 
             <div>
                 <label class="block text-gray-700 font-medium">출근 시간</label>
@@ -31,18 +33,12 @@
 
             <div>
                 <label class="block text-gray-700 font-medium">근태 유형</label>
-                <select name="attendanceType" class="border rounded-lg px-4 py-2 w-full">
-                    <option value="Present" th:selected="${attendance.attendanceType == 'Present'}">출근</option>
-                    <option value="Late" th:selected="${attendance.attendanceType == 'Late'}">지각</option>
-                    <option value="Overtime" th:selected="${attendance.attendanceType == 'Overtime'}">야근</option>
-                    <option value="Leave" th:selected="${attendance.attendanceType == 'Leave'}">휴가</option>
-                    <option value="Absent" th:selected="${attendance.attendanceType == 'Absent'}">결근</option>
+                <select name="status" class="border rounded-lg px-4 py-2 w-full">
+                    <option value="OnTime" th:selected="${attendance.status == 'OnTime'}">정시</option>
+                    <option value="Late" th:selected="${attendance.status == 'Late'}">지각</option>
+                    <option value="Overtime" th:selected="${attendance.status == 'Overtime'}">야근</option>
+                    <option value="Leave" th:selected="${attendance.status == 'Leave'}">휴가</option>
                 </select>
-            </div>
-
-            <div>
-                <label class="block text-gray-700 font-medium">비고</label>
-                <textarea name="remarks" class="border rounded-lg px-4 py-2 w-full" rows="4" th:text="${attendance.remarks}"></textarea>
             </div>
 
             <div class="flex justify-end">

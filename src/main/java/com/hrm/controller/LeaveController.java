@@ -38,7 +38,7 @@ public class LeaveController {
         if (employeeId == null) {
             model.addAttribute("message", "사원 정보를 찾을 수 없습니다.");
         } else {
-            scheduleDto.setEmployeeId(employeeId);
+        	scheduleDto.setEmployeeId(String.valueOf(employeeId));
         }
         
     	model.addAttribute("scheduleDto", new ScheduleDto());
@@ -63,7 +63,7 @@ public class LeaveController {
         }
 
         // Employee 권한일 경우, 본인 ID로만 신청 가능하게 강제 설정
-        scheduleDto.setEmployeeId(employeeId);
+        scheduleDto.setEmployeeId(String.valueOf(employeeId));
 
         boolean isAdded = leaveService.addLeave(scheduleDto);
         redirectAttributes.addFlashAttribute("message", isAdded ? "휴가가 성공적으로 추가되었습니다." : "휴가 추가에 실패하였습니다.");

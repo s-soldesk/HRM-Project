@@ -23,6 +23,7 @@ public class EmployeeService {
 	private final UserAccountDao userAccountDao;
 	private final PasswordEncoder passwordEncoder;
 
+
 	// 사원 리스트 (사원번호, 사원이름, 부서이름)
 	public List<EmployeeDto> employeesList(int offset, int page) {
 		return employeeDao.employeesList(page, offset);

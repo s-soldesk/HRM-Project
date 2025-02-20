@@ -119,35 +119,42 @@ public class ScheduleController {
      * ✅ 일정 수정
      */
     @PutMapping("/update/{scheduleId}")
-    public String updateSchedule(@PathVariable("scheduleId") int scheduleId, @RequestBody Map<String, Object> map) {
-        ScheduleDto schedule = new ScheduleDto();
-        schedule.setScheduleId(scheduleId);
-        schedule.setTitle((String) map.get("title"));
-        
-        // employeeId 유지
-        ScheduleDto existingSchedule = scheduleService.getScheduleById(scheduleId);
-        schedule.setEmployeeId(existingSchedule.getEmployeeId());
-
-        // 📌 날짜 변환 (ISO 8601 → yyyy-MM-dd HH:mm:ss)
-        DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
-
-        if (map.get("start") != null) {
-            ZonedDateTime startUTC = ZonedDateTime.parse(map.get("start").toString(), formatter)
-                    .withZoneSameInstant(ZoneId.of("Asia/Seoul"));
-            schedule.setStartDate(startUTC.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-        }
-        if (map.get("end") != null) {
-            ZonedDateTime endUTC = ZonedDateTime.parse(map.get("end").toString(), formatter)
-                    .withZoneSameInstant(ZoneId.of("Asia/Seoul"));
-            schedule.setEndDate(endUTC.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-        }
-
+    public ResponseEntity<ScheduleDto> updateSchedule(@PathVariable("scheduleId") int scheduleId, @RequestBody Map<String, Object> map) {
         try {
+            // 기존 일정 정보 조회
+            ScheduleDto existingSchedule = scheduleService.getScheduleById(scheduleId);
+            if (existingSchedule == null) {
+                return ResponseEntity.notFound().build();
+            }
+
+            // 새로운 일정 정보 설정
+            ScheduleDto schedule = new ScheduleDto();
+            schedule.setScheduleId(scheduleId);
+            schedule.setTitle((String) map.get("title"));
+            schedule.setEmployeeId(existingSchedule.getEmployeeId());  // 기존 employeeId 유지
+
+            // 날짜 변환 (ISO 8601 → yyyy-MM-dd HH:mm:ss)
+            DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
+
+            if (map.get("start") != null) {
+                ZonedDateTime startUTC = ZonedDateTime.parse(map.get("start").toString(), formatter)
+                        .withZoneSameInstant(ZoneId.of("Asia/Seoul"));
+                schedule.setStartDate(startUTC.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+            }
+            if (map.get("end") != null) {
+                ZonedDateTime endUTC = ZonedDateTime.parse(map.get("end").toString(), formatter)
+                        .withZoneSameInstant(ZoneId.of("Asia/Seoul"));
+                schedule.setEndDate(endUTC.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+            }
+
             scheduleService.updateSchedule(schedule);
-            return "success";
+            
+            // 업데이트된 일정 정보 반환
+            ScheduleDto updatedSchedule = scheduleService.getScheduleById(scheduleId);
+            return ResponseEntity.ok(updatedSchedule);
         } catch (Exception e) {
             e.printStackTrace();
-            return "fail";
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
     }
 }

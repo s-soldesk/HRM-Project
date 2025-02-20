@@ -24,7 +24,7 @@
     <!-- ✅ 일정 수정 -->
     <update id="updateSchedule">
         UPDATE schedule 
-        SET title = #{title}, startDate = #{startDate}, endDate = #{endDate}
+        SET title = #{title}, startDate = #{startDate}, endDate = #{endDate}, employeeId = #{employeeId}
         WHERE scheduleId = #{scheduleId}
     </update>
 

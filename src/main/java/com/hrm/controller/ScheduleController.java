@@ -123,6 +123,10 @@ public class ScheduleController {
         ScheduleDto schedule = new ScheduleDto();
         schedule.setScheduleId(scheduleId);
         schedule.setTitle((String) map.get("title"));
+        
+        // employeeId 유지
+        ScheduleDto existingSchedule = scheduleService.getScheduleById(scheduleId);
+        schedule.setEmployeeId(existingSchedule.getEmployeeId());
 
         // 📌 날짜 변환 (ISO 8601 → yyyy-MM-dd HH:mm:ss)
         DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;

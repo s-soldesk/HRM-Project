@@ -14,7 +14,6 @@ import java.util.Collections;
 
 @Service
 public class UserDetailsServiceImpl implements UserDetailsService {
-
 	@Autowired
     private UserAccountDao userAccountDao;
 

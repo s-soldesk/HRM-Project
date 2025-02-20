@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hrm.dao.NoticeDao">
+    <select id="getAllNotices" resultType="com.hrm.dto.NoticeDto">
+        SELECT n.*,
+            CASE 
+                WHEN ua.Role = 'Admin' THEN '관리자'
+                WHEN e.Position = 'CEO' THEN '대표'
+                ELSE e.Name
+            END as authorName
+        FROM Notice n
+        LEFT JOIN UserAccounts ua ON ua.UserID = n.AuthorID
+        LEFT JOIN Employee e ON e.EmployeeID = ua.EmployeeID
+        ORDER BY n.CreatedDate DESC
+    </select>
+
+    <select id="getNoticeById" parameterType="int" resultType="com.hrm.dto.NoticeDto">
+        SELECT n.*,
+            CASE 
+                WHEN ua.Role = 'Admin' THEN '관리자'
+                WHEN e.Position = 'CEO' THEN '대표'
+                ELSE e.Name
+            END as authorName
+        FROM Notice n
+        LEFT JOIN UserAccounts ua ON ua.UserID = n.AuthorID
+        LEFT JOIN Employee e ON e.EmployeeID = ua.EmployeeID
+        WHERE n.NoticeID = #{noticeId}
+    </select>
+
+   <insert id="insertNotice" parameterType="com.hrm.dto.NoticeDto">
+       INSERT INTO Notice (Title, Content, CreatedDate, AuthorID)
+       VALUES (#{title}, #{content}, #{createdDate}, #{authorId})
+   </insert>
+
+   <update id="updateNotice" parameterType="com.hrm.dto.NoticeDto">
+       UPDATE Notice
+       SET Title = #{title}, Content = #{content}
+       WHERE NoticeID = #{noticeId}
+   </update>
+
+   <delete id="deleteNotice" parameterType="int">
+       DELETE FROM Notice WHERE NoticeID = #{noticeId}
+   </delete>
+   
+	<update id="increaseReadCount">
+	    UPDATE Notice
+	    SET Readcount = Readcount + 1
+	    WHERE NoticeID = #{noticeId}
+	</update>
+
+    <select id="searchNotices" resultType="com.hrm.dto.NoticeDto">
+        SELECT n.*,
+            CASE 
+                WHEN ua.Role = 'Admin' THEN '관리자'
+                WHEN e.Position = 'CEO' THEN '대표'
+                ELSE e.Name
+            END as authorName
+        FROM Notice n
+        LEFT JOIN UserAccounts ua ON ua.UserID = n.AuthorID
+        LEFT JOIN Employee e ON e.EmployeeID = ua.EmployeeID
+        <where>
+            <choose>
+                <when test="searchType == 'title'">
+                    n.Title LIKE CONCAT('%', #{keyword}, '%')
+                </when>
+                <when test="searchType == 'author'">
+                    (ua.Role = 'Admin' AND '관리자' LIKE CONCAT('%', #{keyword}, '%'))
+                    OR (e.Position = 'CEO' AND '대표' LIKE CONCAT('%', #{keyword}, '%'))
+                    OR e.Name LIKE CONCAT('%', #{keyword}, '%')
+                </when>
+                <when test="searchType == 'content'">
+                    n.Content LIKE CONCAT('%', #{keyword}, '%')
+                </when>
+            </choose>
+        </where>
+        ORDER BY n.CreatedDate DESC
+    </select>
+</mapper>

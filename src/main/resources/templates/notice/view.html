@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+   <title>공지사항 상세</title>
+     <link rel="stylesheet" href="/css/sidebar.css">
+     <link rel="stylesheet" type="text/css" th:href="@{/css/dashboard.css}">
+   <style>
+       .notice-header {
+           display: flex;
+           justify-content: space-between;
+           padding: 20px;
+           background-color: #f8f9fa;
+           border-radius: 8px;
+           margin-bottom: 20px;
+           box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+       }
+
+       .notice-info span {
+           color: #666;
+           margin-right: 10px;
+       }
+
+       .notice-title {
+           font-size: 1.5rem;
+           margin-bottom: 10px;
+           font-weight: bold;
+           color: #333;
+       }
+
+       .notice-content {
+           min-height: 300px;
+           padding: 30px;
+           background-color: white;
+           border-radius: 8px;
+           box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+           margin-bottom: 30px;
+           line-height: 1.6;
+           white-space: pre-wrap;
+           word-wrap: break-word;
+           font-size: 14px;
+           color: #333;
+       }
+
+       .button-group {
+           display: flex;
+           justify-content: flex-end;
+           gap: 10px;
+           margin-bottom: 20px;
+           align-items: stretch;
+       }
+
+       .btn {
+           padding: 8px 16px;
+           border: none;
+           border-radius: 4px;
+           cursor: pointer;
+           text-decoration: none;
+           color: white;
+           transition: all 0.3s ease;
+           width: 80px;
+           height: 40px;
+           text-align: center;
+           display: flex;
+           align-items: center;
+           justify-content: center;
+           font-size: 14px;
+           margin: 0;
+           box-sizing: border-box;
+           font-weight: 500;
+       }
+
+       form {
+           margin: 0;
+           padding: 0;
+           display: flex;
+       }
+
+       .btn:hover {
+           opacity: 0.9;
+           transform: translateY(-1px);
+       }
+
+       .btn-list { 
+           background-color: #6c757d; 
+       }
+       
+       .btn-modify { 
+           background-color: #007bff; 
+       }
+       
+       .btn-delete { 
+           background-color: #dc3545; 
+       }
+
+       /* 조회수 표시 추가 */
+       .notice-meta {
+           display: flex;
+           align-items: center;
+           gap: 15px;
+           color: #666;
+           font-size: 14px;
+           margin-top: 5px;
+       }
+
+       .divider {
+           color: #ddd;
+       }
+   </style>
+</head>
+<body>
+   <!-- 사이드바 fragment 적용 -->
+   <div th:replace="~{layout/sidebar :: sidebar}"></div>
+
+   <div class="content">
+       <div class="notice-header">
+           <div>
+               <div class="notice-title" th:text="${notice.title}"></div>
+               <div class="notice-meta">
+                   <span>작성자: <span th:text="${notice.authorName}"></span></span>
+                   <span class="divider">|</span>
+                   <span>작성일: <span th:text="${#temporals.format(notice.createdDate, 'yyyy-MM-dd HH:mm:ss')}"></span></span>
+                   <span class="divider">|</span>
+                   <span>조회수: <span th:text="${notice.readCount}"></span></span>
+               </div>
+           </div>
+       </div>
+
+       <div class="notice-content" th:utext="${notice.content}"></div>
+
+       <div class="button-group">
+           <a href="/notices" class="btn btn-list">목록</a>
+           <!-- 관리자만 수정/삭제 버튼 표시 -->
+           <th:block th:if="${isAdmin}">
+               <a th:href="@{/notices/{id}/edit(id=${notice.noticeId})}" class="btn btn-modify">수정</a>
+               <form th:action="@{/notices/{id}/delete(id=${notice.noticeId})}" method="post">
+                   <button type="submit" class="btn btn-delete" 
+                           onclick="return confirm('정말 삭제하시겠습니까?')">삭제</button>
+               </form>
+           </th:block>
+       </div>
+   </div>
+</body>
+</html>

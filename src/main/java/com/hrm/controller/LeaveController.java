@@ -89,7 +89,7 @@ public class LeaveController {
     @PreAuthorize("hasAnyRole('HR', 'ADMIN')")
     @PostMapping("/approve")
     public String approveLeave(@RequestParam("scheduleId") int scheduleId, RedirectAttributes redirectAttributes) {
-        boolean isApproved = leaveService.approveLeave(scheduleId);
+        boolean isApproved = leaveService.updateLeaveStatus(scheduleId, "CONFIRMED");
         redirectAttributes.addFlashAttribute("message", isApproved ? "휴가가 승인되었습니다." : "휴가 승인에 실패했습니다.");
         return "redirect:/attendance/leave/list";
     }
@@ -97,7 +97,7 @@ public class LeaveController {
     // 휴가 거절 처리 (HR 관리자용)
     @PostMapping("/reject")
     public String rejectLeave(@RequestParam("scheduleId") int scheduleId, RedirectAttributes redirectAttributes) {
-        boolean isRejected = leaveService.rejectLeave(scheduleId);
+        boolean isRejected = leaveService.updateLeaveStatus(scheduleId, "REJECTED");
         redirectAttributes.addFlashAttribute("message", isRejected ? "휴가가 거절되었습니다." : "휴가 거절에 실패했습니다.");
         return "redirect:/attendance/leave/list";
     }

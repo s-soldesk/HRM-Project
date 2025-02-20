@@ -35,9 +35,26 @@ public class LeaveService {
     
     // 휴가 상태 업데이트
     public boolean updateLeaveStatus(int scheduleId, String status) {
-        return leaveDao.updateLeaveStatus(scheduleId, status) > 0;
-    }
+        ScheduleDto leaveSchedule = leaveDao.getLeaveById(scheduleId);
 
+        if (leaveSchedule == null) {
+            return false;
+        }
+
+        boolean updated = leaveDao.updateLeaveStatus(scheduleId, status) > 0;
+        if (updated) {
+            // ✅ 일정 추가/삭제 로직 (승인된 경우만 캘린더에 추가)
+            if ("CONFIRMED".equals(status)) {
+                leaveSchedule.setType("Leave");
+                leaveSchedule.setAllDay(true);
+                scheduleService.createSchedule(leaveSchedule);
+            } else {
+                scheduleService.deleteSchedule(scheduleId);
+            }
+        }
+        return updated;
+    }
+    
     // 휴가 승인 시 상태만 업데이트 (중복 추가 방지)
     public boolean approveLeave(int scheduleId) {
         ScheduleDto leaveSchedule = leaveDao.getLeaveById(scheduleId);

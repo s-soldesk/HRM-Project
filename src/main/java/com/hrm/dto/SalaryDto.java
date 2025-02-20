@@ -2,6 +2,7 @@ package com.hrm.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -54,6 +55,23 @@ public class SalaryDto {
 		BigDecimal deductions = getDeductionTotal();
 		return totalSalary != null ? totalSalary.subtract(deductions) : BigDecimal.ZERO;
 	}
+	
+	// yearMonth 문자열 반환 메서드 추가
+    public String getYearMonth() {
+        if (paymentDate != null) {
+            return paymentDate.format(DateTimeFormatter.ofPattern("yyyy-MM"));
+        }
+        return null;
+    }
+
+    // yearMonth 설정 메서드 추가
+    public void setYearMonth(String yearMonth) {
+        if (yearMonth != null) {
+            // yyyy-MM 또는 yyyy/MM 형식 모두 처리
+            yearMonth = yearMonth.replace("/", "-");
+            this.paymentDate = LocalDate.parse(yearMonth + "-01");
+        }
+    }
 
 	private EmployeeDto employee; // 사원 정보 매핑
 

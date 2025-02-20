@@ -25,8 +25,8 @@ public interface LeaveDao {
     List<ScheduleDto> getAllLeaves();
 
     // 휴가 일정 추가
-    @Insert("INSERT INTO SCHEDULE (EmployeeID, Title, LeaveType, Reason, StartDate, EndDate, Status) " +
-            "VALUES (#{employeeId}, #{title}, #{leaveType}, #{reason}, #{startDate}, #{endDate}, 'PENDING')")
+    @Insert("INSERT INTO SCHEDULE (EmployeeID, Title, Type, LeaveType, Reason, StartDate, EndDate, Status) " +
+            "VALUES (#{employeeId}, #{title}, #{type}, #{leaveType}, #{reason}, #{startDate}, #{endDate}, 'PENDING')")
     @Options(useGeneratedKeys = true, keyProperty = "scheduleId")
     int insertLeave(ScheduleDto scheduleDto);
 
@@ -45,4 +45,8 @@ public interface LeaveDao {
     // 휴가 ID로 일정 정보 조회
     @Select("SELECT * FROM SCHEDULE WHERE ScheduleID = #{scheduleId}")
     ScheduleDto getLeaveById(@Param("scheduleId") int scheduleId);
+    
+    @Select("SELECT * FROM SCHEDULE WHERE EmployeeID = #{employeeId}")
+    List<ScheduleDto> getLeavesByEmployee(@Param("employeeId") Integer employeeId);
+
 }

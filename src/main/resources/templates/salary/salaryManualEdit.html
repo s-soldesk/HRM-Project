@@ -1,0 +1,182 @@
+<!-- salaryManualEdit.html -->
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="UTF-8">
+<title>급여 수기 수정</title>
+<link rel="stylesheet" type="text/css" th:href="@{/css/dashboard.css}">
+<link rel="stylesheet" type="text/css" th:href="@{/css/salary.css}">
+<link rel="stylesheet" href="/css/sidebar.css">
+<style>
+.manual-edit-container {
+	padding: 20px;
+	max-width: 800px;
+	margin: 0 auto;
+}
+
+.edit-form {
+	background: white;
+	padding: 20px;
+	border-radius: 8px;
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.form-group {
+	margin-bottom: 15px;
+}
+
+.form-group label {
+	display: block;
+	margin-bottom: 5px;
+	font-weight: bold;
+}
+
+.form-group input {
+	width: 100%;
+	padding: 8px;
+	border: 1px solid #ddd;
+	border-radius: 4px;
+}
+
+.section-title {
+	margin: 20px 0;
+	padding-bottom: 10px;
+	border-bottom: 2px solid #eee;
+}
+
+.button-group {
+	margin-top: 20px;
+	display: flex;
+	gap: 10px;
+	justify-content: center;
+}
+
+.btn {
+	padding: 10px 20px;
+	border: none;
+	border-radius: 4px;
+	cursor: pointer;
+	font-size: 14px;
+}
+
+.btn-save {
+	background-color: #28a745;
+	color: white;
+}
+
+.btn-cancel {
+	background-color: #dc3545;
+	color: white;
+}
+
+.read-only {
+	background-color: #f8f9fa;
+	cursor: not-allowed;
+}
+</style>
+</head>
+<body>
+	<!-- 사이드바 -->
+	<div th:replace="~{layout/sidebar :: sidebar}"></div>
+
+	<div class="content">
+		<div class="manual-edit-container">
+			<h2>급여 수기 수정</h2>
+
+			<!-- 사원 정보 표시 -->
+			<div class="employee-info section-title">
+				<h3>사원 정보</h3>
+				<p>
+					사원명: <span th:text="${employee.name}"></span>
+				</p>
+				<p>
+					부서: <span th:text="${employee.departmentName}"></span>
+				</p>
+				<p>
+					귀속 연월: <span th:text="${yearMonth}"></span>
+				</p>
+			</div>
+
+			<form id="salaryEditForm" class="edit-form"
+				th:action="@{/salary/manual-edit/save}" method="post">
+				<input type="hidden" name="salaryId" th:value="${salary.salaryId}">
+				<input type="hidden" name="employeeId"
+					th:value="${employee.employeeId}"> 
+				<input type="hidden" name="yearMonth" th:value="${yearMonth}">
+				<input type="hidden" name="status" th:value="${salary.status}"> 
+				<input type="hidden" name="paymentDate" th:value="${salary.paymentDate}">
+
+				<!-- 기본 급여 정보 -->
+				<div class="section-title">
+					<h3>기본 급여 정보</h3>
+				</div>
+				<div class="form-group">
+					<label for="baseSalary">기본급</label> <input type="number"
+						id="baseSalary" name="baseSalary" th:value="${salary.baseSalary}">
+				</div>
+				<div class="form-group">
+					<label for="mealAllowance">식대</label> <input type="number"
+						id="mealAllowance" name="mealAllowance"
+						th:value="${salary.mealAllowance}">
+				</div>
+				<div class="form-group">
+					<label for="positionAllowance">직책수당</label> <input type="number"
+						id="positionAllowance" name="positionAllowance"
+						th:value="${salary.positionAllowance}">
+				</div>
+				<div class="form-group">
+					<label for="overtimePay">초과근무수당</label> <input type="number"
+						id="overtimePay" name="overtimePay"
+						th:value="${salary.overtimePay}">
+				</div>
+
+				<!-- 공제 항목 -->
+				<div class="section-title">
+					<h3>공제 항목</h3>
+				</div>
+				<div class="form-group">
+					<label for="incomeTax">소득세</label> <input type="number"
+						id="incomeTax" name="incomeTax" th:value="${salary.incomeTax}">
+				</div>
+				<div class="form-group">
+					<label for="nationalPension">국민연금</label> <input type="number"
+						id="nationalPension" name="nationalPension"
+						th:value="${salary.nationalPension}">
+				</div>
+				<div class="form-group">
+					<label for="healthInsurance">건강보험</label> <input type="number"
+						id="healthInsurance" name="healthInsurance"
+						th:value="${salary.healthInsurance}">
+				</div>
+				<div class="form-group">
+					<label for="employmentInsurance">고용보험</label> <input type="number"
+						id="employmentInsurance" name="employmentInsurance"
+						th:value="${salary.employmentInsurance}">
+				</div>
+				<div class="form-group">
+					<label for="longTermCareInsurance">장기요양보험</label> <input
+						type="number" id="longTermCareInsurance"
+						name="longTermCareInsurance"
+						th:value="${salary.longTermCareInsurance}">
+				</div>
+
+				<!-- 버튼 그룹 -->
+				<div class="button-group">
+					<button type="button" class="btn btn-cancel"
+						onclick="history.back()">취소</button>
+					<button type="submit" class="btn btn-save">저장</button>
+				</div>
+			</form>
+		</div>
+	</div>
+
+	<script>
+		document.getElementById('salaryEditForm').addEventListener('submit',
+				function(e) {
+					if (!confirm('수정된 급여 정보를 저장하시겠습니까?')) {
+						e.preventDefault();
+					}
+				});
+	</script>
+</body>
+</html>

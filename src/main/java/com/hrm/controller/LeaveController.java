@@ -52,7 +52,7 @@ public class LeaveController {
                            @AuthenticationPrincipal UserDetails userDetails,
                            RedirectAttributes redirectAttributes) {
 
-    	 // 로그인한 사용자의 이메일 가져오기
+    	// 로그인한 사용자의 이메일 가져오기
         String employeeEmail = userDetails.getUsername();
 
         // 이메일을 이용해 Employee 테이블의 EmployeeID(Integer) 조회
@@ -67,7 +67,7 @@ public class LeaveController {
         boolean isHR = userDetails.getAuthorities().stream()
                                  .anyMatch(auth -> auth.getAuthority().equals("ROLE_HR"));
 
-        // ✅ HR도 본인 ID로만 신청 가능하도록 강제 설정
+        // HR도 본인 ID로만 신청 가능하도록 강제 설정
         if (isHR || userDetails.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().equals("ROLE_EMPLOYEE"))) {
             scheduleDto.setEmployeeId(String.valueOf(loggedInEmployeeId));
         }
@@ -79,11 +79,22 @@ public class LeaveController {
 
     // 휴가 신청 목록 페이지 렌더링
     @GetMapping("/list")
-    public String showLeaveListPage(Model model) {
-        List<ScheduleDto> schedules = leaveService.getAllLeaves();
+    public String showLeaveListPage(Model model, @AuthenticationPrincipal UserDetails userDetails) {
+        // 현재 로그인한 계정의 역할 확인
+        String role = userDetails.getAuthorities().stream()
+                                 .findFirst()
+                                 .map(GrantedAuthority::getAuthority)
+                                 .orElse("EMPLOYEE");
+
+        // HR이거나 ADMIN이면 전체 조회, 직원이면 본인 휴가 신청 내역만 조회
+        List<ScheduleDto> schedules = "ROLE_HR".equals(role) || "ROLE_ADMIN".equals(role)
+                                      ? leaveService.getAllLeaves()
+                                      : leaveService.getLeavesByEmployee(userDetails.getUsername());
+
         model.addAttribute("leaves", schedules);
         return "/attendance/leave_list";  // 휴가 신청 목록 페이지
     }
+
     
     // 휴가 승인 처리 (HR 관리자용)
     @PreAuthorize("hasAnyRole('HR', 'ADMIN')")

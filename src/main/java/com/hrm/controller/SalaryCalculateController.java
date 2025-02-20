@@ -15,6 +15,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import com.hrm.dto.AttendanceDto;
+import com.hrm.dto.EmployeeDto;
 import com.hrm.dto.SalaryDto;
 import com.hrm.service.AttendanceService;
 import com.hrm.service.SalaryService;
@@ -172,6 +173,78 @@ public class SalaryCalculateController {
 
 		} catch (Exception e) {
 			return ResponseEntity.badRequest().body("급여 초기화 중 오류가 발생했습니다: " + e.getMessage());
+		}
+	}
+
+	@GetMapping("/manual-edit/{employeeId}/{yearMonth}")
+	@PreAuthorize("hasAnyRole('HR', 'ADMIN')")
+	public String showManualEditForm(@PathVariable(name = "employeeId") Integer employeeId,
+			@PathVariable(name = "yearMonth") String yearMonth, Model model) {
+		try {
+			// yearMonth 형식 통일 (yyyy-MM)
+			yearMonth = yearMonth.replace("/", "-");
+
+			// 해당 월의 급여 정보 조회
+			SalaryDto salary = salaryService.getEmployeeSalaryByMonth(employeeId, yearMonth);
+
+			if (salary == null) {
+				return "redirect:/salary/calculate/status/" + yearMonth;
+			}
+
+			// salary에서 employee 정보를 가져옴
+			EmployeeDto employee = salary.getEmployee();
+
+			if (employee == null) {
+				return "redirect:/salary/calculate/status/" + yearMonth;
+			}
+
+			model.addAttribute("employee", employee);
+			model.addAttribute("salary", salary);
+			model.addAttribute("yearMonth", yearMonth);
+
+			return "salary/salaryManualEdit";
+		} catch (Exception e) {
+			return "redirect:/salary/calculate/status/" + yearMonth;
+		}
+	}
+
+	@PostMapping("/manual-edit/save")
+	@PreAuthorize("hasAnyRole('HR', 'ADMIN')")
+	public String saveManualEdit(@ModelAttribute SalaryDto salaryDto) {
+		try {
+			// 기존 급여 정보 조회
+			SalaryDto existingSalary = salaryService.getSalaryById(salaryDto.getSalaryId());
+			if (existingSalary == null) {
+				return "redirect:/salary/calculate/status/" + salaryDto.getYearMonth();
+			}
+
+			// 수정된 값만 업데이트하고 나머지는 기존 값 유지
+			existingSalary.setBaseSalary(salaryDto.getBaseSalary());
+			existingSalary.setMealAllowance(salaryDto.getMealAllowance());
+			existingSalary.setPositionAllowance(salaryDto.getPositionAllowance());
+			existingSalary.setOvertimePay(salaryDto.getOvertimePay());
+
+			// 공제 항목 업데이트
+			existingSalary.setIncomeTax(salaryDto.getIncomeTax());
+			existingSalary.setLocalIncomeTax(salaryDto.getLocalIncomeTax());
+			existingSalary.setNationalPension(salaryDto.getNationalPension());
+			existingSalary.setHealthInsurance(salaryDto.getHealthInsurance());
+			existingSalary.setEmploymentInsurance(salaryDto.getEmploymentInsurance());
+			existingSalary.setLongTermCareInsurance(salaryDto.getLongTermCareInsurance());
+
+			// 총액 계산
+			BigDecimal totalSalary = existingSalary.getBaseSalary().add(existingSalary.getMealAllowance())
+					.add(existingSalary.getPositionAllowance()).add(existingSalary.getOvertimePay());
+			existingSalary.setTotalSalary(totalSalary);
+
+			// 저장
+			salaryService.updateSalary(existingSalary);
+
+			return "redirect:/salary/calculate/detail/" + existingSalary.getEmployeeId() + "/"
+					+ existingSalary.getYearMonth();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return "redirect:/salary/calculate/status/" + salaryDto.getYearMonth();
 		}
 	}
 

@@ -83,9 +83,16 @@
             
             <!-- 필터 버튼 -->
             <div class="flex justify-center space-x-4 mb-6">
-                <button sec:authorize="hasRole('EMPLOYEE')" onclick="openModal('checkIn')" class="w-40 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-lg no-print">출근</button>
-                <button sec:authorize="hasRole('EMPLOYEE')" onclick="openModal('checkOut')" class="w-40 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-lg no-print">퇴근</button>
-                <a href="/attendance/leave/add" sec:authorize="hasRole('EMPLOYEE')" class="w-40 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 text-lg flex justify-center items-center no-print">휴가 신청</a>
+                <!-- 사원(Employee) 및 HR(인사 관리자)만 출퇴근 버튼 표시 -->
+    			<th:block th:if="${#authorization.expression('hasAnyRole(''EMPLOYEE'', ''HR'')')}">
+        			<button onclick="openModal('checkIn')" class="w-40 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-lg no-print">출근</button>
+        			<button onclick="openModal('checkOut')" class="w-40 py-3 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-lg no-print">퇴근</button>
+    			</th:block>
+
+    			<!-- 휴가 신청 기능도 동일한 방식으로 제한 -->
+    			<th:block th:if="${#authorization.expression('hasAnyRole(''EMPLOYEE'', ''HR'')')}">
+        			<a href="/attendance/leave/add" class="w-40 py-3 bg-red-500 text-white rounded-lg hover:bg-red-600 text-lg flex justify-center items-center no-print">휴가 신청</a>
+    			</th:block>
                 <a href="/attendance/leave/list" class="w-40 py-3 bg-gray-500 text-white rounded-lg hover:bg-gray-600 text-lg flex justify-center items-center no-print">휴가 신청 목록</a>
             	<!-- 인쇄 버튼 추가 -->
             	<button onclick="printAttendanceRecords()" class="w-40 py-3 bg-green-500 text-white rounded-lg hover:bg-green-600 text-lg no-print">출력하기</button>

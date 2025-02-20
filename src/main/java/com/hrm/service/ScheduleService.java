@@ -40,4 +40,8 @@ public class ScheduleService {
     public void deleteSchedule(int scheduleId) {
         scheduleDao.deleteSchedule(scheduleId);
     }
+    
+    public boolean existsSchedule(int scheduleId) {
+        return scheduleDao.countScheduleById(scheduleId) > 0;
+    }
 }

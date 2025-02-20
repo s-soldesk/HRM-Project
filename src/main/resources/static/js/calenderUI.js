@@ -18,47 +18,38 @@ $(document).ready(function () {
         dayMaxEvents: true,
         locale: 'ko',
 
-        // ✅ 모든 직원의 일정 조회 (중복 방지)
+        // ✅ 모든 직원의 일정 조회 (중복 방지) 
         events: function(fetchInfo, successCallback, failureCallback) {
             $.ajax({
                 url: "/api/schedules",
                 type: "GET",
                 dataType: "json",
                 success: function(response) {
-                    let eventsMap = new Map(); // ✅ `scheduleId` 기준으로 그룹화
+					let events = response.map(schedule => {
+						let eventObj = {
+							id: schedule.scheduleId,
+							title: schedule.title + ` (직원: ${schedule.employeeId})`,
+							start: schedule.startDate,
+							end: schedule.endDate,
+							allDay: schedule.allDay
+						};
 
-                    response.forEach(schedule => {
-                        let scheduleId = schedule.scheduleId;
-                        let employeeInfo = `직원: ${schedule.employeeId}`;
+						// ✅ 휴가는 승인된(CONFIRMED) 상태일 때만 표시
+						if (schedule.type === "Leave" && schedule.status !== "CONFIRMED") {
+							return null; // 승인되지 않은 휴가는 표시 안 함
+						}
 
-                        // ✅ 같은 일정이 이미 존재하는지 확인
-                        if (eventsMap.has(scheduleId)) {
-                            let existingEvent = eventsMap.get(scheduleId);
+						return eventObj;
+					}).filter(event => event !== null); // `null` 값 제거
 
-                            // ✅ 기존 직원 ID가 포함되지 않았다면 추가 (중복 방지)
-                            if (!existingEvent.title.includes(employeeInfo)) {
-                                existingEvent.title += `, ${employeeInfo}`;
-                            }
-                        } else {
-                            // ✅ 새로운 일정 추가
-                            eventsMap.set(scheduleId, {
-                                id: scheduleId,
-                                title: `${schedule.title} (${employeeInfo})`,
-                                start: schedule.startDate,
-                                end: schedule.endDate,
-                                allDay: schedule.allDay // ✅ 서버에서 받은 allDay 유지
-                            });
-                        }
-                    });
-
-                    successCallback(Array.from(eventsMap.values()));
-                },
-                error: function(xhr, status, error) {
-                    console.error("🚨 일정 불러오기 실패:", error);
-                    failureCallback(error);
-                }
-            });
-        },
+					successCallback(events);
+				},
+				error: function(xhr, status, error) {
+					console.error("🚨 일정 불러오기 실패:", error);
+					failureCallback(error);
+				}
+			});
+		},
 
         // ✅ 일정 추가
         select: function(arg) {
@@ -146,22 +137,30 @@ $(document).ready(function () {
         },
 
         // ✅ 일정 삭제 (일정 클릭 시)
-        eventClick: function(info) {
-            if (confirm("이 일정을 삭제하시겠습니까?")) {
-                $.ajax({
-                    url: "/api/schedules/delete/" + info.event.id,
-                    type: "DELETE",
-                    success: function() {
-                        alert("일정이 삭제되었습니다.");
-                        info.event.remove();
-                    },
-                    error: function(xhr, status, error) {
-                        console.error("🚨 삭제 실패:", error);
-                        alert("일정 삭제에 실패했습니다.");
-                    }
-                });
-            }
-        }
+		eventClick: function(info) {
+			let userRole = $("meta[name='user-role']").attr("content"); // HTML meta 태그로 역할 가져오기
+
+			if (confirm("이 일정을 삭제하시겠습니까?")) {
+				$.ajax({
+					url: "/api/schedules/delete/" + info.event.id,
+					type: "DELETE",
+					success: function(response) {
+						if (response === "success") {
+							alert("일정이 삭제되었습니다.");
+							info.event.remove();
+						} else if (response === "forbidden") {
+							alert("승인된 휴가는 HR 또는 관리자만 삭제할 수 있습니다.");
+						} else {
+							alert("일정 삭제에 실패했습니다.");
+						}
+					},
+					error: function(xhr, status, error) {
+						console.error("🚨 삭제 실패:", error);
+						alert("일정 삭제에 실패했습니다.");
+					}
+				});
+			}
+		}
     });
 
     // ✅ 캘린더 렌더링

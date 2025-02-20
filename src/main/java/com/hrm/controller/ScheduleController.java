@@ -14,6 +14,7 @@ import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/schedules")
@@ -37,8 +38,11 @@ public class ScheduleController {
                 schedule.setAllDay(false);
             }
         }
-
-        return schedules;
+        
+        // ✅ 승인된 휴가만 반환
+        return schedules.stream()
+                .filter(s -> !"PENDING".equals(s.getStatus())) // 승인되지 않은 일정 제외
+                .collect(Collectors.toList());
     }
 
     /**

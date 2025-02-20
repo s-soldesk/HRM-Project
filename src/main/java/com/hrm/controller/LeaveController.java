@@ -1,0 +1,132 @@
+package com.hrm.controller;
+
+import com.hrm.dao.UserAccountDao;
+import com.hrm.dto.ScheduleDto;
+import com.hrm.service.LeaveService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
+
+import java.util.List;
+
+@Controller
+@RequestMapping("/attendance/leave")
+public class LeaveController {
+
+    @Autowired
+    private LeaveService leaveService;
+
+    @Autowired
+    private UserAccountDao userAccountDao;
+    
+    // 휴가 신청 페이지 렌더링
+    @GetMapping("/add")
+    public String showAddLeavePage(Model model, @AuthenticationPrincipal UserDetails userDetails) {
+    	ScheduleDto scheduleDto = new ScheduleDto();
+
+        // 로그인한 사용자의 이메일 가져오기
+        String employeeEmail = userDetails.getUsername();
+
+        // 이메일을 이용해 Employee 테이블의 EmployeeID(Integer) 조회
+        Integer employeeId = userAccountDao.findEmployeeIdByEmail(employeeEmail);
+
+        if (employeeId == null) {
+            model.addAttribute("message", "사원 정보를 찾을 수 없습니다.");
+        } else {
+        	scheduleDto.setEmployeeId(String.valueOf(employeeId));
+        }
+        
+    	model.addAttribute("scheduleDto", new ScheduleDto());
+        return "attendance/leave_add";  // 휴가 신청 페이지
+    }
+
+    // 휴가 신청 처리
+    @PostMapping("/add")
+    public String addLeave(@ModelAttribute ScheduleDto scheduleDto, 
+                           @AuthenticationPrincipal UserDetails userDetails,
+                           RedirectAttributes redirectAttributes) {
+
+    	// 로그인한 사용자의 이메일 가져오기
+        String employeeEmail = userDetails.getUsername();
+
+        // 이메일을 이용해 Employee 테이블의 EmployeeID(Integer) 조회
+        Integer loggedInEmployeeId = userAccountDao.findEmployeeIdByEmail(employeeEmail);
+
+        if (loggedInEmployeeId == null) {
+            redirectAttributes.addFlashAttribute("message", "사원 정보를 찾을 수 없습니다.");
+            return "redirect:/attendance/leave/add";
+        }
+
+        // 로그인한 사용자의 권한 가져오기
+        boolean isHR = userDetails.getAuthorities().stream()
+                                 .anyMatch(auth -> auth.getAuthority().equals("ROLE_HR"));
+
+        // HR도 본인 ID로만 신청 가능하도록 강제 설정
+        if (isHR || userDetails.getAuthorities().stream().anyMatch(auth -> auth.getAuthority().equals("ROLE_EMPLOYEE"))) {
+            scheduleDto.setEmployeeId(String.valueOf(loggedInEmployeeId));
+        }
+        
+        boolean isAdded = leaveService.addLeave(scheduleDto);
+        redirectAttributes.addFlashAttribute("message", isAdded ? "휴가가 성공적으로 추가되었습니다." : "휴가 추가에 실패하였습니다.");
+        return "redirect:/attendance/leave/list";  // 신청 후 목록 페이지로 리다이렉트
+    }
+
+    // 휴가 신청 목록 페이지 렌더링
+    @GetMapping("/list")
+    public String showLeaveListPage(Model model, @AuthenticationPrincipal UserDetails userDetails) {
+        // 현재 로그인한 계정의 역할 확인
+        String role = userDetails.getAuthorities().stream()
+                                 .findFirst()
+                                 .map(GrantedAuthority::getAuthority)
+                                 .orElse("EMPLOYEE");
+
+        // HR이거나 ADMIN이면 전체 조회, 직원이면 본인 휴가 신청 내역만 조회
+        List<ScheduleDto> schedules = "ROLE_HR".equals(role) || "ROLE_ADMIN".equals(role)
+                                      ? leaveService.getAllLeaves()
+                                      : leaveService.getLeavesByEmployee(userDetails.getUsername());
+
+        model.addAttribute("leaves", schedules);
+        return "/attendance/leave_list";  // 휴가 신청 목록 페이지
+    }
+
+    
+    // 휴가 승인 처리 (HR 관리자용)
+    @PreAuthorize("hasAnyRole('HR', 'ADMIN')")
+    @PostMapping("/approve")
+    public String approveLeave(@RequestParam("scheduleId") int scheduleId, RedirectAttributes redirectAttributes) {
+        boolean isApproved = leaveService.updateLeaveStatus(scheduleId, "CONFIRMED");
+        redirectAttributes.addFlashAttribute("message", isApproved ? "휴가가 승인되었습니다." : "휴가 승인에 실패했습니다.");
+        return "redirect:/attendance/leave/list";
+    }
+
+    // 휴가 거절 처리 (HR 관리자용)
+    @PostMapping("/reject")
+    public String rejectLeave(@RequestParam("scheduleId") int scheduleId, RedirectAttributes redirectAttributes) {
+        boolean isRejected = leaveService.updateLeaveStatus(scheduleId, "REJECTED");
+        redirectAttributes.addFlashAttribute("message", isRejected ? "휴가가 거절되었습니다." : "휴가 거절에 실패했습니다.");
+        return "redirect:/attendance/leave/list";
+    }
+
+    @PostMapping("/delete/{leaveId}")
+    public String deleteLeave(@PathVariable("leaveId") int leaveId, 
+                              @AuthenticationPrincipal UserDetails userDetails,
+                              RedirectAttributes redirectAttributes) {
+        // 로그인한 사용자의 역할 가져오기
+        String role = userDetails.getAuthorities().stream()
+                                 .findFirst()
+                                 .map(GrantedAuthority::getAuthority)
+                                 .orElse("EMPLOYEE"); // 기본값 EMPLOYEE
+
+        boolean isDeleted = leaveService.deleteLeave(leaveId, role);
+        redirectAttributes.addFlashAttribute("message", 
+            isDeleted ? "휴가가 삭제되었습니다." : "승인된 휴가는 HR 또는 관리자만 취소할 수 있습니다.");
+
+        return "redirect:/attendance/leave/list";
+    }
+}

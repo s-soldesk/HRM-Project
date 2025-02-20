@@ -9,7 +9,7 @@ import com.hrm.dao.AttendanceBatisDao;
 import com.hrm.dto.AttendanceDto;
 
 @Service
-public class AttendanceServiceImpl implements AttendanceService {
+public class AttendanceServiceImpl implements AttendanceBatisService {
 
 	@Autowired
 	private AttendanceBatisDao attendanceMapper;

@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.*;
 
 import com.hrm.dto.AttendanceDto;
 import com.hrm.dto.SalaryDto;
-import com.hrm.service.AttendanceService;
+import com.hrm.service.AttendanceBatisService;
 import com.hrm.service.SalaryService;
 
 @Controller
@@ -28,7 +28,7 @@ public class SalaryCalculateController {
 	private SalaryService salaryService;
 
 	@Autowired
-	private AttendanceService attendanceService;
+	private AttendanceBatisService attendanceService;
 
 	// 급여 계산 페이지
 	@GetMapping("/calculate")

@@ -6,7 +6,6 @@ import com.hrm.dto.EmployeeDto;
 import com.hrm.dto.SalaryDto;
 import com.hrm.utils.AllowancePolicy;
 
-import org.apache.ibatis.annotations.Param;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -22,7 +21,7 @@ public class SalaryServiceImpl implements SalaryService {
 	private final SalaryDao salaryMapper;
 
 	@Autowired
-	private AttendanceService attendanceService;
+	private AttendanceBatisService attendanceService;
 
 	@Autowired
 	private SalaryDao salaryDao;

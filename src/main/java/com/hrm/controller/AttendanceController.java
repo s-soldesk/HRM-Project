@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,8 +34,20 @@ public class AttendanceController {
     
     // 근태 관리 메인 페이지
     @GetMapping
-    public String showAttendanceMainPage() {
-        return "attendance/attendance";
+    public String showAttendanceMainPage(Model model, @AuthenticationPrincipal UserDetails userDetails) {
+    	// 로그인한 사용자의 이메일 가져오기
+        String employeeEmail = userDetails.getUsername();
+
+        // 이메일을 이용해 Employee 테이블의 EmployeeID(Integer) 조회
+        Integer employeeId = userAccountDao.findEmployeeIdByEmail(employeeEmail);
+
+        if (employeeId != null) {
+            model.addAttribute("employeeId", employeeId); // Thymeleaf에 전달
+        } else {
+            model.addAttribute("message", "사원 정보를 찾을 수 없습니다.");
+        }
+    	
+    	return "attendance/attendance";
     }
     
     // 근태 기록 조회 페이지

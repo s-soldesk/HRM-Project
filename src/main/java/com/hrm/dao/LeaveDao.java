@@ -46,7 +46,21 @@ public interface LeaveDao {
     @Select("SELECT * FROM SCHEDULE WHERE ScheduleID = #{scheduleId}")
     ScheduleDto getLeaveById(@Param("scheduleId") int scheduleId);
     
-    @Select("SELECT * FROM SCHEDULE WHERE EmployeeID = #{employeeId}")
+    @Select("SELECT s.*, e.Name AS employeeName FROM SCHEDULE s " +
+            "JOIN Employee e ON s.EmployeeID = e.EmployeeID " +
+            "WHERE s.EmployeeID = #{employeeId}")
+    @Results({
+            @Result(property = "employeeId", column = "EmployeeID"),
+            @Result(property = "employeeName", column = "employeeName"),
+            @Result(property = "title", column = "Title"),
+            @Result(property = "leaveType", column = "LeaveType"),
+            @Result(property = "reason", column = "Reason"),
+            @Result(property = "startDate", column = "StartDate"),
+            @Result(property = "endDate", column = "EndDate"),
+            @Result(property = "status", column = "Status"),
+            @Result(property = "requestDate", column = "RequestDate")
+    })
     List<ScheduleDto> getLeavesByEmployee(@Param("employeeId") Integer employeeId);
+
 
 }

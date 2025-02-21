@@ -96,7 +96,7 @@
 <body>
 
 	<!-- 사이드바 -->
-    <div th:replace="~{layout/sidebar :: sidebar}"></div>
+    <div class="sidebar no-print" th:replace="~{layout/sidebar :: sidebar}"></div>
 
     <div class="content">
         <p id="message" th:if="${message}" th:text="${message}" class="text-success text-center"></p>

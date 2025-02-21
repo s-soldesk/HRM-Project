@@ -16,6 +16,11 @@ public interface ScheduleDao {
     List<ScheduleDto> getAllSchedules();
 
     /**
+     * ✅ 특정 일정 조회 (scheduleId로 검색)
+     */
+    ScheduleDto getScheduleById(@Param("scheduleId") int scheduleId);
+    
+    /**
      * ✅ 일정 추가
      */
     void createSchedule(ScheduleDto scheduleDto);

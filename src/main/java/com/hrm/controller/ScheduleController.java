@@ -41,7 +41,7 @@ public class ScheduleController {
         
         // ✅ 승인된 휴가만 반환
         return schedules.stream()
-                .filter(s -> !"PENDING".equals(s.getStatus())) // 승인되지 않은 일정 제외
+                .filter(s -> !"Leave".equals(s.getType()) || "CONFIRMED".equals(s.getStatus()))
                 .collect(Collectors.toList());
     }
 

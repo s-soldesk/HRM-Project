@@ -70,8 +70,7 @@ public class SalaryController {
 
 				if (userAccount == null) {
 					System.out.println("UserAccount를 찾을 수 없음!");
-					model.addAttribute("errorMessage", "사용자 계정 정보를 찾을 수 없습니다.");
-					return "salary/employee";
+					return "redirect:/";
 				}
 
 				// Employee 테이블에서 이메일로 EmployeeID(정수형) 조회

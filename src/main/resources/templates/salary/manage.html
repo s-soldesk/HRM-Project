@@ -1,13 +1,15 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
     <title>인사팀 전용 급여 조회</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" th:href="@{/css/dashboard.css}">
     <link rel="stylesheet" type="text/css" th:href="@{/css/salary.css}">
     <link rel="stylesheet" href="/css/sidebar.css">
-    <script th:inline="javascript">
+    
+	<script th:inline="javascript">
         // 직급 매핑 정보
         const positionMapping = {
             '인턴': 'INTERN',
@@ -57,6 +59,7 @@
             });
         });
     </script>
+    
 </head>
 <body>
     <!-- 사이드바 -->
@@ -64,47 +67,75 @@
     
     <div class="content">
         <div class="salary-container">
-            <h2>급여 조회</h2>
-            <div class="search-section">
-                <form id="searchForm" method="get" th:action="@{/salary/manage}">
-                    <select name="searchType" class="search-select">
-                        <option value="">검색 조건 선택</option>
-                        <option value="employeeId">사원번호</option>
-                        <option value="name">이름</option>
-                        <option value="position">직급</option>
-                    </select>
-                    <input type="text" name="keyword" class="search-input" placeholder="검색어를 입력하세요">
-                    <button type="submit" class="search-button">검색</button>
-                </form>
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="mb-0">급여 조회</h2>
             </div>
 
-            <table class="salary-table">
-                <thead>
-                    <tr>
-                        <th>귀속월</th>
-                        <th>사원번호</th>
-                        <th>사원명</th>
-                        <th>지급총액</th>
-                        <th>공제총액</th>
-                        <th>실지급액</th>
-                        <th></th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr th:each="salary : ${salaries}">
-                        <td th:text="${#temporals.format(salary.paymentDate, 'yyyy-MM-dd')}"></td>
-                        <td th:text="${salary.employeeId}"></td>
-                        <td th:text="${salary.employee.name}"></td>
-                        <td th:text="${#numbers.formatInteger(salary.totalSalary, 0, 'COMMA')}"></td>
-                        <td th:text="${#numbers.formatInteger(salary.deductionTotal, 0, 'COMMA')}"></td>
-                        <td th:text="${#numbers.formatInteger(salary.netPay, 0, 'COMMA')}"></td>
-                        <td>
-                            <button class="arrow-btn" th:onclick="'location.href=\'/salary/detail/' + ${salary.salaryId} + '\''">→</button>
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
+            <div class="card mb-4">
+                <div class="card-body">
+                    <form id="searchForm" method="get" th:action="@{/salary/manage}" 
+                          class="row g-3 align-items-center">
+                        <div class="col-auto">
+                            <select name="searchType" class="form-select">
+                                <option value="">검색 조건 선택</option>
+                                <option value="employeeId">사원번호</option>
+                                <option value="name">이름</option>
+                                <option value="position">직급</option>
+                            </select>
+                        </div>
+                        <div class="col">
+                            <input type="text" name="keyword" class="form-control" 
+                                   placeholder="검색어를 입력하세요">
+                        </div>
+                        <div class="col-auto">
+                            <button type="submit" class="btn btn-primary">검색</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-hover align-middle">
+                            <thead class="table-light">
+                                <tr>
+                                    <th>귀속월</th>
+                                    <th>사원번호</th>
+                                    <th>사원명</th>
+                                    <th class="text-end">지급총액</th>
+                                    <th class="text-end">공제총액</th>
+                                    <th class="text-end">실지급액</th>
+                                    <th class="text-center">상세</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr th:each="salary : ${salaries}">
+                                    <td th:text="${#temporals.format(salary.paymentDate, 'yyyy-MM-dd')}"></td>
+                                    <td th:text="${salary.employeeId}"></td>
+                                    <td th:text="${salary.employee.name}"></td>
+                                    <td class="text-end" 
+                                        th:text="${#numbers.formatInteger(salary.totalSalary, 0, 'COMMA')} + '원'"></td>
+                                    <td class="text-end text-danger" 
+                                        th:text="${#numbers.formatInteger(salary.deductionTotal, 0, 'COMMA')} + '원'"></td>
+                                    <td class="text-end text-success" 
+                                        th:text="${#numbers.formatInteger(salary.netPay, 0, 'COMMA')} + '원'"></td>
+                                    <td class="text-center">
+                                        <button class="btn btn-outline-primary btn-sm" 
+                                                th:onclick="'location.href=\'/salary/detail/' + ${salary.salaryId} + '\''">
+                                            상세보기
+                                        </button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

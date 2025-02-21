@@ -1,9 +1,13 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org"
-	xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+<html xmlns:th="http://www.thymeleaf.org">
 <head>
 <meta charset="UTF-8">
 <title>근태 상세 정보</title>
+<!-- Bootstrap CSS -->
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+<!-- Custom CSS -->
 <link rel="stylesheet" type="text/css" th:href="@{/css/dashboard.css}">
 <link rel="stylesheet" type="text/css" th:href="@{/css/salary.css}">
 <link rel="stylesheet" href="/css/sidebar.css">
@@ -92,120 +96,159 @@
     function goBack(yearMonth) {
         window.location.href = '/salary/calculate/status/' + yearMonth;
     }
-    </script>
+ </script>
+ 
 </head>
 <body>
 	<!-- 사이드바 -->
 	<div th:replace="~{layout/sidebar :: sidebar}"></div>
 
 	<div class="content">
-		<div class="payslip-container">
-			<h2 class="payslip-title">근태 상세 정보</h2>
+		<div class="salary-container">
+			<h2 class="mb-4">근태 상세 정보</h2>
 
-			<div class="employee-info">
-				<table class="info-table">
-					<tr>
-						<th>사원명</th>
-						<td th:text="${attendances[0].employeeName}"></td>
-						<th>부서</th>
-						<td th:text="${attendances[0].departmentName}"></td>
-					</tr>
-					<tr>
-						<th>직급</th>
-						<td th:text="${attendances[0].position?.getPosition()}"></td>
-						<th>근무월</th>
-						<td th:text="${yearMonth}"></td>
-					</tr>
-				</table>
+			<!-- 사원 정보 카드 -->
+			<div class="card mb-4">
+				<div class="card-body">
+					<div class="row">
+						<div class="col-md-6">
+							<p class="mb-2">
+								<strong>사원명:</strong> <span
+									th:text="${attendances[0].employeeName}"></span>
+							</p>
+							<p class="mb-2">
+								<strong>직급:</strong> <span
+									th:text="${attendances[0].position?.getPosition()}"></span>
+							</p>
+						</div>
+						<div class="col-md-6">
+							<p class="mb-2">
+								<strong>부서:</strong> <span
+									th:text="${attendances[0].departmentName}"></span>
+							</p>
+							<p class="mb-2">
+								<strong>근무월:</strong> <span th:text="${yearMonth}"></span>
+							</p>
+						</div>
+					</div>
+				</div>
 			</div>
 
-			<div class="salary-summary">
-				<h3>근태 및 급여 요약</h3>
-				<br>
-				<p>
-					총 근무시간: <span th:text="${totalWorkHours} + 시간"></span>
-				</p>
-				<p>
-					총 초과근무시간: <span th:text="${totalOvertimeHours} + 시간"></span>
-				</p>
-				<p>
-					기본 급여: <span
-						th:text="${#numbers.formatInteger(salaryInfo.baseSalary, 0, 'COMMA')}"></span>
-					원
-				</p>
-				<p>
-					식대: <span
-						th:text="${#numbers.formatInteger(salaryInfo.mealAllowance, 0, 'COMMA')}"></span>
-					원
-				</p>
-				<p>
-					직책수당: <span
-						th:text="${#numbers.formatInteger(salaryInfo.positionAllowance, 0, 'COMMA')}"></span>
-					원
-				</p>
-				<p>
-					초과근무수당: <span
-						th:text="${#numbers.formatInteger(salaryInfo.overtimePay, 0, 'COMMA')}"></span>
-					원
-				</p>
-				<p>
-					총 공제액: <span
-						th:text="${#numbers.formatInteger(salaryInfo.deductionTotal, 0, 'COMMA')}"></span>
-					원
-				</p>
-				<p>
-					실수령액: <span
-						th:text="${#numbers.formatInteger(salaryInfo.netPay, 0, 'COMMA')}"></span>
-					원
-				</p>
+			<!-- 근태 및 급여 요약 카드 -->
+			<div class="card mb-4">
+				<div class="card-body">
+					<h3 class="card-title h5 mb-4">근태 및 급여 요약</h3>
+					<div class="row">
+						<div class="col-md-6">
+							<p class="mb-2">
+								<strong>총 근무시간:</strong> <span class="text-primary"
+									th:text="${totalWorkHours} + ' 시간'"></span>
+							</p>
+							<p class="mb-2">
+								<strong>총 초과근무시간:</strong> <span class="text-primary"
+									th:text="${totalOvertimeHours} + ' 시간'"></span>
+							</p>
+							<p class="mb-2">
+								<strong>기본 급여:</strong> <span class="text-end"
+									th:text="${#numbers.formatInteger(salaryInfo.baseSalary, 0, 'COMMA')} + ' 원'"></span>
+							</p>
+							<p class="mb-2">
+								<strong>식대:</strong> <span class="text-end"
+									th:text="${#numbers.formatInteger(salaryInfo.mealAllowance, 0, 'COMMA')} + ' 원'"></span>
+							</p>
+						</div>
+						<div class="col-md-6">
+							<p class="mb-2">
+								<strong>직책수당:</strong> <span class="text-end"
+									th:text="${#numbers.formatInteger(salaryInfo.positionAllowance, 0, 'COMMA')} + ' 원'"></span>
+							</p>
+							<p class="mb-2">
+								<strong>초과근무수당:</strong> <span class="text-end"
+									th:text="${#numbers.formatInteger(salaryInfo.overtimePay, 0, 'COMMA')} + ' 원'"></span>
+							</p>
+							<p class="mb-2">
+								<strong>총 공제액:</strong> <span class="text-end text-danger"
+									th:text="${#numbers.formatInteger(salaryInfo.deductionTotal, 0, 'COMMA')} + ' 원'"></span>
+							</p>
+							<p class="mb-2">
+								<strong>실수령액:</strong> <span class="text-end text-success"
+									th:text="${#numbers.formatInteger(salaryInfo.netPay, 0, 'COMMA')} + ' 원'"></span>
+							</p>
+						</div>
+					</div>
+				</div>
 			</div>
 
-			<div class="salary-list">
-				<table>
-					<thead>
-						<tr>
-							<th>날짜</th>
-							<th>출근시간</th>
-							<th>퇴근시간</th>
-							<th>근무시간</th>
-							<th>초과근무시간</th>
-							<th>상태</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr th:each="detail : ${attendances}">
-							<td th:text="${#temporals.format(detail.date, 'yyyy-MM-dd')}"></td>
-							<td th:text="${#temporals.format(detail.checkInTime, 'HH:mm')}"></td>
-							<td th:text="${#temporals.format(detail.checkOutTime, 'HH:mm')}"></td>
-							<td th:text="${detail.hoursWorked}"></td>
-							<td th:text="${detail.overtimeHours}"></td>
-							<td th:text="${detail.status}"></td>
-						</tr>
-					</tbody>
-				</table>
+			<!-- 근태 상세 테이블 -->
+			<div class="card mb-4">
+				<div class="card-body">
+					<div class="table-responsive">
+						<table class="table table-hover">
+							<thead class="table-light">
+								<tr>
+									<th>날짜</th>
+									<th>출근시간</th>
+									<th>퇴근시간</th>
+									<th>근무시간</th>
+									<th>초과근무시간</th>
+									<th>상태</th>
+								</tr>
+							</thead>
+							<tbody>
+								<tr th:each="detail : ${attendances}">
+									<td th:text="${#temporals.format(detail.date, 'yyyy-MM-dd')}"></td>
+									<td th:text="${#temporals.format(detail.checkInTime, 'HH:mm')}"></td>
+									<td
+										th:text="${#temporals.format(detail.checkOutTime, 'HH:mm')}"></td>
+									<td th:text="${detail.hoursWorked}"></td>
+									<td th:text="${detail.overtimeHours}"></td>
+									<td><span
+										th:class="${detail.status == 'OnTime' ? 'badge bg-success' : 'badge bg-warning text-dark'}"
+										th:text="${detail.status}"></span></td>
+								</tr>
+							</tbody>
+						</table>
+					</div>
+				</div>
 			</div>
 
-			<div class="button-group">
-				<button class="btn" th:data-year-month="${yearMonth}"
-					onclick="goBack(this.getAttribute('data-year-month'))">돌아가기</button>
-				<button class="btn primary"
+			<!-- 버튼 그룹 -->
+			<div class="d-flex gap-2 justify-content-end">
+				<!-- 돌아가기 버튼 -->
+				<button class="btn btn-outline-secondary"
+					th:data-year-month="${yearMonth}"
+					onclick="goBack(this.getAttribute('data-year-month'))">
+					돌아가기</button>
+
+				<!-- 급여 초기화 버튼 -->
+				<button class="btn btn-outline-primary"
 					th:attr="data-employee-id=${employeeId}, data-year-month=${yearMonth}"
 					onclick="initializeSalary(this.getAttribute('data-employee-id'), this.getAttribute('data-year-month'))">
 					급여 초기화</button>
-				<button class="btn primary"
+
+				<!-- 근태 확정 버튼 -->
+				<button class="btn btn-outline-success"
 					th:attr="data-employee-id=${attendances[0].employeeId}, data-year-month=${yearMonth}"
 					onclick="confirmAttendance(this.getAttribute('data-employee-id'), this.getAttribute('data-year-month'))">
 					근태 확정</button>
-				<button class="btn edit manual-edit"
+
+				<!-- 급여 수기 계산 버튼 -->
+				<button class="btn btn-outline-info manual-edit"
 					th:data-employee-id="${attendances[0].employeeId}"
 					th:data-year-month="${yearMonth}"
 					onclick="redirectToManualEdit(this)">급여 수기 계산</button>
-				<button class="btn primary"
+
+				<!-- 급여 자동 계산 버튼 -->
+				<button class="btn btn-primary"
 					th:attr="data-employee-id=${attendances[0].employeeId}, data-year-month=${yearMonth}"
 					onclick="calculateSalary(this.getAttribute('data-employee-id'), this.getAttribute('data-year-month'))">
 					급여 자동 계산</button>
 			</div>
 		</div>
 	</div>
+
+	<!-- Bootstrap JS -->
+	<script
+		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

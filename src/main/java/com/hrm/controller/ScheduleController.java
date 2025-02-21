@@ -16,6 +16,7 @@ import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/schedules")
@@ -40,7 +41,10 @@ public class ScheduleController {
             }
         }
 
-        return schedules;
+        // ✅ 승인된 휴가만 반환
+        return schedules.stream()
+                .filter(s -> !"Leave".equals(s.getType()) || "CONFIRMED".equals(s.getStatus()))
+                .collect(Collectors.toList());
     }
 
     /**

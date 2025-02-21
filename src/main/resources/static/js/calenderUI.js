@@ -117,74 +117,82 @@ $(document).ready(function() {
 
 		// ✅ 일정 이동 (드래그 & 드롭)
 		eventDrop: function(info) {
-			// 원본 title에서 직원 정보만 제거하고 시간 정보는 유지
-			let originalTitle = info.event.title;
-			let employeeInfo = originalTitle.match(/\(직원:.*\)/)[0];  // 직원 정보 추출
-			let basicTitle = originalTitle.replace(employeeInfo, '').trim(); // 직원 정보만 제거
+		    // 원본 title에서 직원 정보만 제거하고 시간 정보는 유지
+		    let originalTitle = info.event.title;
+		    let employeeInfo = originalTitle.match(/\(직원:.*\)/)[0];
+		    let basicTitle = originalTitle.replace(employeeInfo, '').trim();
+		    let employeeId = employeeInfo.match(/직원: ([^)]+)/)[1].trim();
 
-			let employeeId = employeeInfo.match(/직원: ([^)]+)/)[1].trim();
+		    let updatedEvent = {
+		        scheduleId: info.event.id,
+		        title: basicTitle,
+		        start: info.event.start ? info.event.start.toISOString() : null,
+		        end: info.event.end ? info.event.end.toISOString() : info.event.start.toISOString(),
+		        allDay: info.event.allDay,
+		        employeeId: employeeId
+		    };
 
-			let updatedEvent = {
-				scheduleId: info.event.id,
-				title: basicTitle,  // 시간 정보가 포함된 기본 제목
-				start: info.event.start ? info.event.start.toISOString() : null,
-				end: info.event.end ? info.event.end.toISOString() : info.event.start.toISOString(),
-				allDay: info.event.allDay,
-				employeeId: employeeId
-			};
-
-			$.ajax({
-				url: "/api/schedules/update/" + updatedEvent.scheduleId,
-				type: "PUT",
-				contentType: "application/json",
-				data: JSON.stringify(updatedEvent),
-				success: function(response) {
-					// 원본 시간 정보를 포함한 제목으로 업데이트
-					let displayTitle = basicTitle + ' ' + employeeInfo;
-					info.event.setProp('title', displayTitle);
-					alert("일정이 이동되었습니다.");
-				},
-				error: function(xhr, status, error) {
-					console.error("🚨 이동 실패:", error);
-					alert("일정 이동에 실패했습니다.");
-					info.revert();
-				}
-			});
+		    $.ajax({
+		        url: "/api/schedules/update/" + updatedEvent.scheduleId,
+		        type: "PUT",
+		        contentType: "application/json",
+		        data: JSON.stringify(updatedEvent),
+		        success: function(response) {
+		            // 원본 시간 정보를 포함한 제목으로 업데이트
+		            let displayTitle = basicTitle + ' ' + employeeInfo;
+		            info.event.setProp('title', displayTitle);
+		            alert("일정이 이동되었습니다.");
+		        },
+		        error: function(xhr, status, error) {
+		            console.error("🚨 이동 실패:", error);
+		            // 서버 응답 메시지 표시
+		            if (xhr.responseText) {
+		                alert(xhr.responseText);
+		            } else {
+		                alert("일정 이동에 실패했습니다.");
+		            }
+		            info.revert(); // 변경 내용 되돌리기
+		        }
+		    });
 		},
 
 		// ✅ 일정 크기 조정 (Resize)
 		eventResize: function(info) {
-			let originalTitle = info.event.title;
-			let employeeInfo = originalTitle.match(/\(직원:.*\)/)[0];
-			let basicTitle = originalTitle.replace(employeeInfo, '').trim();
+		    let originalTitle = info.event.title;
+		    let employeeInfo = originalTitle.match(/\(직원:.*\)/)[0];
+		    let basicTitle = originalTitle.replace(employeeInfo, '').trim();
+		    let employeeId = employeeInfo.match(/직원: ([^)]+)/)[1].trim();
 
-			let employeeId = employeeInfo.match(/직원: ([^)]+)/)[1].trim();
+		    let updatedEvent = {
+		        scheduleId: info.event.id,
+		        title: basicTitle,
+		        start: info.event.start.toISOString(),
+		        end: info.event.end ? info.event.end.toISOString() : info.event.start.toISOString(),
+		        allDay: info.event.allDay,
+		        employeeId: employeeId
+		    };
 
-			let updatedEvent = {
-				scheduleId: info.event.id,
-				title: basicTitle,
-				start: info.event.start.toISOString(),
-				end: info.event.end ? info.event.end.toISOString() : info.event.start.toISOString(),
-				allDay: info.event.allDay,
-				employeeId: employeeId
-			};
-
-			$.ajax({
-				url: "/api/schedules/update/" + updatedEvent.scheduleId,
-				type: "PUT",
-				contentType: "application/json",
-				data: JSON.stringify(updatedEvent),
-				success: function(response) {
-					let displayTitle = basicTitle + ' ' + employeeInfo;
-					info.event.setProp('title', displayTitle);
-					alert("일정 시간이 변경되었습니다.");
-				},
-				error: function(xhr, status, error) {
-					console.error("🚨 크기 조정 실패:", error);
-					alert("일정 크기 변경에 실패했습니다.");
-					info.revert();
-				}
-			});
+		    $.ajax({
+		        url: "/api/schedules/update/" + updatedEvent.scheduleId,
+		        type: "PUT",
+		        contentType: "application/json",
+		        data: JSON.stringify(updatedEvent),
+		        success: function(response) {
+		            let displayTitle = basicTitle + ' ' + employeeInfo;
+		            info.event.setProp('title', displayTitle);
+		            alert("일정 시간이 변경되었습니다.");
+		        },
+		        error: function(xhr, status, error) {
+		            console.error("🚨 크기 조정 실패:", error);
+		            // 서버 응답 메시지 표시
+		            if (xhr.responseText) {
+		                alert(xhr.responseText);
+		            } else {
+		                alert("일정 크기 변경에 실패했습니다.");
+		            }
+		            info.revert(); // 변경 내용 되돌리기
+		        }
+		    });
 		},
 
 		// ✅ 일정 삭제 (일정 클릭 시)

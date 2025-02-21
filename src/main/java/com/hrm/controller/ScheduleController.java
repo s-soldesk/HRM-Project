@@ -123,23 +123,33 @@ public class ScheduleController {
      * ✅ 일정 수정
      */
     @PutMapping("/update/{scheduleId}")
-    public ResponseEntity<ScheduleDto> updateSchedule(@PathVariable("scheduleId") int scheduleId, @RequestBody Map<String, Object> map) {
+    public ResponseEntity<?> updateSchedule(@PathVariable("scheduleId") int scheduleId, 
+                                           @RequestBody Map<String, Object> map,
+                                           Principal principal) {
         try {
-            // 기존 일정 정보 조회
+            // 현재 로그인한 사용자 ID
+            String currentUserId = principal.getName();
+            
+            // 일정 정보 조회
             ScheduleDto existingSchedule = scheduleService.getScheduleById(scheduleId);
+            
+            // 일정이 존재하지 않음
             if (existingSchedule == null) {
-                return ResponseEntity.notFound().build();
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("해당 일정이 존재하지 않습니다.");
             }
-
-            // 새로운 일정 정보 설정
+            
+            // 작성자와 현재 사용자가 다른 경우 권한 없음
+            if (!existingSchedule.getEmployeeId().equals(currentUserId)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("다른 사람의 일정을 수정할 권한이 없습니다.");
+            }
+            
             ScheduleDto schedule = new ScheduleDto();
             schedule.setScheduleId(scheduleId);
             schedule.setTitle((String) map.get("title"));
-            schedule.setEmployeeId(existingSchedule.getEmployeeId());  // 기존 employeeId 유지
+            schedule.setEmployeeId(existingSchedule.getEmployeeId()); // 기존 employeeId 유지
 
-            // 날짜 변환 (ISO 8601 → yyyy-MM-dd HH:mm:ss)
+            // 날짜 변환 처리
             DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
-
             if (map.get("start") != null) {
                 ZonedDateTime startUTC = ZonedDateTime.parse(map.get("start").toString(), formatter)
                         .withZoneSameInstant(ZoneId.of("Asia/Seoul"));
@@ -150,15 +160,14 @@ public class ScheduleController {
                         .withZoneSameInstant(ZoneId.of("Asia/Seoul"));
                 schedule.setEndDate(endUTC.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
             }
+            
+            schedule.setAllDay(map.get("allDay") != null ? (boolean) map.get("allDay") : false);
 
             scheduleService.updateSchedule(schedule);
-            
-            // 업데이트된 일정 정보 반환
-            ScheduleDto updatedSchedule = scheduleService.getScheduleById(scheduleId);
-            return ResponseEntity.ok(updatedSchedule);
+            return ResponseEntity.ok(scheduleService.getScheduleById(scheduleId));
         } catch (Exception e) {
             e.printStackTrace();
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("일정 수정 중 오류가 발생했습니다.");
         }
     }
 }

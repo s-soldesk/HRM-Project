@@ -36,12 +36,10 @@
             <div class="form-group">
                 <label for="employeeId">사원 ID</label>
                 <input type="text" id="employeeId"
-                       th:value="${scheduleDto.employeeId}"
-                       th:readonly="${#authorization.expression('hasAnyRole(''EMPLOYEE'', ''HR'')')}"
-                       th:classappend="${#authorization.expression('hasAnyRole(''EMPLOYEE'', ''HR'')')} ? 'bg-gray-200 cursor-not-allowed'">
+                       th:value="${employeeId}" readonly>
 
                 <!-- Employee가 직접 입력 못하지만 값을 전달해야 하므로 hidden 필드 추가 -->
-                <input type="hidden" name="employeeId" th:value="${scheduleDto.employeeId}">
+                <input type="hidden" name="employeeId" th:value="${employeeId}">
             </div>
 
             <div class="form-group">

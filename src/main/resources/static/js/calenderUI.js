@@ -31,8 +31,7 @@ $(document).ready(function() {
 				animation: 'scale',
 				theme: 'light-border'
 			});
-		},
-		//						
+		},				
 		// ✅ 모든 직원의 일정 조회 (중복 방지)
 		events: function(fetchInfo, successCallback, failureCallback) {
 			$.ajax({

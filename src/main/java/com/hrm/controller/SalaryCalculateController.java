@@ -73,8 +73,14 @@ public class SalaryCalculateController {
 			salaryInfo = createEmptySalaryDto(employeeId);
 		}
 
-		double totalWorkHours = details.stream().mapToDouble(AttendanceDto::getHoursWorked).sum();
-		double totalOvertimeHours = details.stream().mapToDouble(AttendanceDto::getOvertimeHours).sum();
+		// null 체크를 추가한 안전한 계산
+		double totalWorkHours = details.stream()
+				.mapToDouble(attendance -> attendance.getHoursWorked() != null ? attendance.getHoursWorked() : 0.0)
+				.sum();
+
+		double totalOvertimeHours = details.stream()
+				.mapToDouble(attendance -> attendance.getOvertimeHours() != null ? attendance.getOvertimeHours() : 0.0)
+				.sum();
 
 		model.addAttribute("attendances", details);
 		model.addAttribute("salaryInfo", salaryInfo);

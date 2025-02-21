@@ -119,7 +119,10 @@ public class LeaveService {
     
     public List<ScheduleDto> getLeavesByEmployee(String employeeEmail) {
         Integer employeeId = userAccountDao.findEmployeeIdByEmail(employeeEmail);
-        return employeeId != null ? leaveDao.getLeavesByEmployee(employeeId) : Collections.emptyList();
+        
+        // Employee ID가 존재하는 경우만 조회
+        return (employeeId != null) ? leaveDao.getLeavesByEmployee(employeeId) : Collections.emptyList();
     }
+
 
 }

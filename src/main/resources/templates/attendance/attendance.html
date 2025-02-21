@@ -110,10 +110,10 @@
             <a href="/attendance/leave/list" class="btn btn-secondary no-print">휴가 신청 목록</a>
             <button onclick="printAttendanceRecords()" class="btn btn-primary no-print">출력하기</button>
         </div>
-
+        
         <form method="get" action="/attendance/records">
             <input type="text" name="employeeId" placeholder="사원 ID">
-            <input type="text" name="name" placeholder="사원 이름">
+    		<input type="text" name="name" placeholder="사원 이름">
             <input type="date" name="startDate">
             <input type="date" name="endDate">
             <select name="status">
@@ -134,7 +134,7 @@
                     <th>출근 시간</th>
                     <th>퇴근 시간</th>
                     <th>근태 유형</th>
-                    <th sec:authorize="hasAnyRole('HR', 'ADMIN')">수정</th>
+                    <th sec:authorize="hasAnyRole('HR', 'ADMIN')" class="no-print">수정</th>
                 </tr>
             </thead>
             <tbody>
@@ -145,7 +145,7 @@
                     <td th:text="${record.checkInTime}"></td>
                     <td th:text="${record.checkOutTime}"></td>
                     <td th:text="${record.status}"></td>
-                    <td sec:authorize="hasAnyRole('HR', 'ADMIN')" class="border border-gray-300 py-3 px-4">
+                    <td sec:authorize="hasAnyRole('HR', 'ADMIN')" class="border border-gray-300 py-3 px-4 no-print">
                     	<a th:href="@{/attendance/update/{attendanceId}(attendanceId=${record.attendanceId})}" 
                         	class="text-blue-500 hover:underline">수정</a>
                 	</td>

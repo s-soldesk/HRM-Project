@@ -17,7 +17,8 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		<result property="employeeName" column="employeeName" />
 		<result property="departmentName" column="DepartmentName" />
 		<result property="position" column="Position"
-			typeHandler="org.apache.ibatis.type.EnumTypeHandler" />
+			typeHandler="org.apache.ibatis.type.EnumTypeHandler"
+			javaType="com.hrm.enums.Position" />
 		<result property="workingDays" column="workingDays" />
 		<result property="totalWorkedHours" column="totalWorkedHours" />
 		<result property="totalOvertimeHours"
@@ -78,8 +79,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		e.EmployeeID,
 		e.Name AS employeeName,
 		d.DepartmentName,
-		e.Position,
-		COALESCE(COUNT(DISTINCT a.Date), 0) AS workingDays,
+		e.Position AS Position,
+		COALESCE(COUNT(DISTINCT a.Date), 0) AS
+		workingDays,
 		COALESCE(SUM(a.HoursWorked), 0) AS totalWorkedHours,
 		COALESCE(SUM(a.OvertimeHours), 0) AS totalOvertimeHours
 		FROM Employee e
@@ -102,12 +104,15 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		e.Position,
 		d.DepartmentName
 		FROM Attendance a
-		JOIN Employee e ON a.EmployeeID =
+		JOIN Employee e ON
+		a.EmployeeID =
 		e.EmployeeID
-		JOIN Department d ON e.DepartmentID = d.DepartmentID
+		JOIN Department d ON e.DepartmentID =
+		d.DepartmentID
 		WHERE
 		a.EmployeeID = #{employeeId}
-		AND DATE_FORMAT(a.Date, '%Y-%m') =
+		AND DATE_FORMAT(a.Date,
+		'%Y-%m') =
 		#{yearMonth}
 		ORDER BY a.Date
 	</select>
@@ -119,7 +124,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
 		SELECT
 		a.*,
 		e.Name as employeeName,
-		e.Position,
+		e.Position AS Position,
 		d.DepartmentName,
 		a.Date as attendanceDate,
 		(

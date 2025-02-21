@@ -28,19 +28,18 @@ public class LeaveController {
     // 휴가 신청 페이지 렌더링
     @GetMapping("/add")
     public String showAddLeavePage(Model model, @AuthenticationPrincipal UserDetails userDetails) {
-    	ScheduleDto scheduleDto = new ScheduleDto();
-
-        // 로그인한 사용자의 이메일 가져오기
+    	// 로그인한 사용자의 이메일 가져오기
         String employeeEmail = userDetails.getUsername();
 
         // 이메일을 이용해 Employee 테이블의 EmployeeID(Integer) 조회
         Integer employeeId = userAccountDao.findEmployeeIdByEmail(employeeEmail);
 
-        if (employeeId == null) {
-            model.addAttribute("message", "사원 정보를 찾을 수 없습니다.");
+        if (employeeId != null) {
+            model.addAttribute("employeeId", employeeId); // Thymeleaf에 전달
         } else {
-        	scheduleDto.setEmployeeId(String.valueOf(employeeId));
+            model.addAttribute("message", "사원 정보를 찾을 수 없습니다.");
         }
+
         
     	model.addAttribute("scheduleDto", new ScheduleDto());
         return "attendance/leave_add";  // 휴가 신청 페이지

@@ -120,7 +120,7 @@ public class ScheduleController {
 
 
     /**
-     *  일정 수정
+     * ✅ 일정 수정
      */
     @PutMapping("/update/{scheduleId}")
     public ResponseEntity<?> updateSchedule(@PathVariable("scheduleId") int scheduleId, 

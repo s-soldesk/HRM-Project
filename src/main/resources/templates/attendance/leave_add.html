@@ -3,7 +3,9 @@
 <head>
     <title>휴가 신청</title>
     <meta charset="UTF-8">
-    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- 공통 CSS 파일 추가 -->
+    <link rel="stylesheet" href="/css/attendance.css">
 
     <script>
         // 날짜 유효성 검사
@@ -19,37 +21,37 @@
         }
     </script>
 </head>
-<body class="bg-gray-100">
-    <div class="max-w-4xl mx-auto mt-10 bg-white p-8 rounded-lg shadow-lg">
-        <h1 class="text-2xl font-bold mb-6">휴가 신청</h1>
+<body>
+
+    <div class="small-container">
+        <h1>휴가 신청</h1>
 
         <!-- 메시지 표시 -->
-        <p th:if="${message}" th:text="${message}" class="text-green-500 mb-4"></p>
+        <p th:if="${message}" th:text="${message}" style="color: green; font-weight: bold;"></p>
 
         <!-- 휴가 신청 폼 -->
-        <form th:action="@{/attendance/leave/add}" method="post" class="space-y-4" onsubmit="return validateDate();">
-            
+        <form th:action="@{/attendance/leave/add}" method="post" onsubmit="return validateDate();">
+
             <!-- 사원 ID 필드 -->
-            <div>
-                <label for="employeeId" class="block font-medium">사원 ID</label>
-                
-                <input type="text" id="employeeId" class="border rounded-lg px-4 py-2 w-full"
+            <div class="form-group">
+                <label for="employeeId">사원 ID</label>
+                <input type="text" id="employeeId"
                        th:value="${scheduleDto.employeeId}"
                        th:readonly="${#authorization.expression('hasAnyRole(''EMPLOYEE'', ''HR'')')}"
-           			   th:classappend="${#authorization.expression('hasAnyRole(''EMPLOYEE'', ''HR'')')} ? 'bg-gray-200 cursor-not-allowed'">
-                      
+                       th:classappend="${#authorization.expression('hasAnyRole(''EMPLOYEE'', ''HR'')')} ? 'bg-gray-200 cursor-not-allowed'">
+
                 <!-- Employee가 직접 입력 못하지만 값을 전달해야 하므로 hidden 필드 추가 -->
                 <input type="hidden" name="employeeId" th:value="${scheduleDto.employeeId}">
             </div>
 
-            <div>
-                <label for="title" class="block font-medium">일정 제목</label>
-                <input type="text" name="title" id="title" class="border rounded-lg px-4 py-2 w-full" required>
+            <div class="form-group">
+                <label for="title">일정 제목</label>
+                <input type="text" name="title" id="title" required>
             </div>
 
-            <div>
-                <label for="leaveType" class="block font-medium">휴가 유형</label>
-                <select name="leaveType" id="leaveType" class="border rounded-lg px-4 py-2 w-full">
+            <div class="form-group">
+                <label for="leaveType">휴가 유형</label>
+                <select name="leaveType" id="leaveType">
                     <option value="Annual">연차</option>
                     <option value="Sick">병가</option>
                     <option value="Personal">개인 사유</option>
@@ -57,29 +59,27 @@
             </div>
 
             <!-- 날짜 입력 -->
-            <div>
-                <label for="startDate" class="block font-medium">시작 날짜</label>
-                <input type="date" name="startDate" id="startDate" class="border rounded-lg px-4 py-2 w-full" required
-                       min="" onchange="document.getElementById('endDate').min = this.value;">
+            <div class="form-group">
+                <label for="startDate">시작 날짜</label>
+                <input type="date" name="startDate" id="startDate" required min=""
+                       onchange="document.getElementById('endDate').min = this.value;">
             </div>
 
-            <div>
-                <label for="endDate" class="block font-medium">종료 날짜</label>
-                <input type="date" name="endDate" id="endDate" class="border rounded-lg px-4 py-2 w-full" required>
+            <div class="form-group">
+                <label for="endDate">종료 날짜</label>
+                <input type="date" name="endDate" id="endDate" required>
             </div>
 
-            <div>
-                <label for="reason" class="block font-medium">사유</label>
-                <textarea name="reason" id="reason" class="border rounded-lg px-4 py-2 w-full"></textarea>
+            <div class="form-group">
+                <label for="reason">사유</label>
+                <textarea name="reason" id="reason"></textarea>
             </div>
 
-            <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600">휴가 신청</button>
+            <div class="leave-btn-container">
+                <button type="submit" class="btn btn-primary">휴가 신청</button>
+                <a href="/attendance" class="btn btn-secondary">메인 페이지로 돌아가기</a>
+            </div>
         </form>
-
-        <!-- 메인 페이지로 돌아가기 버튼 -->
-        <div class="mt-6">
-            <a href="/attendance" class="bg-gray-500 text-white px-4 py-2 rounded-lg hover:bg-gray-600">메인 페이지로 돌아가기</a>
-        </div>
     </div>
 
     <script>
@@ -90,5 +90,6 @@
             document.getElementById("endDate").setAttribute("min", today);
         });
     </script>
+
 </body>
 </html>

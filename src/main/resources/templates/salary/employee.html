@@ -6,88 +6,130 @@
 <link rel="stylesheet" type="text/css" th:href="@{/css/dashboard.css}">
 <link rel="stylesheet" type="text/css" th:href="@{/css/salary.css}">
 <link rel="stylesheet" href="/css/sidebar.css">
+<style>
+.no-data-message {
+    text-align: center;
+    padding: 30px;
+    color: #666;
+    background-color: #f9f9f9;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin: 20px 0;
+}
+
+.no-data-message i {
+    display: block;
+    margin-bottom: 10px;
+    font-size: 24px;
+    color: #999;
+}
+
+.error-message {
+    text-align: center;
+    padding: 50px 20px;
+    margin: 40px auto;
+    max-width: 600px;
+    background-color: #fff3f3;
+    border: 1px solid #ffdddd;
+    border-radius: 4px;
+    color: #d92020;
+}
+
+.error-message i {
+    font-size: 48px;
+    margin-bottom: 20px;
+    display: block;
+}
+
+.error-message p {
+    font-size: 18px;
+    margin: 10px 0;
+}
+</style>
 </head>
 <body>
-	<!-- 사이드바 -->
-	<div th:replace="~{layout/sidebar :: sidebar}"></div>
+    <!-- 사이드바 -->
+    <div th:replace="~{layout/sidebar :: sidebar}"></div>
 
-	<div class="content">
-		<div class="emp-salary-container">
-			<h2>급여 조회</h2>
+    <div class="content">
+        <!-- 에러 메시지가 있는 경우 -->
+        <div th:if="${errorMessage}" class="error-message">
+            <i>⚠️</i>
+            <p th:text="${errorMessage}"></p>
+        </div>
 
-			<!-- 사원 정보 -->
-			<div class="employee-info">
-				<table>
-					<colgroup>
-						<col width="15%">
-						<col width="35%">
-						<col width="15%">
-						<col width="35%">
-					</colgroup>
-					<tr>
-						<th>사원번호</th>
-						<td th:text="${employee.employeeId}"></td>
-						<th>성명</th>
-						<td th:text="${employee.name}"></td>
-					</tr>
-					<tr>
-						<th>부서</th>
-						<td th:text="${employee.departmentName}"></td>
-						<th>직급</th>
-						<td th:text="${employee.position?.getPosition()}"></td>
-					</tr>
-				</table>
-			</div>
+        <!-- employee가 있는 경우에만 표시 -->
+        <div th:if="${employee != null}" class="emp-salary-container">
+            <h2>급여 조회</h2>
 
-			<!-- 급여 목록 테이블 -->
-			<div class="salary-list">
-				<table>
-					<colgroup>
-						<col width="15%">
-						<!-- 귀속월 -->
-						<col width="20%">
-						<!-- 총급여 -->
-						<col width="20%">
-						<!-- 공제총액 -->
-						<col width="25%">
-						<!-- 실수령액 -->
-						<col width="10%">
-						<!-- 확인 -->
-						<col width="10%">
-						<!-- 명세서 -->
-					</colgroup>
-					<thead>
-						<tr>
-							<th>귀속월</th>
-							<th>총급여</th>
-							<th>공제총액</th>
-							<th>실수령액</th>
-							<th>명세서</th>
-						</tr>
-					</thead>
-					<tbody>
-						<tr th:if="${not #lists.isEmpty(salaries)}"
-							th:each="salary : ${salaries}">
-							<td th:text="${#temporals.format(salary.paymentDate, 'yyyy/MM')}"></td>
-							<td class="text-right"
-								th:text="${#numbers.formatInteger(salary.totalSalary, 0, 'COMMA')} + '원'"></td>
-							<td class="text-right"
-								th:text="${#numbers.formatInteger(salary.deductionTotal, 0, 'COMMA')} + '원'"></td>
-							<td class="text-right"
-								th:text="${#numbers.formatInteger(salary.netPay, 0, 'COMMA')} + '원'"></td>
-							<td class="text-center">
-								<button class="arrow-btn"
-									th:onclick="'location.href=\'/salary/detail/' + ${salary.salaryId} + '\''">
-									→</button>
-							</td>
-						</tr>
-						<tr th:if="${#lists.isEmpty(salaries)}">
-							<td colspan="6" class="no-data">급여 내역이 없습니다.</td>
-						</tr>
-					</tbody>
-				</table>
-			</div>
-		</div>
-	</div>
+            <!-- 사원 정보 -->
+            <div class="employee-info">
+                <table>
+                    <colgroup>
+                        <col width="15%">
+                        <col width="35%">
+                        <col width="15%">
+                        <col width="35%">
+                    </colgroup>
+                    <tr>
+                        <th>사원번호</th>
+                        <td th:text="${employee.employeeId}"></td>
+                        <th>성명</th>
+                        <td th:text="${employee.name}"></td>
+                    </tr>
+                    <tr>
+                        <th>부서</th>
+                        <td th:text="${employee.departmentName}"></td>
+                        <th>직급</th>
+                        <td th:text="${employee.position?.getPosition()}"></td>
+                    </tr>
+                </table>
+            </div>
+
+            <!-- 급여 목록 -->
+            <div th:if="${not #lists.isEmpty(salaries)}" class="salary-list">
+                <table>
+                    <colgroup>
+                        <col width="15%">
+                        <col width="20%">
+                        <col width="20%">
+                        <col width="25%">
+                        <col width="10%">
+                        <col width="10%">
+                    </colgroup>
+                    <thead>
+                        <tr>
+                            <th>귀속월</th>
+                            <th>총급여</th>
+                            <th>공제총액</th>
+                            <th>실수령액</th>
+                            <th>명세서</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="salary : ${salaries}">
+                            <td th:text="${#temporals.format(salary.paymentDate, 'yyyy/MM')}"></td>
+                            <td class="text-right"
+                                th:text="${#numbers.formatInteger(salary.totalSalary, 0, 'COMMA')} + '원'"></td>
+                            <td class="text-right"
+                                th:text="${#numbers.formatInteger(salary.deductionTotal, 0, 'COMMA')} + '원'"></td>
+                            <td class="text-right"
+                                th:text="${#numbers.formatInteger(salary.netPay, 0, 'COMMA')} + '원'"></td>
+                            <td class="text-center">
+                                <button class="arrow-btn"
+                                    th:onclick="'location.href=\'/salary/detail/' + ${salary.salaryId} + '\''">→</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- 급여 데이터가 없는 경우 -->
+            <div th:if="${#lists.isEmpty(salaries)}" class="no-data-message">
+                <i>🔍</i>
+                <p>급여 지급 내역이 없습니다.</p>
+            </div>
+        </div>
+    </div>
 </body>
 </html>

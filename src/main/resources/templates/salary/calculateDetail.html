@@ -82,6 +82,16 @@
             });
         }
     }
+    
+    function redirectToManualEdit(button) {
+        const employeeId = button.getAttribute('data-employee-id');
+        const yearMonth = button.getAttribute('data-year-month');
+        window.location.href = `/salary/manual-edit/${employeeId}/${yearMonth}`;
+    }
+    
+    function goBack(yearMonth) {
+        window.location.href = '/salary/calculate/status/' + yearMonth;
+    }
     </script>
 </head>
 <body>
@@ -129,7 +139,7 @@
 					원
 				</p>
 				<p>
-					직급수당: <span
+					직책수당: <span
 						th:text="${#numbers.formatInteger(salaryInfo.positionAllowance, 0, 'COMMA')}"></span>
 					원
 				</p>
@@ -176,7 +186,8 @@
 			</div>
 
 			<div class="button-group">
-				<button class="btn" onclick="history.back()">돌아가기</button>
+				<button class="btn" th:data-year-month="${yearMonth}"
+					onclick="goBack(this.getAttribute('data-year-month'))">돌아가기</button>
 				<button class="btn primary"
 					th:attr="data-employee-id=${employeeId}, data-year-month=${yearMonth}"
 					onclick="initializeSalary(this.getAttribute('data-employee-id'), this.getAttribute('data-year-month'))">
@@ -185,10 +196,14 @@
 					th:attr="data-employee-id=${attendances[0].employeeId}, data-year-month=${yearMonth}"
 					onclick="confirmAttendance(this.getAttribute('data-employee-id'), this.getAttribute('data-year-month'))">
 					근태 확정</button>
+				<button class="btn edit manual-edit"
+					th:data-employee-id="${attendances[0].employeeId}"
+					th:data-year-month="${yearMonth}"
+					onclick="redirectToManualEdit(this)">급여 수기 계산</button>
 				<button class="btn primary"
 					th:attr="data-employee-id=${attendances[0].employeeId}, data-year-month=${yearMonth}"
 					onclick="calculateSalary(this.getAttribute('data-employee-id'), this.getAttribute('data-year-month'))">
-					급여 계산 확정</button>
+					급여 자동 계산</button>
 			</div>
 		</div>
 	</div>

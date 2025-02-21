@@ -78,7 +78,8 @@ public class SalaryController {
 
 				if (employeeId == null) {
 					System.out.println("EmployeeID를 찾을 수 없음!");
-					return "redirect:/";
+					model.addAttribute("errorMessage", "직원 정보를 찾을 수 없습니다.");
+					return "salary/employee";
 				}
 
 				// EmployeeID로 급여 조회
@@ -92,7 +93,8 @@ public class SalaryController {
 
 				if (employee == null) {
 					System.out.println("Employee 정보가 존재하지 않음!");
-					return "redirect:/"; // 오류 방지
+					model.addAttribute("errorMessage", "Employee 정보가 존재하지 않습니다!");
+					return "salary/employee";
 				}
 
 				model.addAttribute("employee", employee);
@@ -102,11 +104,13 @@ public class SalaryController {
 
 			} catch (Exception e) {
 				e.printStackTrace();
-				return "redirect:/";
+				model.addAttribute("errorMessage", "시스템 오류가 발생했습니다. 관리자에게 문의하세요.");
+				return "salary/employee";
 			}
 		}
 
-		return "redirect:/";
+		model.addAttribute("errorMessage", "접근 권한이 없습니다.");
+		return "salary/employee";
 	}
 
 	// 급여 명세서 상세 조회
@@ -125,17 +129,17 @@ public class SalaryController {
 
 		// 일반 사원의 경우 자신의 급여 정보만 조회 가능
 		try {
-	        // 이메일로 Employee ID 조회
-	        Integer employeeId = salaryService.getEmployeeIdByEmail(currentEmail);
-	        if (employeeId == null || !salary.getEmployeeId().equals(employeeId)) {
-	            return "redirect:/salary/employee";
-	        }
-	        
-	        model.addAttribute("salary", salary);
-	        return "salary/salaryDetail";
-	    } catch (Exception e) {
-	        return "redirect:/salary/employee";
-	    }
+			// 이메일로 Employee ID 조회
+			Integer employeeId = salaryService.getEmployeeIdByEmail(currentEmail);
+			if (employeeId == null || !salary.getEmployeeId().equals(employeeId)) {
+				return "redirect:/salary/employee";
+			}
+
+			model.addAttribute("salary", salary);
+			return "salary/salaryDetail";
+		} catch (Exception e) {
+			return "redirect:/salary/employee";
+		}
 	}
 
 	private boolean hasHRorAdminRole(Authentication auth) {

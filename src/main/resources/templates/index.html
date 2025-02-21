@@ -7,6 +7,7 @@
     <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales/ko.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
     <!-- 사이드바 -->
@@ -22,52 +23,11 @@
                 <img th:unless="${employee != null and employee.profileImage != null}"
                      src="/img/basic.jpg" alt="기본 프로필 이미지" class="profile-image">
                 <div class="profile-info">
-                    <h3 th:text="${employee?.name}">[홍길동]</h3>
-                    <p th:text="${employee?.departmentName + ' ' + employee?.position}">부비2 사원</p>
+                    <h3 th:text="${employee?.name}">null null</h3>
                 </div>
                 <div class="attendance-time">
                     <p>출근시간: <span id="checkInTime">--:--</span></p>
                     <p>퇴근시간: <span id="checkOutTime">--:--</span></p>
-                </div>
-            </div>
-        </div>
-
-        <!-- 근태 현황 카드 섹션 -->
-        <div class="attendance-status">
-            <div class="status-card">
-                <div class="card-content">
-                    <h4>출근</h4>
-                    <p th:text="${attendanceCount ?: '0'}">0</p>
-                </div>
-            </div>
-            <div class="status-card">
-                <div class="card-content">
-                    <h4>퇴근</h4>
-                    <p th:text="${leaveCount ?: '0'}">0</p>
-                </div>
-            </div>
-            <div class="status-card">
-                <div class="card-content">
-                    <h4>지각</h4>
-                    <p th:text="${lateCount ?: '0'}">0</p>
-                </div>
-            </div>
-            <div class="status-card">
-                <div class="card-content">
-                    <h4>결근</h4>
-                    <p th:text="${absentCount ?: '0'}">0</p>
-                </div>
-            </div>
-            <div class="status-card">
-                <div class="card-content">
-                    <h4>휴가</h4>
-                    <p th:text="${vacationCount ?: '0'}">0</p>
-                </div>
-            </div>
-            <div class="status-card">
-                <div class="card-content">
-                    <h4>병결</h4>
-                    <p th:text="${sickLeaveCount ?: '0'}">0</p>
                 </div>
             </div>
         </div>
@@ -80,14 +40,32 @@
                     <h3>공지사항</h3>
                     <a href="/notices" class="more-btn">more</a>
                 </div>
-                <ul class="notice-list">
+                <ul class="notice-list" th:if="${not #lists.isEmpty(recentNotices)}">
                     <li th:each="notice : ${recentNotices}">
                         <a th:href="@{/notices/{id}(id=${notice.noticeId})}">
-                            <span class="notice-title" th:text="${notice.title}">공지사항 제목</span>
-                            <span class="notice-date" th:text="${#temporals.format(notice.createdDate, 'yyyy-MM-dd')}">2024-01-01</span>
+                            <span class="notice-title" th:text="${notice.title}">공지1</span>
+                            <span class="notice-date" th:text="${#temporals.format(notice.createdDate, 'yyyy-MM-dd')}">2025-02-20</span>
                         </a>
                     </li>
                 </ul>
+                <p class="empty-message" th:if="${#lists.isEmpty(recentNotices)}">현재 작성된 글이 없습니다.</p>
+            </div>
+
+            <!-- 채용 게시판 요약 -->
+            <div class="section-box recruitment-section">
+                <div class="section-header">
+                    <h3>채용 게시판</h3>
+                    <a href="/recruitments" class="more-btn">more</a>
+                </div>
+                <ul class="recruitment-list" th:if="${not #lists.isEmpty(recentRecruitments)}">
+                    <li th:each="post : ${recentRecruitments}">
+                        <a th:href="@{/recruitments/{id}(id=${post.id})}">
+                            <span class="recruitment-title" th:text="${post.title}">채용 공고 제목</span>
+                            <span class="recruitment-date" th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd')}">2025-02-20</span>
+                        </a>
+                    </li>
+                </ul>
+                <p class="empty-message" th:if="${#lists.isEmpty(recentRecruitments)}">현재 작성된 글이 없습니다.</p>
             </div>
 
             <!-- 캘린더 요약 -->
@@ -97,22 +75,6 @@
                     <a href="/schedule" class="more-btn">more</a>
                 </div>
                 <div id="mini-calendar"></div>
-            </div>
-
-            <!-- 채용 게시판 요약 -->
-            <div class="section-box recruitment-section">
-                <div class="section-header">
-                    <h3>채용 게시판</h3>
-                    <a href="/recruitments" class="more-btn">more</a>
-                </div>
-                <ul class="recruitment-list">
-                    <li th:each="post : ${recentRecruitments}">
-                        <a th:href="@{/recruitments/{id}(id=${post.id})}">
-                            <span class="recruitment-title" th:text="${post.title}">채용 공고 제목</span>
-                            <span class="recruitment-date" th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd')}">2024-01-01</span>
-                        </a>
-                    </li>
-                </ul>
             </div>
         </div>
     </div>

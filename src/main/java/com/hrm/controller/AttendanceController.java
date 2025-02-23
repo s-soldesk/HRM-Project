@@ -38,13 +38,22 @@ public class AttendanceController {
     	// 로그인한 사용자의 이메일 가져오기
         String employeeEmail = userDetails.getUsername();
 
-        // 이메일을 이용해 Employee 테이블의 EmployeeID(Integer) 조회
-        Integer employeeId = userAccountDao.findEmployeeIdByEmail(employeeEmail);
+        // 로그인한 사용자의 권한 확인
+        boolean isAdmin = userDetails.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
 
-        if (employeeId != null) {
-            model.addAttribute("employeeId", employeeId); // Thymeleaf에 전달
+        // Admin 계정은 employeeId 조회를 하지 않음
+        if (!isAdmin) {
+            Integer employeeId = userAccountDao.findEmployeeIdByEmail(employeeEmail);
+
+            if (employeeId == null) {
+                model.addAttribute("message", "사원 정보를 찾을 수 없습니다.");
+            } else {
+                model.addAttribute("employeeId", employeeId);
+            }
         } else {
-            model.addAttribute("message", "사원 정보를 찾을 수 없습니다.");
+            // Admin 계정은 employeeId가 필요 없음
+            model.addAttribute("employeeId", "");  // 빈 값으로 설정
         }
     	
     	return "attendance/attendance";

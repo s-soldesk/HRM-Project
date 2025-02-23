@@ -50,7 +50,7 @@ public class SalaryDto {
 		return total;
 	}
 
-	// 실지급액 계산 메서드도 안전하게 수정
+	// 실지급액 계산
 	public BigDecimal getNetPay() {
 		BigDecimal deductions = getDeductionTotal();
 		return totalSalary != null ? totalSalary.subtract(deductions) : BigDecimal.ZERO;

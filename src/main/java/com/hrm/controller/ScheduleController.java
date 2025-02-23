@@ -3,6 +3,8 @@ package com.hrm.controller;
 import com.hrm.dto.ScheduleDto;
 import com.hrm.service.ScheduleService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
@@ -14,6 +16,7 @@ import java.time.OffsetDateTime;
 import java.time.ZoneId;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/schedules")
@@ -38,7 +41,10 @@ public class ScheduleController {
             }
         }
 
-        return schedules;
+        // ✅ 승인된 휴가만 반환
+        return schedules.stream()
+                .filter(s -> !"Leave".equals(s.getType()) || "CONFIRMED".equals(s.getStatus()))
+                .collect(Collectors.toList());
     }
 
     /**
@@ -95,45 +101,73 @@ public class ScheduleController {
      * ✅ 일정 삭제
      */
     @DeleteMapping("/delete/{scheduleId}")
-    public String deleteSchedule(@PathVariable("scheduleId") int scheduleId) {
-        try {
-            scheduleService.deleteSchedule(scheduleId);
-            return "success";
-        } catch (Exception e) {
-            e.printStackTrace();
-            return "fail";
+    public ResponseEntity<?> deleteSchedule(@PathVariable("scheduleId") int scheduleId, Principal principal) {
+        String currentUserId = principal.getName(); // 현재 로그인한 사용자 ID
+        ScheduleDto scheduleDto = scheduleService.getScheduleById(scheduleId); // 일정 정보 조회
+
+        if (scheduleDto == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body("해당 일정이 존재하지 않습니다.");
         }
+
+        // ✅ 일정 작성자와 로그인한 사용자가 같은지 확인
+        if (!scheduleDto.getEmployeeId().equals(currentUserId)) {
+            return ResponseEntity.status(HttpStatus.FORBIDDEN).body("⚠️ 다른 사람의 일정을 삭제할 수 없습니다.");
+        }
+
+        scheduleService.deleteSchedule(scheduleId);
+        return ResponseEntity.ok("✅ 일정이 삭제되었습니다.");
     }
+
 
     /**
      * ✅ 일정 수정
      */
     @PutMapping("/update/{scheduleId}")
-    public String updateSchedule(@PathVariable("scheduleId") int scheduleId, @RequestBody Map<String, Object> map) {
-        ScheduleDto schedule = new ScheduleDto();
-        schedule.setScheduleId(scheduleId);
-        schedule.setTitle((String) map.get("title"));
-
-        // 📌 날짜 변환 (ISO 8601 → yyyy-MM-dd HH:mm:ss)
-        DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
-
-        if (map.get("start") != null) {
-            ZonedDateTime startUTC = ZonedDateTime.parse(map.get("start").toString(), formatter)
-                    .withZoneSameInstant(ZoneId.of("Asia/Seoul"));
-            schedule.setStartDate(startUTC.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-        }
-        if (map.get("end") != null) {
-            ZonedDateTime endUTC = ZonedDateTime.parse(map.get("end").toString(), formatter)
-                    .withZoneSameInstant(ZoneId.of("Asia/Seoul"));
-            schedule.setEndDate(endUTC.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
-        }
-
+    public ResponseEntity<?> updateSchedule(@PathVariable("scheduleId") int scheduleId, 
+                                           @RequestBody Map<String, Object> map,
+                                           Principal principal) {
         try {
+            // 현재 로그인한 사용자 ID
+            String currentUserId = principal.getName();
+            
+            // 일정 정보 조회
+            ScheduleDto existingSchedule = scheduleService.getScheduleById(scheduleId);
+            
+            // 일정이 존재하지 않음
+            if (existingSchedule == null) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("해당 일정이 존재하지 않습니다.");
+            }
+            
+            // 작성자와 현재 사용자가 다른 경우 권한 없음
+            if (!existingSchedule.getEmployeeId().equals(currentUserId)) {
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("다른 사람의 일정을 수정할 권한이 없습니다.");
+            }
+            
+            ScheduleDto schedule = new ScheduleDto();
+            schedule.setScheduleId(scheduleId);
+            schedule.setTitle((String) map.get("title"));
+            schedule.setEmployeeId(existingSchedule.getEmployeeId()); // 기존 employeeId 유지
+
+            // 날짜 변환 처리
+            DateTimeFormatter formatter = DateTimeFormatter.ISO_DATE_TIME;
+            if (map.get("start") != null) {
+                ZonedDateTime startUTC = ZonedDateTime.parse(map.get("start").toString(), formatter)
+                        .withZoneSameInstant(ZoneId.of("Asia/Seoul"));
+                schedule.setStartDate(startUTC.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+            }
+            if (map.get("end") != null) {
+                ZonedDateTime endUTC = ZonedDateTime.parse(map.get("end").toString(), formatter)
+                        .withZoneSameInstant(ZoneId.of("Asia/Seoul"));
+                schedule.setEndDate(endUTC.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+            }
+            
+            schedule.setAllDay(map.get("allDay") != null ? (boolean) map.get("allDay") : false);
+
             scheduleService.updateSchedule(schedule);
-            return "success";
+            return ResponseEntity.ok(scheduleService.getScheduleById(scheduleId));
         } catch (Exception e) {
             e.printStackTrace();
-            return "fail";
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("일정 수정 중 오류가 발생했습니다.");
         }
     }
 }

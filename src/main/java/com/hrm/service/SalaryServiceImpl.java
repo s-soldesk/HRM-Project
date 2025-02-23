@@ -4,6 +4,7 @@ import com.hrm.dao.SalaryDao;
 import com.hrm.dto.AttendanceDto;
 import com.hrm.dto.EmployeeDto;
 import com.hrm.dto.SalaryDto;
+import com.hrm.enums.Position;
 import com.hrm.utils.AllowancePolicy;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -80,15 +81,15 @@ public class SalaryServiceImpl implements SalaryService {
 			salaryDao.addSalary(salary);
 		}
 	}
-	
+
 	@Override
 	public Integer getEmployeeIdByEmail(String email) {
-	    return salaryMapper.findEmployeeIdByEmail(email);
+		return salaryMapper.findEmployeeIdByEmail(email);
 	}
 
 	@Override
 	public List<SalaryDto> getSalariesByEmployeeId(int employeeId) {
-	    return salaryMapper.getSalariesByEmployeeId(employeeId);
+		return salaryMapper.getSalariesByEmployeeId(employeeId);
 	}
 
 	@Override
@@ -102,15 +103,19 @@ public class SalaryServiceImpl implements SalaryService {
 	}
 
 	private SalaryDto calculateIndividualSalary(AttendanceDto attendance) {
+	    
 		SalaryDto salary = new SalaryDto();
 		salary.setEmployeeId(attendance.getEmployeeId());
 
 		// 기본급과 수당 설정
 		BigDecimal baseSalary = new BigDecimal("2800000.00");
 		BigDecimal mealAllowance = BigDecimal.valueOf(AllowancePolicy.getMealAllowance());
-		BigDecimal positionAllowance = BigDecimal
-				.valueOf(AllowancePolicy.getPositionAllowance(attendance.getPosition()));
 
+		// Position을 기반으로 직급수당 계산
+		Position position = attendance.getPosition();
+		
+		BigDecimal positionAllowance = BigDecimal.valueOf(AllowancePolicy.getPositionAllowance(position));
+		
 		// 초과근무수당 계산
 		BigDecimal overtimePay = BigDecimal.ZERO;
 		double overtimeHours = attendance.getOvertimeHours();
@@ -139,7 +144,7 @@ public class SalaryServiceImpl implements SalaryService {
 		// SalaryDto에 데이터 설정
 		salary.setBaseSalary(baseSalary);
 		salary.setMealAllowance(mealAllowance);
-		salary.setPositionAllowance(positionAllowance);
+		salary.setPositionAllowance(positionAllowance); // 직급수당 설정
 		salary.setOvertimePay(overtimePay);
 		salary.setTotalSalary(totalSalary);
 		salary.setNationalPension(nationalPension);

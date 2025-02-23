@@ -3,6 +3,7 @@ package com.hrm.dao;
 import com.hrm.dto.ScheduleDto;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
 
 import java.util.List;
 
@@ -14,6 +15,11 @@ public interface ScheduleDao {
      */
     List<ScheduleDto> getAllSchedules();
 
+    /**
+     * ✅ 특정 일정 조회 (scheduleId로 검색)
+     */
+    ScheduleDto getScheduleById(@Param("scheduleId") int scheduleId);
+    
     /**
      * ✅ 일정 추가
      */
@@ -28,4 +34,8 @@ public interface ScheduleDao {
      * ✅ 일정 삭제
      */
     void deleteSchedule(@Param("scheduleId") int scheduleId);
+    
+    @Select("SELECT COUNT(*) FROM SCHEDULE WHERE ScheduleID = #{scheduleId}")
+    int countScheduleById(@Param("scheduleId") int scheduleId);
+
 }

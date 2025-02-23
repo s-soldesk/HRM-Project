@@ -1,16 +1,30 @@
 /* 전체 레이아웃 */
+
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    overflow-x: hidden;
+    box-sizing: border-box;
+}
+
 .content {
-    margin-left: 250px;
-    padding: 20px;
-    background-color: #F5F5F5;
+    margin-left: 210px;
+    padding: 40px;
+    background-color: #f8f9fa;
+    min-height: 100vh;
+    box-sizing: border-box;
+    border: none;
 }
 
 /* 프로필 섹션 */
 .profile-section {
-    background-color: #DBE2EF;
-    border-radius: 15px;
+    background-color: #e9eff6;
+    border-radius: 10px;
     padding: 20px;
     margin-bottom: 20px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
 }
 
 .profile-card {
@@ -20,8 +34,8 @@
 }
 
 .profile-image {
-    width: 100px;
-    height: 100px;
+    width: 70px;
+    height: 70px;
     border-radius: 50%;
     object-fit: cover;
 }
@@ -29,72 +43,17 @@
 .profile-info h3 {
     margin: 0;
     font-size: 1.2rem;
-    color: #333;
-}
-
-.profile-info p {
-    margin: 5px 0 0;
-    color: #666;
 }
 
 .attendance-time {
     margin-left: auto;
 }
 
-.attendance-time p {
-    margin: 5px 0;
-    color: #666;
-}
-
-/* 근태 현황 카드 섹션 */
-.attendance-status {
-    display: flex;
-    gap: 15px;
-    margin-bottom: 20px;
-}
-
-.status-card {
-    flex: 1;
-    background: white;
-    padding: 15px;
-    border-radius: 10px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-    transition: transform 0.2s;
-}
-
-.status-card:hover {
-    transform: translateY(-2px);
-}
-
-.card-content {
-    text-align: center;
-}
-
-.card-content h4 {
-    color: #666;
-    margin-bottom: 10px;
-    font-size: 1rem;
-}
-
-.card-content p {
-    font-size: 1.5rem;
-    font-weight: bold;
-    color: #333;
-    margin: 0;
-}
-
-/* 각 카드별 색상 구분 */
-.status-card:nth-child(1) { border-top: 3px solid #2196F3; }
-.status-card:nth-child(2) { border-top: 3px solid #2196F3; }
-.status-card:nth-child(3) { border-top: 3px solid #ec0006; }
-.status-card:nth-child(4) { border-top: 3px solid #ec0006; }
-.status-card:nth-child(5) { border-top: 3px solid #112D4E; }
-.status-card:nth-child(6) { border-top: 3px solid #112D4E; }
-
 /* 그리드 레이아웃 */
 .dashboard-grid {
     display: grid;
     grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: auto auto;
     gap: 20px;
 }
 
@@ -103,33 +62,40 @@
     border-radius: 10px;
     padding: 20px;
     box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+    height: 100%;
+    min-height: 200px;
 }
 
-/* 섹션 헤더 */
+/* 캘린더 섹션 */
+.calendar-section {
+    grid-column: span 2;
+    margin-top: 40px;
+}
+
+/* 헤더 스타일 */
 .section-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid #eee;
 }
 
 .section-header h3 {
     margin: 0;
+    font-size: 1.2rem;
     color: #333;
 }
 
 .more-btn {
-    background-color: #3F72AF;
+    background-color: #4285f4;
     color: white;
-    text-decoration: none;
+    border: none;
     padding: 5px 15px;
     border-radius: 5px;
+    text-decoration: none;
     font-size: 0.9em;
-    transition: background-color 0.2s;
-}
-
-.more-btn:hover {
-    background-color: #6B3410;
 }
 
 /* 리스트 스타일 */
@@ -155,37 +121,43 @@
     color: #333;
 }
 
-.notice-date, .recruitment-date {
+.empty-message {
+    padding: 20px;
+    text-align: center;
     color: #666;
+    font-style: italic;
+}
+
+/* FullCalendar 커스텀 스타일 */
+#mini-calendar {
+    height: 500px;
+    margin-top: 10px;
+}
+
+.fc .fc-toolbar-title {
+    font-size: 1.3em;
+}
+
+.fc .fc-button {
+    padding: 0.3em 0.65em;
     font-size: 0.9em;
 }
 
-/* 미니 캘린더 */
-#mini-calendar {
-    height: 300px;
+.fc-header-toolbar {
+    margin-bottom: 1em !important;
 }
 
-/* 반응형 디자인 */
-@media (max-width: 1024px) {
+.fc-daygrid-day-number {
+    font-size: 0.9em;
+}
+
+/* 미디어 쿼리 */
+@media (max-width: 768px) {
     .dashboard-grid {
         grid-template-columns: 1fr;
     }
     
-    .attendance-status {
-        flex-wrap: wrap;
-    }
-    
-    .status-card {
-        flex: 1 1 calc(33.333% - 15px);
-    }
-}
-
-@media (max-width: 768px) {
-    .content {
-        margin-left: 0;
-    }
-    
-    .status-card {
-        flex: 1 1 calc(50% - 15px);
+    .calendar-section {
+        grid-column: span 1;
     }
 }

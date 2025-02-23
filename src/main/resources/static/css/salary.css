@@ -1,242 +1,167 @@
 /* salary.css */
+:root {
+    --primary-color: #2C3E50;    /* 진한 네이비 */
+    --secondary-color: #34495E;  /* 밝은 네이비 */
+    --success-color: #27AE60;    /* 차분한 초록 */
+    --danger-color: #E74C3C;     /* 부드러운 레드 */
+    --text-color: #2C3E50;       /* 기본 텍스트 */
+    --border-color: #ECF0F1;     /* 은은한 회색 */
+    --bg-light: #f8f9fa;
+}
 
-/* Content 영역 설정 (dashboard.css와 동일하게) */
 .content {
     margin-left: 270px;
-    padding: 20px;
+    padding: 2rem;
     width: calc(100% - 270px);
+    background-color: var(--bg-light);
+    min-height: 100vh;
 }
 
-/* 공통 컨테이너 스타일 */
-.salary-container,
-.emp-salary-container,
-.salary-calculate-container,
-.payslip-container {
+.salary-container {
+    max-width: 1200px;
+    margin: 0 auto;
     background: #fff;
-    padding: 20px;
+    padding: 2.5rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+/* 카드 스타일 */
+.card {
+    border: none;
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    margin-bottom: 1.5rem;
+    background: #fff;
 }
 
-/* 테이블 공통 스타일 */
-.salary-table,
-.salary-list table,
-.attendance-list table,
-.info-table,
-.payment-table,
-.deduction-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin: 15px 0;
+.card-body {
+    padding: 1.5rem;
 }
 
-.salary-table th,
-.salary-list th,
-.attendance-list th,
-.info-table th,
-.payment-table th,
-.deduction-table th {
-    background-color: #f5f5f5;
-    padding: 12px;
-    text-align: left;
-    border: 1px solid #ddd;
+.card-header {
+    background: none;
+    border-bottom: 1px solid var(--border-color);
+    padding: 1.25rem;
 }
 
-.salary-table td,
-.salary-list td,
-.attendance-list td,
-.info-table td,
-.payment-table td,
-.deduction-table td {
-    padding: 12px;
-    border: 1px solid #ddd;
+/* 사원정보 카드 */
+.employee-info-card {
+    background-color: var(--bg-light);
+    margin-bottom: 2rem;
 }
 
-/* 검색 섹션 스타일 */
-.search-section {
-    margin: 20px 0;
-    padding: 20px;
-    background-color: #f8f9fa;
-    border-radius: 5px;
+.employee-info-card .card-body {
+    padding: 1.5rem;
 }
 
-.search-select,
-.search-input,
-.month-selector select {
-    padding: 8px;
-    border: 1px solid #ddd;
-    border-radius: 4px;
-    margin-right: 10px;
+/* 지급/공제 카드 */
+.payment-card .card-header,
+.deduction-card .card-header {
+    color: var(--text-color);
+    font-weight: 600;
+    padding: 1rem 1.5rem;
 }
 
-.search-input {
-    width: 200px;
+.payment-card .card-header {
+    border-bottom: 2px solid var(--primary-color);
+}
+
+.deduction-card .card-header {
+    border-bottom: 2px solid var(--danger-color);
+}
+
+/* 실지급액 카드 */
+.net-pay-card {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    margin-bottom: 2rem;
+}
+
+.net-pay-card .card-body {
+    padding: 1.5rem;
+}
+
+.net-pay-amount {
+    font-size: 1.75rem;
+    font-weight: 600;
+}
+
+/* 금액 표시 스타일 */
+.amount-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.amount-row:last-child {
+    border-bottom: none;
+}
+
+.amount-total {
+    font-weight: 600;
+    color: var(--primary-color);
+    font-size: 1.1rem;
+    padding-top: 0.5rem;
+    margin-top: 0.5rem;
+    border-top: 2px solid var(--border-color);
 }
 
 /* 버튼 스타일 */
-.btn,
-.search-button,
-.detail-button {
-    padding: 8px 20px;
-    background-color: #0066b3;
-    color: white;
+.btn {
+    padding: 0.5rem 1.5rem;
+    border-radius: 6px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
     border: none;
-    border-radius: 4px;
-    cursor: pointer;
 }
 
-.btn:hover,
-.search-button:hover,
-.detail-button:hover {
-    background-color: #005299;
+.btn-primary:hover {
+    background-color: var(--secondary-color);
+    transform: translateY(-1px);
 }
 
-.btn.primary {
-    background: #0066b3;
-    color: white;
-}
-
-.arrow-btn {
-    background: none;
+.btn-secondary {
+    background-color: #95a5a6;
     border: none;
-    font-size: 18px;
-    cursor: pointer;
-    padding: 5px 10px;
 }
 
-.arrow-btn:hover {
-    color: #0066b3;
+.btn-secondary:hover {
+    background-color: #7f8c8d;
+    transform: translateY(-1px);
 }
 
-/* 급여 명세서 스타일 */
-.payslip-title {
-    font-size: 24px;
-    margin-bottom: 30px;
-}
-
-.salary-details h3 {
-    margin: 20px 0 10px;
-    font-size: 18px;
-}
-
-.total {
-    font-weight: bold;
-    background-color: #f5f5f5;
-}
-
-.net-pay {
-    margin: 30px 0;
-    text-align: right;
-}
-
-.net-pay h3 {
-    display: inline-block;
-    margin-right: 20px;
-}
-
-.net-pay p {
-    display: inline-block;
-    font-size: 24px;
-    font-weight: bold;
-}
-
-/* 급여 계산 페이지 스타일 */
-.calculate-content {
-    background: #fff;
-    padding: 20px;
-    border-radius: 4px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-}
-
-.salary-summary {
-    border: 1px solid #ddd;
-    padding: 15px;
-    margin: 20px 0;
-    background-color: #f9f9fa;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-}
-
-.salary-summary h3 {
-    font-size: 1.5rem;
-    color: #333;
-    margin-bottom: 10px;
-}
-
-.salary-summary p {
-    font-size: 1rem;
-    color: #555;
-    margin: 5px 0;
-}
-
-/* 버튼 그룹 */
-.button-group {
-    margin-top: 20px;
-    text-align: right;
-}
-
-/* 데이터 없음 메시지 */
-.no-data {
-    padding: 30px;
-    text-align: center;
-    color: #666;
-}
-
-/* 확인 표시 */
-.checkmark {
-    color: #2ecc71;
-    font-weight: bold;
-}
-
-/* employee 페이지 스타일 */
-.emp-salary-container {
-    padding: 20px;
-    background: #fff;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-.emp-salary-container h2 {
-    margin-bottom: 20px;
-    font-size: 1.5rem;
-    color: #333;
-}
-
-.employee-info table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-bottom: 30px;
-}
-
-.employee-info th,
-.employee-info td {
-    padding: 12px;
-    border: 1px solid #ddd;
-}
-
-.employee-info th {
-    background-color: #f5f5f5;
+/* 페이지 타이틀 */
+.salary-title {
+    color: var(--text-color);
+    font-weight: 600;
+    margin-bottom: 2rem;
     text-align: center;
 }
 
-.text-right {
-    text-align: right;
+/* 반응형 조정 */
+@media (max-width: 768px) {
+    .content {
+        margin-left: 0;
+        width: 100%;
+        padding: 1rem;
+    }
+    
+    .salary-container {
+        padding: 1rem;
+    }
+    
+    .card-body {
+        padding: 1rem;
+    }
+    
+    .net-pay-amount {
+        font-size: 1.5rem;
+    }
 }
-
-.text-center {
-    text-align: center;
-}
-
-.arrow-btn {
-    background: none;
-    border: none;
-    font-size: 18px;
-    cursor: pointer;
-    padding: 5px 10px;
-    color: #0066b3;
-}
-
-.arrow-btn:hover {
-    color: #005299;
-}
-

@@ -103,12 +103,6 @@ public class SalaryServiceImpl implements SalaryService {
 	}
 
 	private SalaryDto calculateIndividualSalary(AttendanceDto attendance) {
-		// 오류 수정을 위한 출력
-		System.out.println("=== Debugging Position Calculation ===");
-	    System.out.println("AttendanceDto: " + attendance);
-	    System.out.println("Position from attendance: " + attendance.getPosition());
-	    System.out.println("Position type: " + (attendance.getPosition() != null ? 
-	                       attendance.getPosition().getClass().getName() : "null"));
 	    
 		SalaryDto salary = new SalaryDto();
 		salary.setEmployeeId(attendance.getEmployeeId());
@@ -119,12 +113,8 @@ public class SalaryServiceImpl implements SalaryService {
 
 		// Position을 기반으로 직급수당 계산
 		Position position = attendance.getPosition();
-		// 오류 수정을 위한 출력
-		System.out.println("Position before allowance calculation: " + position);
 		
 		BigDecimal positionAllowance = BigDecimal.valueOf(AllowancePolicy.getPositionAllowance(position));
-		// 오류 수정을 위한 출력
-		System.out.println("Calculated position allowance: " + positionAllowance);
 		
 		// 초과근무수당 계산
 		BigDecimal overtimePay = BigDecimal.ZERO;

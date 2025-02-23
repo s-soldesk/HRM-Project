@@ -3,101 +3,138 @@
 <head>
     <meta charset="UTF-8">
     <title>급여명세서</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" type="text/css" th:href="@{/css/dashboard.css}">
     <link rel="stylesheet" type="text/css" th:href="@{/css/salary.css}">
     <link rel="stylesheet" href="/css/sidebar.css">
+    <style>
+        @media print {
+            .no-print {
+                display: none !important;
+            }
+            .content {
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+        }
+    </style>
 </head>
 <body>
     <!-- 사이드바 -->
-    <div th:replace="~{layout/sidebar :: sidebar}"></div>
+    <div th:replace="~{layout/sidebar :: sidebar}" class="no-print"></div>
     
     <div class="content">
-        <div class="payslip-container">
-            <h2 class="payslip-title" th:text="${#temporals.format(salary.paymentDate, 'yyyy/MM')} + ' 급여명세서'"></h2>
+        <div class="salary-container">
+            <h2 class="salary-title" 
+                th:text="${#temporals.format(salary.paymentDate, 'yyyy/MM')} + ' 급여명세서'"></h2>
 
-            <table class="info-table">
-                <tr>
-                    <th width="15%">사원번호</th>
-                    <td width="35%" th:text="${salary.employeeId}"></td>
-                    <th width="15%">성명</th>
-                    <td width="35%" th:text="${salary.employee.name}"></td>
-                </tr>
-                <tr>
-                    <th>부서</th>
-                    <td th:text="${salary.employee.departmentName}"></td>
-                    <th>직급</th>
-                    <td th:text="${salary.employee.position?.getPosition()}"></td>
-                </tr>
-            </table>
-
-            <div class="salary-details">
-                <h3>지급내역</h3>
-                <table class="payment-table">
-                    <tr>
-                        <th>기본급</th>
-                        <td th:text="${#numbers.formatInteger(salary.baseSalary, 0, 'COMMA')}"></td>
-                    </tr>
-                    <tr>
-                        <th>식대</th>
-                        <td th:text="${#numbers.formatInteger(salary.mealAllowance, 0, 'COMMA')}"></td>
-                    </tr>
-                    <tr>
-                        <th>직책수당</th>
-                        <td th:text="${#numbers.formatInteger(salary.positionAllowance, 0, 'COMMA')}"></td>
-                    </tr>
-                    <tr>
-                        <th>초과 근무수당</th>
-                        <td th:text="${#numbers.formatInteger(salary.overtimePay, 0, 'COMMA')}"></td>
-                    </tr>
-                    <tr class="total">
-                        <th>지급총액</th>
-                        <td th:text="${#numbers.formatInteger(salary.totalSalary, 0, 'COMMA')}"></td>
-                    </tr>
-                </table>
-
-                <h3>공제내역</h3>
-                <table class="deduction-table">
-                    <tr>
-                        <th>국민연금</th>
-                        <td th:text="${#numbers.formatInteger(salary.nationalPension, 0, 'COMMA')}"></td>
-                    </tr>
-                    <tr>
-                        <th>건강보험</th>
-                        <td th:text="${#numbers.formatInteger(salary.healthInsurance, 0, 'COMMA')}"></td>
-                    </tr>
-                    <tr>
-                        <th>고용보험</th>
-                        <td th:text="${#numbers.formatInteger(salary.employmentInsurance, 0, 'COMMA')}"></td>
-                    </tr>
-                    <tr>
-                        <th>장기요양보험</th>
-                        <td th:text="${#numbers.formatInteger(salary.longTermCareInsurance, 0, 'COMMA')}"></td>
-                    </tr>
-                    <tr>
-                        <th>소득세</th>
-                        <td th:text="${#numbers.formatInteger(salary.incomeTax, 0, 'COMMA')}"></td>
-                    </tr>
-                    <tr>
-                        <th>지방소득세</th>
-                        <td th:text="${#numbers.formatInteger(salary.localIncomeTax, 0, 'COMMA')}"></td>
-                    </tr>
-                    <tr class="total">
-                        <th>공제총액</th>
-                        <td th:text="${#numbers.formatInteger(salary.deductionTotal, 0, 'COMMA')}"></td>
-                    </tr>
-                </table>
-
-                <div class="net-pay">
-                    <h3>실지급액</h3>
-                    <p th:text="${#numbers.formatInteger(salary.netPay, 0, 'COMMA')}"></p>
+            <!-- 사원 정보 -->
+            <div class="card employee-info-card">
+                <div class="card-body">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <p class="mb-2"><strong>사원번호:</strong> <span th:text="${salary.employeeId}"></span></p>
+                            <p class="mb-2"><strong>부서:</strong> <span th:text="${salary.employee.departmentName}"></span></p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-2"><strong>성명:</strong> <span th:text="${salary.employee.name}"></span></p>
+                            <p class="mb-2"><strong>직급:</strong> <span th:text="${salary.employee.position?.getPosition()}"></span></p>
+                        </div>
+                    </div>
                 </div>
             </div>
 
-            <div class="button-group">
-                <button onclick="history.back()" class="btn">목록으로</button>
-                <button onclick="window.print()" class="btn">출력하기</button>
+            <div class="row">
+                <!-- 지급내역 -->
+                <div class="col-md-6">
+                    <div class="card payment-card h-100">
+                        <div class="card-header">
+                            <h3 class="card-title h5 mb-0">지급내역</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="amount-row">
+                                <span>기본급</span>
+                                <span th:text="${#numbers.formatInteger(salary.baseSalary, 0, 'COMMA')} + '원'"></span>
+                            </div>
+                            <div class="amount-row">
+                                <span>식대</span>
+                                <span th:text="${#numbers.formatInteger(salary.mealAllowance, 0, 'COMMA')} + '원'"></span>
+                            </div>
+                            <div class="amount-row">
+                                <span>직책수당</span>
+                                <span th:text="${#numbers.formatInteger(salary.positionAllowance, 0, 'COMMA')} + '원'"></span>
+                            </div>
+                            <div class="amount-row">
+                                <span>초과 근무수당</span>
+                                <span th:text="${#numbers.formatInteger(salary.overtimePay, 0, 'COMMA')} + '원'"></span>
+                            </div>
+                            <div class="amount-total">
+                                <span>지급총액</span>
+                                <span th:text="${#numbers.formatInteger(salary.totalSalary, 0, 'COMMA')} + '원'"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 공제내역 -->
+                <div class="col-md-6">
+                    <div class="card deduction-card h-100">
+                        <div class="card-header">
+                            <h3 class="card-title h5 mb-0">공제내역</h3>
+                        </div>
+                        <div class="card-body">
+                            <div class="amount-row">
+                                <span>국민연금</span>
+                                <span th:text="${#numbers.formatInteger(salary.nationalPension, 0, 'COMMA')} + '원'"></span>
+                            </div>
+                            <div class="amount-row">
+                                <span>건강보험</span>
+                                <span th:text="${#numbers.formatInteger(salary.healthInsurance, 0, 'COMMA')} + '원'"></span>
+                            </div>
+                            <div class="amount-row">
+                                <span>고용보험</span>
+                                <span th:text="${#numbers.formatInteger(salary.employmentInsurance, 0, 'COMMA')} + '원'"></span>
+                            </div>
+                            <div class="amount-row">
+                                <span>장기요양보험</span>
+                                <span th:text="${#numbers.formatInteger(salary.longTermCareInsurance, 0, 'COMMA')} + '원'"></span>
+                            </div>
+                            <div class="amount-row">
+                                <span>소득세</span>
+                                <span th:text="${#numbers.formatInteger(salary.incomeTax, 0, 'COMMA')} + '원'"></span>
+                            </div>
+                            <div class="amount-row">
+                                <span>지방소득세</span>
+                                <span th:text="${#numbers.formatInteger(salary.localIncomeTax, 0, 'COMMA')} + '원'"></span>
+                            </div>
+                            <div class="amount-total">
+                                <span>공제총액</span>
+                                <span th:text="${#numbers.formatInteger(salary.deductionTotal, 0, 'COMMA')} + '원'"></span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 실지급액 -->
+            <div class="card net-pay-card">
+                <div class="card-body">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <h3 class="h5 mb-0">실지급액</h3>
+                        <span class="net-pay-amount" th:text="${#numbers.formatInteger(salary.netPay, 0, 'COMMA')} + '원'"></span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 버튼 그룹 -->
+            <div class="d-flex justify-content-center gap-3 no-print">
+                <button onclick="history.back()" class="btn btn-secondary">목록으로</button>
+                <button onclick="window.print()" class="btn btn-primary">출력하기</button>
             </div>
         </div>
     </div>
+	<!-- Footer Include -->
+    <div th:replace="~{layout/footer :: footer}"></div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

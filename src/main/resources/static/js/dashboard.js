@@ -1,24 +1,107 @@
 document.addEventListener('DOMContentLoaded', function() {
-    // 미니 캘린더 초기화
-    let calendarEl = document.getElementById('mini-calendar');
+    // 애니메이션 클래스 추가 함수
+    function addAnimationClass(element, className) {
+        element.classList.add(className);
+        element.addEventListener('animationend', () => {
+            element.classList.remove(className);
+        });
+    }
+
+    // 시간 업데이트 함수
+    function updateDateTime() {
+        const now = new Date();
+        const timeElement = document.getElementById('currentTime');
+        const dateElement = document.getElementById('currentDate');
+
+        // 날짜 포맷팅
+        const dateOptions = {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric',
+            weekday: 'long'
+        };
+        const dateStr = now.toLocaleDateString('ko-KR', dateOptions);
+
+        // 시간 포맷팅
+        const timeOptions = {
+            hour: '2-digit',
+            minute: '2-digit',
+            second: '2-digit',
+            hour12: false
+        };
+        const timeStr = now.toLocaleTimeString('ko-KR', timeOptions);
+
+        // 직접 업데이트
+		timeElement.textContent = timeStr;
+		dateElement.textContent = dateStr;
+    }
+
+    // 출퇴근 상태 업데이트 함수
+    function updateAttendanceStatus() {
+        fetch('/api/attendance/today')
+            .then(response => response.json())
+            .then(data => {
+                const statusElement = document.getElementById('attendanceStatus');
+                const checkInElement = document.getElementById('checkInTime');
+                const checkOutElement = document.getElementById('checkOutTime');
+
+                // 상태 업데이트 함수
+                function updateStatus(status, color) {
+                    addAnimationClass(statusElement, 'animate-fade-in');
+                    statusElement.textContent = status;
+                    statusElement.className = `badge bg-${color}`;
+                }
+
+                // 시간 업데이트 함수
+                function updateTime(element, time) {
+                    if (time && element.textContent !== time) {
+                        addAnimationClass(element.parentElement, 'animate-fade-in');
+                        element.textContent = time;
+                    }
+                }
+
+                // 상태에 따른 업데이트
+                if (data.checkInTime) {
+                    updateTime(checkInElement, data.checkInTime);
+                    if (data.checkOutTime) {
+                        updateStatus('퇴근', 'secondary');
+                        updateTime(checkOutElement, data.checkOutTime);
+                    } else {
+                        updateStatus('근무중', 'success');
+                    }
+                } else {
+                    updateStatus('미출근', 'danger');
+                }
+            })
+            .catch(error => {
+                console.error('Error fetching attendance status:', error);
+            });
+    }
+
+    // 캘린더 초기화
+    const calendarEl = document.getElementById('mini-calendar');
     if (calendarEl) {
-        let calendar = new FullCalendar.Calendar(calendarEl, {
+        const calendar = new FullCalendar.Calendar(calendarEl, {
             initialView: 'dayGridMonth',
             locale: 'ko',
-            height: 'auto',
             headerToolbar: {
                 left: 'prev',
                 center: 'title',
                 right: 'next'
             },
-            navLinks: true,
-            dayMaxEvents: 2,
-            eventTimeFormat: {
-                hour: '2-digit',
-                minute: '2-digit',
-                hour12: false
+            height: 'auto',
+            contentHeight: 'auto',
+            aspectRatio: 1.5,
+            dayMaxEvents: true,
+            eventDidMount: function(info) {
+                // Tippy.js 툴팁 설정
+                tippy(info.el, {
+                    content: info.event.title,
+                    placement: 'top',
+                    animation: 'shift-away',
+                    theme: 'light-border'
+                });
             },
-            // 서버에서 일정 가져오기
 			events: function(fetchInfo, successCallback, failureCallback) {
 						$.ajax({
 							url: "/api/schedules",
@@ -64,41 +147,40 @@ document.addEventListener('DOMContentLoaded', function() {
 								failureCallback(error);
 							}
 						});
-					},
+					}
         });
-        
+
         calendar.render();
+
+        // 반응형 처리
+        window.addEventListener('resize', () => {
+            calendar.updateSize();
+        });
     }
 
-    // 출퇴근 시간 업데이트
-    function updateAttendanceTime() {
-        $.ajax({
-            url: '/api/attendance/today',
-            type: 'GET',
-            success: function(data) {
-                if (data.checkInTime) {
-                    $('#checkInTime').text(formatTime(data.checkInTime));
-                }
-                if (data.checkOutTime) {
-                    $('#checkOutTime').text(formatTime(data.checkOutTime));
-                }
-            },
-            error: function(error) {
-                console.error('Error fetching attendance time:', error);
+    // 스크롤 애니메이션
+    const observerOptions = {
+        threshold: 0.1
+    };
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                entry.target.classList.add('animate-slide-up');
+                observer.unobserve(entry.target);
             }
         });
-    }
+    }, observerOptions);
 
-    // 시간 포맷팅 헬퍼 함수
-    function formatTime(timeStr) {
-        const date = new Date(timeStr);
-        return date.toLocaleTimeString('ko-KR', { 
-            hour: '2-digit', 
-            minute: '2-digit',
-            hour12: false
-        });
-    }
+    document.querySelectorAll('.section-box').forEach(box => {
+        observer.observe(box);
+    });
 
-    // 초기 데이터 로드
-    updateAttendanceTime();
+    // 초기화
+    updateDateTime();
+    updateAttendanceStatus();
+
+    // 주기적 업데이트
+    setInterval(updateDateTime, 1000);
+    setInterval(updateAttendanceStatus, 60000);
 });

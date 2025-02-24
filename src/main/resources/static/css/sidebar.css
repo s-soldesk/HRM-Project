@@ -16,6 +16,10 @@
     overflow: hidden; /* 기본적으로 오버플로우 숨김 */
 }
 
+.sidebar * {
+    all: revert;
+}
+
 /* 사이드바 제목 */
 .sidebar h2 {
     font-size: 1.5rem;

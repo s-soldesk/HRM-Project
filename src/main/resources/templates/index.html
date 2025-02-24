@@ -1,84 +1,179 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>Dashboard</title>
-    <link rel="stylesheet" href="/css/dashboard.css">
-    <link rel="stylesheet" href="/css/sidebar.css">
-    <link href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css" rel="stylesheet">
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales/ko.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<title>Dashboard</title>
+<!-- 메타 태그 -->
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<!-- 부트스트랩 CSS -->
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+	rel="stylesheet">
+<!-- Font Awesome -->
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<!-- Tippy.js CSS -->
+<link rel="stylesheet"
+	href="https://unpkg.com/tippy.js@6/dist/tippy.css">
+<!-- Custom CSS -->
+<link rel="stylesheet" href="/css/dashboard.css">
+<link rel="stylesheet" href="/css/sidebar.css">
+<!-- FullCalendar -->
+<link
+	href="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.css"
+	rel="stylesheet">
 </head>
 <body>
-    <!-- 사이드바 -->
-    <div th:replace="~{layout/sidebar :: sidebar}"></div>
-    
-    <div class="content">
-        <!-- 프로필과 출퇴근 섹션 -->
-        <div class="profile-section">
-            <div class="profile-card">
-                <img th:if="${employee != null and employee.profileImage != null}"
-                     th:src="@{'/uploads/' + ${employee.profileImage}}"
-                     alt="프로필 이미지" class="profile-image">
-                <img th:unless="${employee != null and employee.profileImage != null}"
-                     src="/img/basic.jpg" alt="기본 프로필 이미지" class="profile-image">
-                <div class="profile-info">
-                    <h3 th:text="${employee?.name}">null null</h3>
-                </div>
-                <div class="attendance-time">
-                    <p>출근시간: <span id="checkInTime">--:--</span></p>
-                    <p>퇴근시간: <span id="checkOutTime">--:--</span></p>
-                </div>
-            </div>
-        </div>
+	<!-- 사이드바 -->
+	<div th:replace="~{layout/sidebar :: sidebar}"></div>
 
-        <!-- 주요 정보 그리드 -->
-        <div class="dashboard-grid">
-            <!-- 공지사항 요약 -->
-            <div class="section-box notice-section">
-                <div class="section-header">
-                    <h3>공지사항</h3>
-                    <a href="/notices" class="more-btn">more</a>
-                </div>
-                <ul class="notice-list" th:if="${not #lists.isEmpty(recentNotices)}">
-                    <li th:each="notice : ${recentNotices}">
-                        <a th:href="@{/notices/{id}(id=${notice.noticeId})}">
-                            <span class="notice-title" th:text="${notice.title}">공지1</span>
-                            <span class="notice-date" th:text="${#temporals.format(notice.createdDate, 'yyyy-MM-dd')}">2025-02-20</span>
-                        </a>
-                    </li>
-                </ul>
-                <p class="empty-message" th:if="${#lists.isEmpty(recentNotices)}">현재 작성된 글이 없습니다.</p>
-            </div>
+	<div class="content">
+		<!-- 프로필 섹션 -->
+		<div class="row mb-4">
+			<div class="col-12">
+				<div class="card shadow-sm animate-fade-in">
+					<div class="card-body">
+						<div class="row align-items-center">
+							<!-- 프로필 이미지 -->
+							<div class="col-auto">
+								<div class="profile-image-wrapper">
+									<img
+										th:if="${employee != null and employee.profileImage != null}"
+										th:src="@{'/uploads/' + ${employee.profileImage}}"
+										alt="프로필 이미지" class="profile-image"> <img
+										th:unless="${employee != null and employee.profileImage != null}"
+										src="/img/basic.jpg" alt="기본 프로필 이미지" class="profile-image">
+								</div>
+							</div>
 
-            <!-- 채용 게시판 요약 -->
-            <div class="section-box recruitment-section">
-                <div class="section-header">
-                    <h3>채용 게시판</h3>
-                    <a href="/recruitments" class="more-btn">more</a>
-                </div>
-                <ul class="recruitment-list" th:if="${not #lists.isEmpty(recentRecruitments)}">
-                    <li th:each="post : ${recentRecruitments}">
-                        <a th:href="@{/recruitments/{id}(id=${post.id})}">
-                            <span class="recruitment-title" th:text="${post.title}">채용 공고 제목</span>
-                            <span class="recruitment-date" th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd')}">2025-02-20</span>
-                        </a>
-                    </li>
-                </ul>
-                <p class="empty-message" th:if="${#lists.isEmpty(recentRecruitments)}">현재 작성된 글이 없습니다.</p>
-            </div>
+							<!-- 직원 정보 -->
+							<div class="col">
+								<h4 class="employee-name" th:text="${employee?.name}">사원명</h4>
+								<div class="employee-info">
+									<span class="position"
+										th:text="${employee?.position?.getPosition()}">직책</span> <span
+										class="divider">|</span> <span class="department"
+										th:text="${employee?.departmentName}">부서명</span>
+								</div>
+							</div>
 
-            <!-- 캘린더 요약 -->
-            <div class="section-box calendar-section">
-                <div class="section-header">
-                    <h3>캘린더</h3>
-                    <a href="/schedule" class="more-btn">more</a>
-                </div>
-                <div id="mini-calendar"></div>
-            </div>
-        </div>
-    </div>
+							<!-- 시간 및 출퇴근 -->
+							<div class="col-auto">
+								<div class="time-container">
+									<div class="attendance-info">
+										<div class="status-badge">
+											<span class="badge" id="attendanceStatus">상태확인중</span>
+										</div>
+										<div class="time-records">
+											<div class="time-record check-in">
+												<i class="fas fa-sign-in-alt"></i> <span>출근</span> <span
+													id="checkInTime">--:--</span>
+											</div>
+											<div class="time-record check-out">
+												<i class="fas fa-sign-out-alt"></i> <span>퇴근</span> <span
+													id="checkOutTime">--:--</span>
+											</div>
+										</div>
+									</div>
+									<div class="current-time animate-fade-in">
+										<div id="currentDate" class="date"></div>
+										<div id="currentTime" class="time"></div>
+									</div>
+								</div>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
 
-    <script src="/js/dashboard.js"></script>
+		<!-- 메인 그리드 -->
+		<div class="dashboard-grid">
+			<!-- 공지사항과 채용 섹션 -->
+			<div class="info-section">
+				<!-- 공지사항 -->
+				<div class="section-box notice-section animate-slide-up">
+					<div class="section-header">
+						<h3>
+							<i class="fas fa-bullhorn"></i> 공지사항
+						</h3>
+						<a href="/notices" class="more-btn">more <i
+							class="fas fa-chevron-right"></i></a>
+					</div>
+					<div class="notice-container">
+						<ul class="notice-list"
+							th:if="${not #lists.isEmpty(recentNotices)}">
+							<li th:each="notice : ${recentNotices}"
+								class="notice-item animate-fade-in"><a
+								th:href="@{/notices/{id}(id=${notice.noticeId})}"> <span
+									class="notice-title" th:text="${notice.title}"></span> <span
+									class="notice-date"
+									th:text="${#temporals.format(notice.createdDate, 'yyyy-MM-dd')}"></span>
+							</a></li>
+						</ul>
+						<div class="empty-state" th:if="${#lists.isEmpty(recentNotices)}">
+							<i class="fas fa-inbox"></i>
+							<p>현재 등록된 공지사항이 없습니다.</p>
+						</div>
+					</div>
+				</div>
+
+				<!-- 채용 게시판 -->
+				<div class="section-box recruitment-section animate-slide-up">
+					<div class="section-header">
+						<h3>
+							<i class="fas fa-users"></i> 채용 게시판
+						</h3>
+						<a href="/recruitments" class="more-btn">more <i
+							class="fas fa-chevron-right"></i></a>
+					</div>
+					<div class="recruitment-container">
+						<ul class="recruitment-list"
+							th:if="${not #lists.isEmpty(recentRecruitments)}">
+							<li th:each="post : ${recentRecruitments}"
+								class="recruitment-item animate-fade-in"><a
+								th:href="@{/recruitments/{id}(id=${post.id})}"> <span
+									class="recruitment-title" th:text="${post.title}"></span> <span
+									class="recruitment-date"
+									th:text="${#temporals.format(post.createdAt, 'yyyy-MM-dd')}"></span>
+							</a></li>
+						</ul>
+						<div class="empty-state"
+							th:if="${#lists.isEmpty(recentRecruitments)}">
+							<i class="fas fa-clipboard"></i>
+							<p>현재 등록된 채용공고가 없습니다.</p>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- 캘린더 섹션 -->
+			<div class="calendar-wrapper">
+				<div class="section-box calendar-section animate-slide-up">
+					<div class="section-header">
+						<h3>
+							<i class="fas fa-calendar-alt"></i> 일정
+						</h3>
+						<a href="/schedule" class="more-btn">more <i
+							class="fas fa-chevron-right"></i></a>
+					</div>
+					<div id="mini-calendar"></div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- Scripts -->
+	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script
+		src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+	<script
+		src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/main.min.js"></script>
+	<script
+		src="https://cdn.jsdelivr.net/npm/fullcalendar@5.11.3/locales/ko.js"></script>
+	<script src="https://unpkg.com/@popperjs/core@2"></script>
+	<script src="https://unpkg.com/tippy.js@6"></script>
+	<script src="/js/dashboard.js"></script>
 </body>
 </html>

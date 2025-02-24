@@ -6,6 +6,7 @@
     <link rel="stylesheet" href="/css/attendance.css">
     <link rel="stylesheet" href="/css/dashboard.css">
     <link rel="stylesheet" href="/css/sidebar.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     
     <script>
         function openModal(type) {
@@ -144,7 +145,13 @@
                     <td th:text="${record.date}"></td>
                     <td th:text="${record.checkInTime}"></td>
                     <td th:text="${record.checkOutTime}"></td>
-                    <td th:text="${record.status}"></td>
+                    <td>
+    					<span th:switch="${record.status}">
+       						<span th:case="'OnTime'">정시</span>
+        					<span th:case="'Late'">지각</span>
+        					<span th:case="'Overtime'">야근</span>
+    					</span>
+					</td>
                     <td sec:authorize="hasAnyRole('HR', 'ADMIN')" class="border border-gray-300 py-3 px-4 no-print">
                     	<a th:href="@{/attendance/update/{attendanceId}(attendanceId=${record.attendanceId})}" 
                         	class="text-blue-500 hover:underline">수정</a>
@@ -159,6 +166,6 @@
             <button onclick="nextPage()">다음</button>
         </div>
     </div>
-
 </body>
+<div th:replace="~{layout/footer :: footer}"></div>
 </html>

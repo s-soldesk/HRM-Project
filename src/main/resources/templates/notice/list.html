@@ -4,6 +4,8 @@
     <title>공지사항</title>
         <link rel="stylesheet" href="/css/sidebar.css">
         <link rel="stylesheet" type="text/css" th:href="@{/css/dashboard.css}">
+        <link rel="stylesheet" href="/css/bootstrap.min.css">
+		<link rel="stylesheet" href="/css/footer.css">
     <style>
         .search-bar {
             display: flex;
@@ -125,4 +127,5 @@
         </div>
     </div>
 </body>
+<div th:replace="~{layout/footer :: footer}"></div>
 </html>

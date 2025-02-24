@@ -1,0 +1,84 @@
+/* 푸터 기본 스타일 */
+.footer {
+    margin-left: 210px; /* 사이드바 너비만큼 여백 */
+    background-color: #1f2937;
+    color: #F3F4F6;
+    padding: 40px 0 0 0;
+    font-family: 'Pretendard', sans-serif;
+    margin-top: 60px;
+}
+
+/* 푸터 컨테이너 */
+.footer-container {
+    max-width: 1200px;
+    margin: 0 50px;
+    padding: 0 20px;
+}
+
+/* 회사명 */
+.footer-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    color: #fff;
+}
+
+/* 회사 정보 */
+.footer-info {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    font-size: 0.875rem;
+    color: #D1D5DB;
+    line-height: 1.6;
+}
+
+/* 링크 영역 */
+.footer-links {
+    margin: 2rem 0;
+    padding: 1rem 0;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.footer-links a {
+    color: #D1D5DB;
+    text-decoration: none;
+    margin: 0 1rem;
+    transition: color 0.2s;
+}
+
+.footer-links a:hover {
+    color: #fff;
+}
+
+/* 저작권 표시 */
+.footer-bottom {
+    background-color: #1e40af;
+    padding: 1rem 0;
+    text-align: center;
+    font-size: 0.875rem;
+    color: rgba(255, 255, 255, 0.8);
+}
+
+/* 반응형 처리 */
+@media (max-width: 768px) {
+    .footer {
+        margin-left: 0;
+        padding: 30px 20px 0 20px;
+    }
+    
+    .footer-info {
+        text-align: center;
+    }
+    
+    .footer-links {
+        flex-direction: column;
+        text-align: center;
+    }
+    
+    .footer-links a {
+        display: block;
+        margin: 0.5rem 0;
+    }
+}

@@ -20,10 +20,5 @@ public class LoginController {
         }
         return "login";
     }
-
-    @GetMapping("/index")
-    public String dashboardPage() {
-        return "index";
-    }
 }
 

@@ -2,19 +2,10 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>공지사항</title>
-<<<<<<< HEAD
-	    <link
-		href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
-		rel="stylesheet">
-	    <link rel="stylesheet" href="/css/sidebar.css">
-	    <link rel="stylesheet" type="text/css" th:href="@{/css/dashboard.css}">
-	    <link rel="stylesheet" href="/css/footer.css">
-=======
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="/css/sidebar.css">
     <link rel="stylesheet" type="text/css" th:href="@{/css/dashboard.css}">
     <link rel="stylesheet" href="/css/footer.css">
->>>>>>> develop
     <style>
         :root {
             --primary-color: #2C3E50;
@@ -166,18 +157,6 @@
         <div class="notice-container">
             <h2 class="page-title">공지사항</h2>
 
-<<<<<<< HEAD
-        <!-- 검색 바 -->
-		<form action="/notices/search" method="get" class="search-bar">
-		    <select name="searchType" th:with="selectedType=${param.searchType}">
-		        <option value="title" th:selected="${selectedType == 'title'}">제목</option>
-		        <option value="author" th:selected="${selectedType == 'author'}">작성자</option>
-		        <option value="content" th:selected="${selectedType == 'content'}">내용</option>
-		    </select>
-		    <input type="text" name="keyword" th:value="${param.keyword}" placeholder="검색어를 입력하세요">
-		    <button type="submit">검색</button>
-		</form>
-=======
             <!-- 검색 바 -->
             <form action="/notices/search" method="get" class="search-bar">
                 <div class="row g-3 align-items-center justify-content-end">
@@ -196,7 +175,6 @@
                     </div>
                 </div>
             </form>
->>>>>>> develop
 
             <!-- 공지사항 테이블 -->
             <div class="table-container">
@@ -226,12 +204,7 @@
             </div>
         </div>
     </div>
-<<<<<<< HEAD
-    <!-- Footer Include -->
-    <div th:replace="~{layout/footer :: footer}"></div>
-=======
 	<div th:replace="~{layout/footer :: footer}"></div>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
->>>>>>> develop
 </body>
 </html>

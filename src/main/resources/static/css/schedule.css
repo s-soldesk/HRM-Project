@@ -2,44 +2,70 @@
 .container {
     display: flex;
     height: 100vh;
-    margin: 0; /* 기본 마진 제거 */
-    padding: 0; /* 기본 패딩 제거 */
+    margin: 0;
+    padding: 0;
     background-color: #f4f4f4;
 }
 
 /* 본문 컨텐츠 */
 .content {
-    margin-left: 250px !important;
+    margin-left: 100px;
     padding: 20px;
     width: calc(100% - 250px);
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: flex-start;
 }
 
-/* FullCalendar 스타일 */
+/* 캘린더 카드 */
+.calendar-container {
+    background: white;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    width: 100%; /* 🔹 전체 너비 사용 */
+    max-width: 1200px; /* 🔹 최대 크기 제한 */
+    min-width: 600px; /* 🔹 최소 크기 설정 */
+    margin: auto; /* 🔹 중앙 정렬 */
+}
+
+/* 캘린더 */
 #calendar {
     background: white;
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     width: 95%;
-    height: 75vh;
 }
 
-/* 토요일 글자색*/
+/* 요일 색상 설정 */
 .fc-day-sat a {
-    color: #1565C0 !important;
+    color: #1565C0 !important; /* 토요일 */
 }
 
-/* 일요일 글자색*/
 .fc-day-sun a {
-    color: #D32F2F !important;
+    color: #D32F2F !important; /* 일요일 */
 }
 
-/* 기본 마진 제거 */
-body, html {
-    margin: 0;
-    padding: 0;
-    overflow-x: hidden; /* 가로 스크롤 방지 */
+/* 평일 요일 색상 */
+.fc-col-header-cell-cushion {
+    color: #333 !important; /* 📌 평일은 검은색 */
+    text-decoration: none !important;
+}
+
+/* 날짜 밑줄 제거 */
+.fc-daygrid-day-number {
+    text-decoration: none !important;
+}
+
+/* 평일 날짜 검은색 */
+.fc-daygrid-day-number {
+    color: #333 !important;
+    text-decoration: none !important;
+}
+
+/* 이전/다음 달 날짜 흐리게 */
+.fc-day-other .fc-daygrid-day-number {
+    opacity: 0.3;
 }

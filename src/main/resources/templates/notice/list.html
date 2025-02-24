@@ -92,12 +92,12 @@
 
         <!-- 검색 바 -->
 		<form action="/notices/search" method="get" class="search-bar">
-		    <select name="searchType">
-		        <option value="title">제목</option>
-		        <option value="author">작성자</option>
-		        <option value="content">내용</option>
+		    <select name="searchType" th:with="selectedType=${param.searchType}">
+		        <option value="title" th:selected="${selectedType == 'title'}">제목</option>
+		        <option value="author" th:selected="${selectedType == 'author'}">작성자</option>
+		        <option value="content" th:selected="${selectedType == 'content'}">내용</option>
 		    </select>
-		    <input type="text" name="keyword" placeholder="검색어를 입력하세요">
+		    <input type="text" name="keyword" th:value="${param.keyword}" placeholder="검색어를 입력하세요">
 		    <button type="submit">검색</button>
 		</form>
 

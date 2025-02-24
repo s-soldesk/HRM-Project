@@ -48,31 +48,35 @@
 	    WHERE NoticeID = #{noticeId}
 	</update>
 
-    <select id="searchNotices" resultType="com.hrm.dto.NoticeDto">
-        SELECT n.*,
-            CASE 
-                WHEN ua.Role = 'Admin' THEN '관리자'
-                WHEN e.Position = 'CEO' THEN '대표'
-                ELSE e.Name
-            END as authorName
-        FROM Notice n
-        LEFT JOIN UserAccounts ua ON ua.UserID = n.AuthorID
-        LEFT JOIN Employee e ON e.EmployeeID = ua.EmployeeID
-        <where>
+<select id="searchNotices" resultType="com.hrm.dto.NoticeDto">
+    SELECT n.*,
+        CASE 
+            WHEN ua.Role = 'Admin' THEN '관리자'
+            WHEN e.Position = 'CEO' THEN '대표'
+            ELSE e.Name
+        END as authorName
+    FROM Notice n
+    LEFT JOIN UserAccounts ua ON ua.UserID = n.AuthorID
+    LEFT JOIN Employee e ON e.EmployeeID = ua.EmployeeID
+    <where>
+        <if test="searchType != null and keyword != null">
             <choose>
                 <when test="searchType == 'title'">
-                    n.Title LIKE CONCAT('%', #{keyword}, '%')
-                </when>
-                <when test="searchType == 'author'">
-                    (ua.Role = 'Admin' AND '관리자' LIKE CONCAT('%', #{keyword}, '%'))
-                    OR (e.Position = 'CEO' AND '대표' LIKE CONCAT('%', #{keyword}, '%'))
-                    OR e.Name LIKE CONCAT('%', #{keyword}, '%')
+                    AND n.Title LIKE CONCAT('%', #{keyword}, '%')
                 </when>
                 <when test="searchType == 'content'">
-                    n.Content LIKE CONCAT('%', #{keyword}, '%')
+                    AND n.Content LIKE CONCAT('%', #{keyword}, '%')
+                </when>
+                <when test="searchType == 'author'">
+                    AND (
+                        (ua.Role = 'Admin' AND '관리자' LIKE CONCAT('%', #{keyword}, '%'))
+                        OR (e.Position = 'CEO' AND '대표' LIKE CONCAT('%', #{keyword}, '%'))
+                        OR (e.Name LIKE CONCAT('%', #{keyword}, '%'))
+                    )
                 </when>
             </choose>
-        </where>
-        ORDER BY n.CreatedDate DESC
-    </select>
+        </if>
+    </where>
+    ORDER BY n.CreatedDate DESC
+</select>
 </mapper>

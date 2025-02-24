@@ -117,7 +117,7 @@
            <div>
                <div class="notice-title" th:text="${notice.title}"></div>
                <div class="notice-meta">
-                   <span>작성자: <span th:text="${notice.authorName}"></span></span>
+                   <span>작성자: <td> 대표 </td></span></span>
                    <span class="divider">|</span>
                    <span>작성일: <span th:text="${#temporals.format(notice.createdDate, 'yyyy-MM-dd HH:mm:ss')}"></span></span>
                    <span class="divider">|</span>

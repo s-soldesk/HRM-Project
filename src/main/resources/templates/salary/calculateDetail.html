@@ -11,7 +11,7 @@
 <link rel="stylesheet" type="text/css" th:href="@{/css/dashboard.css}">
 <link rel="stylesheet" type="text/css" th:href="@{/css/salary.css}">
 <link rel="stylesheet" href="/css/sidebar.css">
-
+<link rel="stylesheet" href="/css/footer.css">
 <script th:inline="javascript">
     function confirmAttendance(employeeId, yearMonth) {
         if(confirm('근태를 확정하시겠습니까?')) {
@@ -215,13 +215,13 @@
 			<!-- 버튼 그룹 -->
 			<div class="d-flex gap-2 justify-content-end">
 				<!-- 돌아가기 버튼 -->
-				<button class="btn btn-outline-secondary"
+				<button class="btn btn-outline-success"
 					th:data-year-month="${yearMonth}"
 					onclick="goBack(this.getAttribute('data-year-month'))">
 					돌아가기</button>
 
 				<!-- 급여 초기화 버튼 -->
-				<button class="btn btn-outline-primary"
+				<button class="btn btn-outline-success"
 					th:attr="data-employee-id=${employeeId}, data-year-month=${yearMonth}"
 					onclick="initializeSalary(this.getAttribute('data-employee-id'), this.getAttribute('data-year-month'))">
 					급여 초기화</button>
@@ -233,13 +233,13 @@
 					근태 확정</button>
 
 				<!-- 급여 수기 계산 버튼 -->
-				<button class="btn btn-outline-info manual-edit"
+				<button class="btn btn-outline-success"
 					th:data-employee-id="${attendances[0].employeeId}"
 					th:data-year-month="${yearMonth}"
 					onclick="redirectToManualEdit(this)">급여 수기 계산</button>
 
 				<!-- 급여 자동 계산 버튼 -->
-				<button class="btn btn-primary"
+				<button class="btn btn-outline-success"
 					th:attr="data-employee-id=${attendances[0].employeeId}, data-year-month=${yearMonth}"
 					onclick="calculateSalary(this.getAttribute('data-employee-id'), this.getAttribute('data-year-month'))">
 					급여 자동 계산</button>

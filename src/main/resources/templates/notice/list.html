@@ -2,127 +2,209 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <title>공지사항</title>
-        <link rel="stylesheet" href="/css/sidebar.css">
-        <link rel="stylesheet" type="text/css" th:href="@{/css/dashboard.css}">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/css/sidebar.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/dashboard.css}">
+    <link rel="stylesheet" href="/css/footer.css">
     <style>
+        :root {
+            --primary-color: #2C3E50;
+            --secondary-color: #34495E;
+            --bg-light: #f8f9fa;
+            --border-color: #ECF0F1;
+        }
+
+        .content {
+            margin-left: 270px;
+            padding: 2rem;
+            width: calc(100% - 270px);
+            background-color: var(--bg-light);
+            min-height: 100vh;
+        }
+
+        .notice-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .page-title {
+            color: var(--text-color);
+            font-weight: 600;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        /* 검색 바 */
         .search-bar {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            justify-content: flex-end;
+            background: var(--bg-light);
+            padding: 1.5rem;
+            border-radius: 8px;
+            margin-bottom: 2rem;
         }
 
-        .search-bar select,
-        .search-bar input {
-            padding: 8px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
+        .search-bar select {
+            min-width: 120px;
         }
 
-        .search-bar button {
-            padding: 8px 16px;
-            background-color: #007bff;
-            color: white;
+        .search-bar .form-control:focus,
+        .search-bar .form-select:focus {
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.25rem rgba(44, 62, 80, 0.25);
+        }
+
+        /* 테이블 스타일 */
+        .table-container {
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 0 0 1px var(--border-color);
+        }
+
+        .table {
+            margin-bottom: 0;
+        }
+
+        .table thead th {
+            background-color: var(--primary-color);
+            color: #fff;
+            font-weight: 500;
             border: none;
-            border-radius: 4px;
-            cursor: pointer;
+            padding: 1rem;
         }
 
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 20px;
+        .table tbody td {
+            padding: 1rem;
+            vertical-align: middle;
+            border-bottom: 1px solid var(--border-color);
         }
 
-        th, td {
-            padding: 12px;
-            text-align: left;
-            border-bottom: 1px solid #ddd;
+        .table tbody tr:hover {
+            background-color: rgba(44, 62, 80, 0.05);
         }
 
-        th {
-            background-color: #f8f9fa;
-            font-weight: bold;
+        /* 링크 스타일 */
+        .table a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 500;
         }
 
-        tr:hover {
-            background-color: #f5f5f5;
+        .table a:hover {
+            color: var(--secondary-color);
         }
 
+        /* 작성 버튼 */
         .floating-button {
             position: fixed;
-            bottom: 30px;
-            right: 30px;
+            bottom: 2rem;
+            right: 2rem;
             z-index: 100;
         }
 
-        .write-btn {
-            display: inline-block;
-            padding: 8px 20px;
-            background-color: #007bff;
-            color: white;
+        .btn-write {
+            background-color: var(--primary-color);
+            color: blue;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
             border: none;
-            border-radius: 4px;
-            text-decoration: none;
-            cursor: pointer;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
             transition: all 0.3s ease;
         }
 
-        .write-btn:hover {
-            background-color: #0056b3;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+        .btn-write:hover {
+            background-color: var(--secondary-color);
             transform: translateY(-2px);
+            color: blue;
+            text-decoration: none;
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                margin-left: 0;
+                width: 100%;
+                padding: 1rem;
+            }
+
+            .notice-container {
+                padding: 1rem;
+            }
+
+            .search-bar {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .table-container {
+                overflow-x: auto;
+            }
+
+            .floating-button {
+                bottom: 1rem;
+                right: 1rem;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- 사이드바 fragment 적용 -->
+    <!-- 사이드바 -->
     <div th:replace="~{layout/sidebar :: sidebar}"></div>
 
     <!-- 메인 컨텐츠 -->
     <div class="content">
-        <div class="content-header">
-            <h2>공지사항</h2>
-        </div>
+        <div class="notice-container">
+            <h2 class="page-title">공지사항</h2>
 
-        <!-- 검색 바 -->
-		<form action="/notices/search" method="get" class="search-bar">
-		    <select name="searchType">
-		        <option value="title">제목</option>
-		        <option value="author">작성자</option>
-		        <option value="content">내용</option>
-		    </select>
-		    <input type="text" name="keyword" placeholder="검색어를 입력하세요">
-		    <button type="submit">검색</button>
-		</form>
+            <!-- 검색 바 -->
+            <form action="/notices/search" method="get" class="search-bar">
+                <div class="row g-3 align-items-center justify-content-end">
+                    <div class="col-auto">
+                        <select name="searchType" class="form-select">
+                            <option value="title">제목</option>
+                            <option value="author">작성자</option>
+                            <option value="content">내용</option>
+                        </select>
+                    </div>
+                    <div class="col">
+                        <input type="text" name="keyword" class="form-control" placeholder="검색어를 입력하세요">
+                    </div>
+                    <div class="col-auto">
+                        <button type="submit" class="btn btn-primary">검색</button>
+                    </div>
+                </div>
+            </form>
 
-        <!-- 공지사항 테이블 -->
-        <table>
-            <thead>
-                <tr>
-<!--                <th>번호</th>
- -->                <th>제목</th>
-                    <th>작성자</th>
-                    <th>작성일</th>
-                    <th>조회수</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="notice : ${notices}">
-<!--                     <td th:text="${notice.noticeId}"></td>
- -->                    <td><a th:href="@{/notices/{id}(id=${notice.noticeId})}" th:text="${notice.title}"></a></td>
-                    <td> 대표 </td>
-                    <td th:text="${#temporals.format(notice.createdDate, 'yyyy-MM-dd')}"></td>
-                    <td th:text="${notice.readCount}"></td>
-                </tr>
-            </tbody>
-       </table>
+            <!-- 공지사항 테이블 -->
+            <div class="table-container">
+                <table class="table">
+                    <thead>
+                        <tr>
+                            <th>제목</th>
+                            <th>작성자</th>
+                            <th>작성일</th>
+                            <th>조회수</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr th:each="notice : ${notices}">
+                            <td><a th:href="@{/notices/{id}(id=${notice.noticeId})}" th:text="${notice.title}"></a></td>
+                            <td>대표</td>
+                            <td th:text="${#temporals.format(notice.createdDate, 'yyyy-MM-dd')}"></td>
+                            <td th:text="${notice.readCount}"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
 
-		<!-- ADMIN만 작성 버튼 표시 -->
-        <div th:if="${isAdmin}" class="floating-button">
-            <a href="/notices/new" class="write-btn">작성</a>
+            <!-- ADMIN만 작성 버튼 표시 -->
+            <div th:if="${isAdmin}" class="floating-button">
+                <a href="/notices/new" class="btn btn-primary">작성</a>
+            </div>
         </div>
     </div>
+	<div th:replace="~{layout/footer :: footer}"></div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

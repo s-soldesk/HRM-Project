@@ -141,6 +141,7 @@
     padding: 10px 0;
     border-bottom: 2px solid transparent;
     transition: all 0.3s ease-in-out;
+    letter-spacing: 3px; /* 글자 간격 추가 */
 }
 
 /* Dashboard Hover 효과 */

@@ -32,45 +32,37 @@ document.addEventListener('DOMContentLoaded', function() {
         const timeStr = now.toLocaleTimeString('ko-KR', timeOptions);
 
         // 직접 업데이트
-		timeElement.textContent = timeStr;
-		dateElement.textContent = dateStr;
+        timeElement.textContent = timeStr;
+        dateElement.textContent = dateStr;
     }
 
     // 출퇴근 상태 업데이트 함수
     function updateAttendanceStatus() {
-        fetch('/api/attendance/today')
+        fetch('/attendance/today/status')
             .then(response => response.json())
             .then(data => {
                 const statusElement = document.getElementById('attendanceStatus');
                 const checkInElement = document.getElementById('checkInTime');
                 const checkOutElement = document.getElementById('checkOutTime');
 
-                // 상태 업데이트 함수
-                function updateStatus(status, color) {
-                    addAnimationClass(statusElement, 'animate-fade-in');
-                    statusElement.textContent = status;
-                    statusElement.className = `badge bg-${color}`;
-                }
-
-                // 시간 업데이트 함수
-                function updateTime(element, time) {
-                    if (time && element.textContent !== time) {
-                        addAnimationClass(element.parentElement, 'animate-fade-in');
-                        element.textContent = time;
-                    }
-                }
-
-                // 상태에 따른 업데이트
+                // 상태 업데이트
                 if (data.checkInTime) {
-                    updateTime(checkInElement, data.checkInTime);
+                    checkInElement.textContent = data.checkInTime.substring(0, 5); // HH:MM 형태로 표시
+                    
                     if (data.checkOutTime) {
-                        updateStatus('퇴근', 'secondary');
-                        updateTime(checkOutElement, data.checkOutTime);
+                        statusElement.textContent = '퇴근';
+                        statusElement.className = 'badge bg-secondary';
+                        checkOutElement.textContent = data.checkOutTime.substring(0, 5);
                     } else {
-                        updateStatus('근무중', 'success');
+                        statusElement.textContent = '근무중';
+                        statusElement.className = 'badge bg-success';
+                        checkOutElement.textContent = '--:--';
                     }
                 } else {
-                    updateStatus('미출근', 'danger');
+                    statusElement.textContent = '미출근';
+                    statusElement.className = 'badge bg-danger';
+                    checkInElement.textContent = '--:--';
+                    checkOutElement.textContent = '--:--';
                 }
             })
             .catch(error => {
@@ -102,52 +94,52 @@ document.addEventListener('DOMContentLoaded', function() {
                     theme: 'light-border'
                 });
             },
-			events: function(fetchInfo, successCallback, failureCallback) {
-						$.ajax({
-							url: "/api/schedules",
-							type: "GET",
-							dataType: "json",
-							success: function(response) {
-								let eventsMap = new Map();
+            events: function(fetchInfo, successCallback, failureCallback) {
+                $.ajax({
+                    url: "/api/schedules",
+                    type: "GET",
+                    dataType: "json",
+                    success: function(response) {
+                        let eventsMap = new Map();
 
-								response.forEach(schedule => {
-									let scheduleId = schedule.scheduleId;
-									let employeeInfo = `직원: ${schedule.employeeId}`;
+                        response.forEach(schedule => {
+                            let scheduleId = schedule.scheduleId;
+                            let employeeInfo = `직원: ${schedule.employeeId}`;
 
-									// 시간 정보 포맷팅
-									let timePrefix = '';
-									if (!schedule.allDay) {
-										let startTime = new Date(schedule.startDate);
-										let hours = startTime.getHours();
-										let period = hours < 12 ? '오전' : '오후';
-										hours = hours % 12 || 12;
-										timePrefix = `${period} ${hours}시 `;
-									}
+                            // 시간 정보 포맷팅
+                            let timePrefix = '';
+                            if (!schedule.allDay) {
+                                let startTime = new Date(schedule.startDate);
+                                let hours = startTime.getHours();
+                                let period = hours < 12 ? '오전' : '오후';
+                                hours = hours % 12 || 12;
+                                timePrefix = `${period} ${hours}시 `;
+                            }
 
-									if (eventsMap.has(scheduleId)) {
-										let existingEvent = eventsMap.get(scheduleId);
-										if (!existingEvent.title.includes(employeeInfo)) {
-											existingEvent.title += `, ${employeeInfo}`;
-										}
-									} else {
-										eventsMap.set(scheduleId, {
-											id: scheduleId,
-											title: `${timePrefix}${schedule.title} (${employeeInfo})`,
-											start: schedule.startDate,
-											end: schedule.endDate,
-											allDay: schedule.allDay
-										});
-									}
-								});
+                            if (eventsMap.has(scheduleId)) {
+                                let existingEvent = eventsMap.get(scheduleId);
+                                if (!existingEvent.title.includes(employeeInfo)) {
+                                    existingEvent.title += `, ${employeeInfo}`;
+                                }
+                            } else {
+                                eventsMap.set(scheduleId, {
+                                    id: scheduleId,
+                                    title: `${timePrefix}${schedule.title} (${employeeInfo})`,
+                                    start: schedule.startDate,
+                                    end: schedule.endDate,
+                                    allDay: schedule.allDay
+                                });
+                            }
+                        });
 
-								successCallback(Array.from(eventsMap.values()));
-							},
-							error: function(xhr, status, error) {
-								console.error("🚨 일정 불러오기 실패:", error);
-								failureCallback(error);
-							}
-						});
-					}
+                        successCallback(Array.from(eventsMap.values()));
+                    },
+                    error: function(xhr, status, error) {
+                        console.error("🚨 일정 불러오기 실패:", error);
+                        failureCallback(error);
+                    }
+                });
+            }
         });
 
         calendar.render();
@@ -155,6 +147,52 @@ document.addEventListener('DOMContentLoaded', function() {
         // 반응형 처리
         window.addEventListener('resize', () => {
             calendar.updateSize();
+        });
+    }
+
+    // 출퇴근 버튼 이벤트 리스너 추가
+    const checkInBtn = document.getElementById('checkInBtn');
+    const checkOutBtn = document.getElementById('checkOutBtn');
+    
+    if (checkInBtn) {
+        checkInBtn.addEventListener('click', function() {
+            fetch('/attendance/commute/check_in', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+                // 상태 즉시 갱신
+                updateAttendanceStatus();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('출근 처리 중 오류가 발생했습니다.');
+            });
+        });
+    }
+    
+    if (checkOutBtn) {
+        checkOutBtn.addEventListener('click', function() {
+            fetch('/attendance/commute/check_out', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert(data.message);
+                // 상태 즉시 갱신
+                updateAttendanceStatus();
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('퇴근 처리 중 오류가 발생했습니다.');
+            });
         });
     }
 

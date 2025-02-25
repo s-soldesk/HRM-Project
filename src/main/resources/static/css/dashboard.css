@@ -26,6 +26,7 @@ html, body {
     padding: 40px;
     min-height: 100vh;
     box-sizing: border-box;
+    padding-bottom: 100px; /* 푸터와의 간격 추가 */
 }
 
 /* 애니메이션 */

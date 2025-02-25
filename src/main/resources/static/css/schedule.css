@@ -3,12 +3,8 @@ html, body {
     margin: 0;
     padding: 0;
     height: 100%;
+    width: 100%;
     background-color: #edf0f4 !important;
-}
-
-body {
-    display: flex;
-    flex-direction: column;
 }
 
 .container {
@@ -19,28 +15,30 @@ body {
 
 /* 본문 컨텐츠 */
 .content {
+	margin-left: 210px;
     height: 100%;
+    min-height: 100vh;
     display: flex;
     flex-direction: column;
     padding: 20px;
+    padding-bottom: 80px; /* 푸터와의 간격 추가 */
 }
 
 .content h1 {
     text-align: center; /* 일정 관리 제목 가운데 정렬 */
-    margin-bottom: 20px;
+    margin-bottom: 50px;
 }
 
 /* 캘린더 카드 */
 .calendar-container {
     background: white;
-    padding: 20px;
+    padding: 10px;
     border-radius: 10px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
     width: 100%;
-    max-width: 1200px;
-    min-width: 600px;
+    max-width: 1800px;
+    min-width: 1000px;
     margin: auto;
-    flex-grow: 1; /* 남은 공간 모두 차지 */
 }
 
 /* 캘린더 */
@@ -77,4 +75,33 @@ body {
 /* 이전/다음 달 날짜 흐리게 */
 .fc-day-other .fc-daygrid-day-number {
     opacity: 0.3;
+}
+
+/* 반응형 조정 */
+@media screen and (max-width: 1400px) {
+    .calendar-container {
+        max-width: 1200px; /* 중간 크기 화면에서 조정 */
+        min-width: 900px;
+    }
+}
+
+@media screen and (max-width: 1024px) {
+    .content {
+        margin-left: 0;
+        padding: 10px;
+    }
+    
+    .calendar-container {
+        width: 100%;
+        max-width: 900px;
+        min-width: 700px;
+    }
+}
+
+@media screen and (max-width: 768px) {
+    .calendar-container {
+        max-width: 100%;
+        min-width: 100%;
+        padding: 15px;
+    }
 }

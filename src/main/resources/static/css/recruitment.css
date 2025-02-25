@@ -1,9 +1,9 @@
 /* 공통 레이아웃 */
 .content {
-	margin-left: 250px;
-	padding: 20px;
+	margin-left: 210px;
+	padding: 40px;
 	min-height: 100vh;
-	background-color: #f8f9fa;
+	background-color: #edf0f4;
 }
 
 .container-flex {

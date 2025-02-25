@@ -2,6 +2,7 @@ package com.hrm.controller;
 
 import com.hrm.dao.UserAccountDao;
 import com.hrm.dto.AttendanceDto;
+import com.hrm.service.AttendanceBatisService;
 import com.hrm.service.AttendanceService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,7 +19,10 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
+import java.time.LocalDate;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 
 @Controller
@@ -27,6 +31,9 @@ public class AttendanceController {
 
     @Autowired
     private AttendanceService attendanceService;
+    
+    @Autowired
+    private AttendanceBatisService attendanceBatisService;
     
     @Autowired
     private UserAccountDao userAccountDao;
@@ -128,5 +135,38 @@ public class AttendanceController {
         }
         
         return "redirect:/attendance/records";
+    }
+    
+    // 오늘의 출퇴근 상태 조회 API
+    @GetMapping("/today/status")
+    @ResponseBody
+    public Map<String, Object> getTodayStatus(@AuthenticationPrincipal UserDetails userDetails) {
+        Map<String, Object> result = new HashMap<>();
+        
+        try {
+            // 로그인한 사용자의 이메일 가져오기
+            String employeeEmail = userDetails.getUsername();
+            
+            // 이메일을 이용해 Employee 테이블의 EmployeeID 조회
+            Integer employeeId = userAccountDao.findEmployeeIdByEmail(employeeEmail);
+            
+            if (employeeId != null) {
+                // 오늘 날짜로 근태 기록 조회 (AttendanceBatisService 사용)
+                AttendanceDto attendance = attendanceBatisService.getAttendanceDetail(employeeId, LocalDate.now().toString());
+                
+                if (attendance != null) {
+                    result.put("checkInTime", attendance.getCheckInTime() != null ? 
+                            attendance.getCheckInTime().toString() : null);
+                    result.put("checkOutTime", attendance.getCheckOutTime() != null ? 
+                            attendance.getCheckOutTime().toString() : null);
+                    result.put("status", attendance.getStatus());
+                }
+            }
+            
+            return result;
+        } catch (Exception e) {
+            result.put("error", e.getMessage());
+            return result;
+        }
     }
 }

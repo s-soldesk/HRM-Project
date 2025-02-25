@@ -1,9 +1,11 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-<title>인사 관리 페이지</title>
-<link rel="stylesheet" href="/css/sidebar.css">
-<link rel="stylesheet" href="/css/employee.css">
+    <title>인사 관리 페이지</title>
+    <link rel="stylesheet" href="/css/employee.css">
+    <link rel="stylesheet" href="/css/sidebar.css">
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/footer.css">
 </head>
 <body>
 	<!-- 사이드바 -->
@@ -161,4 +163,5 @@
     });
 </script>
 </body>
+<div th:replace="~{layout/footer :: footer}"></div>
 </html>

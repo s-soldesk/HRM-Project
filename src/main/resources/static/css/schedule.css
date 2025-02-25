@@ -1,21 +1,33 @@
 /* 전체 레이아웃 설정 */
+html, body {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    background-color: #edf0f4 !important;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+}
+
 .container {
     display: flex;
     height: 100vh;
-    margin: 0;
-    padding: 0;
-    background-color: #f4f4f4;
+    background-color: #edf0f4;
 }
 
 /* 본문 컨텐츠 */
 .content {
-    margin-left: 100px;
-    padding: 20px;
-    width: calc(100% - 250px);
+    height: 100%;
     display: flex;
     flex-direction: column;
-    align-items: center;
-    justify-content: flex-start;
+    padding: 20px;
+}
+
+.content h1 {
+    text-align: center; /* 일정 관리 제목 가운데 정렬 */
+    margin-bottom: 20px;
 }
 
 /* 캘린더 카드 */
@@ -24,19 +36,21 @@
     padding: 20px;
     border-radius: 10px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    width: 100%; /* 🔹 전체 너비 사용 */
-    max-width: 1200px; /* 🔹 최대 크기 제한 */
-    min-width: 600px; /* 🔹 최소 크기 설정 */
-    margin: auto; /* 🔹 중앙 정렬 */
+    width: 100%;
+    max-width: 1200px;
+    min-width: 600px;
+    margin: auto;
+    flex-grow: 1; /* 남은 공간 모두 차지 */
 }
 
 /* 캘린더 */
 #calendar {
     background: white;
-    padding: 20px;
+    padding: 50px;
     border-radius: 10px;
     box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    width: 95%;
+    width: 100%;
+    height: 100%; /* 높이를 화면 높이에서 여백 제외하고 설정 */
 }
 
 /* 요일 색상 설정 */
@@ -50,16 +64,11 @@
 
 /* 평일 요일 색상 */
 .fc-col-header-cell-cushion {
-    color: #333 !important; /* 📌 평일은 검은색 */
+    color: #333 !important;
     text-decoration: none !important;
 }
 
 /* 날짜 밑줄 제거 */
-.fc-daygrid-day-number {
-    text-decoration: none !important;
-}
-
-/* 평일 날짜 검은색 */
 .fc-daygrid-day-number {
     color: #333 !important;
     text-decoration: none !important;

@@ -93,7 +93,6 @@ public class EmployeeManagementController {
 		final int PAGE_SIZE = 5;
 		int offset = (page - 1) * PAGE_SIZE;
 		int total = eService.totalSearchEmployees(searchType, keyword);
-		System.out.println(total);
 
 		// 데이터 조회
 		List<EmployeeDto> searchResults = eService.searchEmployee(searchType, keyword, offset, PAGE_SIZE);

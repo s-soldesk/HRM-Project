@@ -4,6 +4,8 @@
 <title>채용공고 목록</title>
 <link rel="stylesheet" href="/css/sidebar.css">
 <link rel="stylesheet" href="/css/recruitment.css">
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+<link rel="stylesheet" href="/css/footer.css">
 </head>
 <body>
 	<!-- 사이드바 -->
@@ -19,10 +21,12 @@
 				</div>
 
 				<div class="filter-section">
-					<select id="statusFilter">
+					<select id="statusFilter" onchange="filterByStatus()">
 						<option value="">전체</option>
+						<!-- 중요: value에는 영문 Enum 값, 텍스트에는 한글 표시를 사용 -->
 						<option th:each="status : ${T(com.hrm.enums.PostStatus).values()}"
-							th:value="${status}" th:text="${status.status}">상태</option>
+							th:value="${status.name()}" th:text="${status.status}"
+							th:selected="${selectedStatus != null && selectedStatus.name() == status.name()}">상태</option>
 					</select>
 				</div>
 			</div>
@@ -54,5 +58,22 @@
 			</div>
 		</div>
 	</div>
+
+	<script>
+		function filterByStatus() {
+			const statusFilter = document.getElementById('statusFilter');
+			const selectedStatus = statusFilter.value;
+
+			// 상태값에 따라 URL 구성
+			let url = '/recruitments';
+			if (selectedStatus) {
+				url += '?status=' + selectedStatus;
+			}
+
+			// 페이지 이동
+			window.location.href = url;
+		}
+	</script>
+	<div th:replace="~{layout/footer :: footer}"></div>
 </body>
 </html>

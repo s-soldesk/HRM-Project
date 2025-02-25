@@ -2,7 +2,6 @@
 
 /* 공통 스타일 */
 body {
-    font-family: Arial, sans-serif;
     background-color: #f8f9fa;
     margin: 0;
 }
@@ -184,8 +183,13 @@ body {
 
 /* 인쇄할 때 숨길 요소 */
 @media print {
-    .no-print {
-        display: none !important;
+    .no-print, .sidebar {
+        display: none !important;  /* ✅ 출력 시 사이드바 숨김 */
+    }
+
+    .content {
+        margin-left: 0 !important;  /* ✅ 콘텐츠가 왼쪽으로 정렬되도록 수정 */
+        width: 100%;  /* ✅ 전체 페이지 너비 사용 */
     }
 }
 

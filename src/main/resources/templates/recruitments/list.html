@@ -21,10 +21,11 @@
 				</div>
 
 				<div class="filter-section">
-					<select id="statusFilter">
+					<select id="statusFilter" onchange="filterByStatus()">
 						<option value="">전체</option>
 						<option th:each="status : ${T(com.hrm.enums.PostStatus).values()}"
-							th:value="${status}" th:text="${status.status}">상태</option>
+							th:value="${status}" th:text="${status.status}"
+							th:selected="${selectedStatus == status}">상태</option>
 					</select>
 				</div>
 			</div>
@@ -56,6 +57,22 @@
 			</div>
 		</div>
 	</div>
+
+	<script>
+		function filterByStatus() {
+			const statusFilter = document.getElementById('statusFilter');
+			const selectedStatus = statusFilter.value;
+
+			// 상태값에 따라 URL 구성
+			let url = '/recruitments';
+			if (selectedStatus) {
+				url += '?status=' + selectedStatus;
+			}
+
+			// 페이지 이동
+			window.location.href = url;
+		}
+	</script>
 </body>
 <div th:replace="~{layout/footer :: footer}"></div>
 </html>

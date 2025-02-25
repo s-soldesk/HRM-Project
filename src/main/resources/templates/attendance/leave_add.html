@@ -3,9 +3,74 @@
 <head>
     <title>휴가 신청</title>
     <meta charset="UTF-8">
+    
+    <!-- salary.css 로 변경 -->
+    <link rel="stylesheet" href="/css/salary.css">
 
-    <!-- 공통 CSS 파일 추가 -->
-    <link rel="stylesheet" href="/css/attendance.css">
+    <!-- leave_add 페이지 전용 추가 스타일 -->
+    <style>
+        /* attendance.css 에 있던 small-container 스타일 복원 */
+        .small-container {
+            max-width: 500px;
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        /* 입력 필드 관련 스타일 */
+        .form-group {
+            text-align: left;
+            margin-bottom: 12px;
+        }
+        .form-group label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+            color: #333;
+        }
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 95%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 13px;
+        }
+        .form-group input {
+            height: 35px;
+        }
+        .form-group textarea {
+            resize: none;
+            height: 80px;
+        }
+        #leaveType {
+            width: 20%;  
+        }
+        /* 휴가 신청 폼 하단 버튼 정렬 */
+        .leave-btn-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        /* 버튼 색상 오버라이드: 텍스트가 잘 보이도록 */
+        .btn.btn-primary {
+            background-color: #007bff !important;
+            color: #ffffff !important;
+        }
+        .btn.btn-secondary {
+            background-color: #6c757d !important;
+            color: #ffffff !important;
+        }
+        .btn.btn-danger {
+            background-color: #dc3545 !important;
+            color: #ffffff !important;
+        }
+    </style>
 
     <script>
         // 날짜 유효성 검사
@@ -31,14 +96,11 @@
 
         <!-- 휴가 신청 폼 -->
         <form th:action="@{/attendance/leave/add}" method="post" onsubmit="return validateDate();">
-
             <!-- 사원 ID 필드 -->
             <div class="form-group">
                 <label for="employeeId">사원 ID</label>
-                <input type="text" id="employeeId"
-                       th:value="${employeeId}" readonly>
-
-                <!-- Employee가 직접 입력 못하지만 값을 전달해야 하므로 hidden 필드 추가 -->
+                <input type="text" id="employeeId" th:value="${employeeId}" readonly>
+                <!-- 직접 입력할 수 없으므로 hidden 필드로 값 전달 -->
                 <input type="hidden" name="employeeId" th:value="${employeeId}">
             </div>
 

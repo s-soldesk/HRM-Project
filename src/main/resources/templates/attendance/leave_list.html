@@ -4,8 +4,63 @@
     <title>휴가 신청 목록</title>
     <meta charset="UTF-8">
 
-    <!-- 공통 CSS 파일 추가 -->
-    <link rel="stylesheet" href="/css/attendance.css">
+    <!-- salary.css 적용 -->
+    <link rel="stylesheet" href="/css/salary.css">
+
+    <!-- leave_list 페이지 전용 추가 스타일 -->
+    <style>
+        /* leave_list 컨테이너 스타일 (attendance.css 의 leave-list-container 복원) */
+        .leave-list-container {
+            max-width: 1200px;
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        /* 테이블 컨테이너 및 테이블 스타일 */
+        .table-container {
+            width: 100%;
+            overflow-x: auto;
+        }
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+            margin-top: 20px;
+        }
+        .table th, .table td {
+            border: 1px solid #dee2e6;
+            padding: 12px;
+            text-align: center;
+        }
+        .table th {
+            background-color: #007bff;
+            color: #fff;
+        }
+        /* 버튼 영역 스타일 */
+        .leave-btn-container {
+            margin-top: 20px;
+            text-align: center;
+        }
+        /* leave-list-container 내의 btn-danger 버튼 오버라이드 */
+    	.leave-list-container .btn.btn-danger {
+        	background-color: #dc3545 !important;  /* 원하는 빨간색 */
+        	color: #ffffff !important;
+        	border: none !important;
+    	}
+    	/* 필요에 따라 다른 버튼들도 오버라이드 */
+    	.leave-list-container .btn.btn-primary {
+        	background-color: #007bff !important;
+        	color: #ffffff !important;
+       	 border: none !important;
+    	}
+    	.leave-list-container .btn.btn-secondary {
+        	background-color: #6c757d !important;
+        	color: #ffffff !important;
+        	border: none !important;
+    	}
+    </style>
 </head>
 
 <body>
@@ -39,12 +94,12 @@
                         <td th:text="${leave.employeeName}"></td>
                         <td th:text="${leave.title}"></td>
                         <td>
-    						<span th:switch="${leave.leaveType}">
-       							<span th:case="'Annual'">연차</span>
-        						<span th:case="'Sick'">병가</span>
-        						<span th:case="'Personal'">개인 사유</span>
-    						</span>
-						</td>
+                            <span th:switch="${leave.leaveType}">
+                                <span th:case="'Annual'">연차</span>
+                                <span th:case="'Sick'">병가</span>
+                                <span th:case="'Personal'">개인 사유</span>
+                            </span>
+                        </td>
                         <td th:text="${leave.reason}"></td>
                         <td th:text="${leave.startDate}"></td>
                         <td th:text="${leave.endDate}"></td> 
@@ -62,11 +117,11 @@
                             </form>
                         </td>
                         <td>
-                        	<span th:switch="${leave.status}">
-                        		<span th:case="'CONFIRMED'">승인</span>
-                        		<span th:case="'PENDING'">보류</span>
-                        		<span th:case="'REJECTED'">거절</span>
-                        	</span>
+                            <span th:switch="${leave.status}">
+                                <span th:case="'CONFIRMED'">승인</span>
+                                <span th:case="'PENDING'">보류</span>
+                                <span th:case="'REJECTED'">거절</span>
+                            </span>
                         </td>
                         <td>
                             <form th:if="${leave.status == 'PENDING' or #authorization.expression('hasAnyRole(''HR'', ''ADMIN'')')}" 

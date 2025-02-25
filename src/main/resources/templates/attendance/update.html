@@ -3,9 +3,69 @@
 <head>
     <title>근태 기록 수정</title>
     <meta charset="UTF-8">
-
-    <!-- 공통 CSS 파일 추가 -->
-    <link rel="stylesheet" href="/css/attendance.css">
+    
+    <!-- salary.css 적용 -->
+    <link rel="stylesheet" href="/css/salary.css">
+    
+    <!-- update 페이지 전용 추가 스타일 -->
+    <style>
+        /* attendance-edit-container 스타일 복원 */
+        .attendance-edit-container {
+            max-width: 500px;
+            margin: 50px auto;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
+            text-align: left;
+        }
+        /* 사원 정보 영역 스타일 */
+        .info-container {
+            margin-bottom: 20px;
+        }
+        /* 입력 필드 그룹 스타일 */
+        .form-group {
+            margin-bottom: 12px;
+            text-align: left;
+        }
+        .form-group label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+            color: #333;
+        }
+        .form-group input,
+        .form-group select {
+            width: 95%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 13px;
+        }
+        #status {
+            width: 20%;  
+        }
+        /* 버튼 영역 스타일 */
+        .button-container {
+            margin-top: 20px;
+            display: flex;
+            gap: 10px;
+        }
+        /* 버튼 색상 오버라이드: 텍스트가 잘 보이도록 */
+        .btn.btn-primary {
+            background-color: #007bff !important;
+            color: #ffffff !important;
+        }
+        .btn.btn-secondary {
+            background-color: #6c757d !important;
+            color: #ffffff !important;
+        }
+        .btn.btn-danger {
+            background-color: #dc3545 !important;
+            color: #ffffff !important;
+        }
+    </style>
 </head>
 <body>
 

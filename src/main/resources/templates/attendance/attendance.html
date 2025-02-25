@@ -3,12 +3,102 @@
 <head>
     <title>근태 관리</title>
     <meta charset="UTF-8">
-    <link rel="stylesheet" href="/css/attendance.css">
-    <link rel="stylesheet" href="/css/dashboard.css">
+    <!-- salary.css 사용 -->
+    <link rel="stylesheet" href="/css/salary.css">
     <link rel="stylesheet" href="/css/sidebar.css">
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/footer.css">
-    
+
+    <!-- 추가 인라인 스타일: 모달 등 attendance 전용 스타일 및 인쇄 전용 스타일 -->
+    <style>
+        /* 모달 스타일 (attendance.css 에 있던 정의 복원) */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            justify-content: center; 
+            align-items: center;    
+        }
+        .modal-content {
+            background-color: #fff;
+            padding: 15px;
+            margin: 15% auto;
+            width: 30%;
+            max-width: 350px;
+            border-radius: 8px;
+            text-align: center;
+            font-size: 14px;
+        }
+        /* 테이블 스타일 (salary.css 에 없는 부분 추가) */
+        .table {
+            width: 100%;
+            border-collapse: collapse;
+            background: #fff;
+            margin-top: 20px;
+        }
+        .table th, .table td {
+            border: 1px solid var(--border-color);
+            padding: 12px;
+            text-align: center;
+        }
+        .table th {
+            background-color: var(--primary-color);
+            color: white;
+        }
+        /* 페이지네이션 스타일 */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        .pagination button {
+            padding: 5px 15px;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        .pagination button:hover {
+            background-color: #f1f1f1;
+        }
+        /* btn-danger 스타일 추가 */
+        .btn-danger {
+            background-color: var(--danger-color);
+            color: white;
+            border: none;
+            padding: 0.5rem 1.5rem;
+            border-radius: 6px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+        .btn-danger:hover {
+            background-color: #c0392b;
+            transform: translateY(-1px);
+        }
+        /* 인쇄 스타일 */
+        @media print {
+    		.no-print, .sidebar {
+        		display: none !important;  /* ✅ 출력 시 사이드바 숨김 */
+   		 	}
+   		 	
+   		 	.no-print, .footer{
+   		 		display: none !important;
+   		 	}
+
+    		.content {
+        		margin-left: 0 !important;  /* ✅ 콘텐츠가 왼쪽으로 정렬되도록 수정 */
+        		width: 100%;  /* ✅ 전체 페이지 너비 사용 */
+    		}
+		}
+    </style>
+
     <script>
         function openModal(type) {
             document.getElementById('modalTitle').innerText = type === 'checkIn' ? '출근 등록' : '퇴근 등록';
@@ -17,71 +107,129 @@
 
             let loggedInEmployeeId = document.getElementById('loggedInEmployeeId').value;
             let employeeIdField = document.getElementById('employeeId');
-
             employeeIdField.value = loggedInEmployeeId; 
             employeeIdField.readOnly = true; 
-
             document.getElementById('modal').style.display = 'block';
         }
-
         function closeModal() {
             document.getElementById('modal').style.display = 'none';
         }
-
         function printAttendanceRecords() {
             window.print();
         }
-
         let currentPage = 1;
         const rowsPerPage = 10;
-
         function showPage(page) {
             let table = document.getElementById("attendanceTable");
             let rows = table.getElementsByTagName("tbody")[0].getElementsByTagName("tr");
-
             let totalRows = rows.length;
             let totalPages = Math.ceil(totalRows / rowsPerPage);
-
             if (page < 1) page = 1;
             if (page > totalPages) page = totalPages;
-
             for (let i = 0; i < totalRows; i++) {
                 rows[i].style.display = (i >= (page - 1) * rowsPerPage && i < page * rowsPerPage) ? "" : "none";
             }
-
             document.getElementById("pageNumber").innerText = `페이지 ${page} / ${totalPages}`;
             currentPage = page;
         }
-
         function prevPage() {
             if (currentPage > 1) {
                 showPage(currentPage - 1);
             }
         }
-
         function nextPage() {
             let table = document.getElementById("attendanceTable");
             let totalRows = table.getElementsByTagName("tbody")[0].getElementsByTagName("tr").length;
             let totalPages = Math.ceil(totalRows / rowsPerPage);
-
             if (currentPage < totalPages) {
                 showPage(currentPage + 1);
             }
         }
-
         window.onload = function() {
             showPage(1);
         };
     </script>
+</head>
+<body>
+    <!-- 사이드바 (인쇄 시 숨김) -->
+    <div class="sidebar no-print" th:replace="~{layout/sidebar :: sidebar}"></div>
 
-    <script>
-        function printAttendanceRecords() {
-            window.print();
-        }
-    </script>
+    <div class="content">
+        <p id="message" th:if="${message}" th:text="${message}" class="text-success text-center"></p>
 
+        <!-- salary.css 레이아웃 컨테이너 -->
+        <div class="salary-container">
+            <div>
+                <th:block th:if="${#authorization.expression('hasAnyRole(''EMPLOYEE'', ''HR'')')}">
+                    <button onclick="openModal('checkIn')" class="btn btn-primary no-print">출근</button>
+                    <button onclick="openModal('checkOut')" class="btn btn-primary no-print">퇴근</button>
+                    <a href="/attendance/leave/add" class="btn btn-danger no-print">휴가 신청</a>
+                </th:block>
+                <a href="/attendance/leave/list" class="btn btn-secondary no-print">휴가 신청 목록</a>
+                <button onclick="printAttendanceRecords()" class="btn btn-primary no-print">출력하기</button>
+            </div>
+            
+            <form method="get" action="/attendance/records" class="no-print">
+                <input type="text" name="employeeId" placeholder="사원 ID">
+                <input type="text" name="name" placeholder="사원 이름">
+                <input type="date" name="startDate">
+                <input type="date" name="endDate">
+                <select name="status">
+                    <option value="">전체</option>
+                    <option value="OnTime">정시</option>
+                    <option value="Late">지각</option>
+                    <option value="Overtime">야근</option>
+                </select>
+                <button type="submit" class="btn btn-primary">검색</button>
+            </form>
+
+            <!-- 인쇄 시 유일하게 보이는 근태 조회 테이블 -->
+            <table class="table" id="attendanceTable">
+                <thead>
+                    <tr>
+                        <th>사원 ID</th>
+                        <th>사원 이름</th>
+                        <th>날짜</th>
+                        <th>출근 시간</th>
+                        <th>퇴근 시간</th>
+                        <th>근태 유형</th>
+                        <th sec:authorize="hasAnyRole('HR', 'ADMIN')" class="no-print">수정</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="record : ${records}">
+                        <td th:text="${record.employeeId}"></td>
+                        <td th:text="${record.employeeName}"></td>
+                        <td th:text="${record.date}"></td>
+                        <td th:text="${record.checkInTime}"></td>
+                        <td th:text="${record.checkOutTime}"></td>
+                        <td>
+                            <span th:switch="${record.status}">
+                                <span th:case="'OnTime'">정시</span>
+                                <span th:case="'Late'">지각</span>
+                                <span th:case="'OverTime'">야근</span>
+                                <span th:case="'LeaveEarly'">조퇴</span>
+                            </span>
+                        </td>
+                        <td sec:authorize="hasAnyRole('HR', 'ADMIN')" class="no-print">
+                            <a th:href="@{/attendance/update/{attendanceId}(attendanceId=${record.attendanceId})}"
+                               class="text-blue-500 hover:underline">수정</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- 페이지네이션 (인쇄 시 숨김) -->
+            <div class="pagination no-print">
+                <button onclick="prevPage()">이전</button>
+                <span id="pageNumber"></span>
+                <button onclick="nextPage()">다음</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- hidden 필드와 모달 -->
     <input type="hidden" id="loggedInEmployeeId" th:value="${employeeId}">
-
     <div id="modal" class="modal">
         <div class="modal-content">
             <h2 id="modalTitle"></h2>
@@ -94,80 +242,8 @@
             </form>
         </div>
     </div>
-</head>
-<body>
-
-	<!-- 사이드바 -->
-    <div class="sidebar no-print" th:replace="~{layout/sidebar :: sidebar}"></div>
-
-    <div class="content">
-        <p id="message" th:if="${message}" th:text="${message}" class="text-success text-center"></p>
-
-        <div>
-            <th:block th:if="${#authorization.expression('hasAnyRole(''EMPLOYEE'', ''HR'')')}">
-            	<button onclick="openModal('checkIn')" class="btn btn-primary no-print">출근</button>
-            	<button onclick="openModal('checkOut')" class="btn btn-primary no-print">퇴근</button>
-            	<a href="/attendance/leave/add" class="btn btn-danger no-print">휴가 신청</a>
-            </th:block>
-            <a href="/attendance/leave/list" class="btn btn-secondary no-print">휴가 신청 목록</a>
-            <button onclick="printAttendanceRecords()" class="btn btn-primary no-print">출력하기</button>
-        </div>
-        
-        <form method="get" action="/attendance/records">
-            <input type="text" name="employeeId" placeholder="사원 ID">
-    		<input type="text" name="name" placeholder="사원 이름">
-            <input type="date" name="startDate">
-            <input type="date" name="endDate">
-            <select name="status">
-                <option value="">전체</option>
-                <option value="OnTime">정시</option>
-                <option value="Late">지각</option>
-                <option value="Overtime">야근</option>
-            </select>
-            <button type="submit" class="btn btn-primary">검색</button>
-        </form>
-
-        <table class="table" id="attendanceTable">
-            <thead>
-                <tr>
-                    <th>사원 ID</th>
-                    <th>사원 이름</th>
-                    <th>날짜</th>
-                    <th>출근 시간</th>
-                    <th>퇴근 시간</th>
-                    <th>근태 유형</th>
-                    <th sec:authorize="hasAnyRole('HR', 'ADMIN')" class="no-print">수정</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr th:each="record : ${records}">
-                    <td th:text="${record.employeeId}"></td>
-                    <td th:text="${record.employeeName}"></td>
-                    <td th:text="${record.date}"></td>
-                    <td th:text="${record.checkInTime}"></td>
-                    <td th:text="${record.checkOutTime}"></td>
-                    <td>
-    					<span th:switch="${record.status}">
-       						<span th:case="'OnTime'">정시</span>
-        					<span th:case="'Late'">지각</span>
-        					<span th:case="'OverTime'">야근</span>
-        					<span th:case="'LeaveEarly'">조퇴</span>
-    					</span>
-					</td>
-                    <td sec:authorize="hasAnyRole('HR', 'ADMIN')" class="border border-gray-300 py-3 px-4 no-print">
-                    	<a th:href="@{/attendance/update/{attendanceId}(attendanceId=${record.attendanceId})}" 
-                        	class="text-blue-500 hover:underline">수정</a>
-                	</td>
-                </tr>
-            </tbody>
-        </table>
-        <!-- 페이지네이션 -->
-        <div class="pagination no-print">
-            <button onclick="prevPage()">이전</button>
-            <span id="pageNumber"></span>
-            <button onclick="nextPage()">다음</button>
-        </div>
-    </div>
+    
+    <!-- 푸터 (인쇄 시 숨김) -->
+    <div th:replace="~{layout/footer :: footer}" class="no-print"></div>
 </body>
-<div th:replace="~{layout/footer :: footer}"></div>
 </html>

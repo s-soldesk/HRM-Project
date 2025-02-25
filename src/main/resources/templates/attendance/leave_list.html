@@ -28,8 +28,8 @@
                         <th>사유</th>
                         <th>시작일</th>
                         <th>종료일</th>
-                        <th>상태</th>
                         <th sec:authorize="hasAnyRole('HR', 'ADMIN')">승인</th>
+                        <th>상태</th>
                         <th>삭제</th>
                     </tr>
                 </thead>
@@ -38,11 +38,16 @@
                         <td th:text="${leave.employeeId}"></td>
                         <td th:text="${leave.employeeName}"></td>
                         <td th:text="${leave.title}"></td>
-                        <td th:text="${leave.leaveType}"></td>
+                        <td>
+    						<span th:switch="${leave.leaveType}">
+       							<span th:case="'Annual'">연차</span>
+        						<span th:case="'Sick'">병가</span>
+        						<span th:case="'Personal'">개인 사유</span>
+    						</span>
+						</td>
                         <td th:text="${leave.reason}"></td>
                         <td th:text="${leave.startDate}"></td>
-                        <td th:text="${leave.endDate}"></td>
-                        <td th:text="${leave.status}"></td>
+                        <td th:text="${leave.endDate}"></td> 
                         <td sec:authorize="hasAnyRole('HR', 'ADMIN')">
                             <!-- 승인 및 거절 버튼 -->
                             <form method="post" action="/attendance/leave/approve" class="inline-block">
@@ -55,6 +60,13 @@
                                 <button type="submit" class="btn btn-danger"
                                         th:disabled="${leave.status == 'REJECTED'}">거절</button>
                             </form>
+                        </td>
+                        <td>
+                        	<span th:switch="${leave.status}">
+                        		<span th:case="'CONFIRMED'">승인</span>
+                        		<span th:case="'PENDING'">보류</span>
+                        		<span th:case="'REJECTED'">거절</span>
+                        	</span>
                         </td>
                         <td>
                             <form th:if="${leave.status == 'PENDING' or #authorization.expression('hasAnyRole(''HR'', ''ADMIN'')')}" 
@@ -70,7 +82,7 @@
 
         <!-- 메인 페이지로 돌아가기 버튼 -->
         <div class="leave-btn-container">
-            <a href="/attendance" class="btn btn-secondary">메인 페이지로 돌아가기</a>
+            <a href="/attendance" class="btn btn-secondary">돌아가기</a>
         </div>
     </div>
 

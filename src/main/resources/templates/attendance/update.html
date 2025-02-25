@@ -39,13 +39,14 @@
                 <select name="status" id="status">
                     <option value="OnTime" th:selected="${attendance.status == 'OnTime'}">정시</option>
                     <option value="Late" th:selected="${attendance.status == 'Late'}">지각</option>
-                    <option value="Overtime" th:selected="${attendance.status == 'Overtime'}">야근</option>
+                    <option value="LeaveEarly" th:selected="${attendance.status == 'LeaveEarly'}">조퇴</option>
+                    <option value="OverTime" th:selected="${attendance.status == 'OverTime'}">야근</option>     
                 </select>
             </div>
 
             <div class="button-container">
                 <button type="submit" class="btn btn-primary">수정</button>
-                <a href="/attendance" class="btn btn-secondary">메인 페이지로 돌아가기</a>
+                <a href="/attendance" class="btn btn-secondary">돌아가기</a>
             </div>
         </form>
     </div>

@@ -23,7 +23,6 @@ public class EmployeeService {
 	private final UserAccountDao userAccountDao;
 	private final PasswordEncoder passwordEncoder;
 
-
 	// 사원 리스트 (사원번호, 사원이름, 부서이름)
 	public List<EmployeeDto> employeesList(int offset, int page) {
 		return employeeDao.employeesList(page, offset);
@@ -45,8 +44,7 @@ public class EmployeeService {
 	}
 
 	/*
-	 * 사원 추가.
-	 *  Employee, UserAccounts 두개의 테이블에 INSERT 해야하므로 트랜잭션 처리!
+	 * 사원 추가. Employee, UserAccounts 두개의 테이블에 INSERT 해야하므로 트랜잭션 처리!
 	 */
 	@Transactional
 	public EmployeeDto addEmployee(EmployeeDto employeeDto) {
@@ -102,5 +100,10 @@ public class EmployeeService {
 				throw new IllegalArgumentException("사원 ID는 숫자로 검색해야합니다.");
 			}
 		}
+	}
+
+	// 사원의 이메일로 이름 가져오기
+	public String getEmployeeName(String email) {
+		return employeeDao.getEmployeeName(email);
 	}
 }

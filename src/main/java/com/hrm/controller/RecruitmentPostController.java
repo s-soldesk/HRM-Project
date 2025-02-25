@@ -12,8 +12,11 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.hrm.entity.RecruitmentPostEntity;
+import com.hrm.enums.PostStatus;
+import com.hrm.service.EmployeeService;
 import com.hrm.service.RecruitmentPostService;
 
 import lombok.RequiredArgsConstructor;
@@ -24,11 +27,20 @@ import lombok.RequiredArgsConstructor;
 public class RecruitmentPostController {
 
 	private final RecruitmentPostService recruitmentPostService;
+	private final EmployeeService employeeService;
 
 	@GetMapping("")
-	public String getList(Model m) {
-		List<RecruitmentPostEntity> posts = recruitmentPostService.getAllPosts();
+	public String getList(@RequestParam(name = "status", required = false) PostStatus status, Model m) {
+		List<RecruitmentPostEntity> posts;
+
+		if (status != null) { // 상태를 선택했으면 해당 상태로 필터링
+			posts = recruitmentPostService.getPostsByStatus(status);
+		} else { // 기본값은 전체 게시물
+			posts = recruitmentPostService.getAllPosts();
+		}
+
 		m.addAttribute("posts", posts);
+		m.addAttribute("status", status);
 		return "recruitments/list";
 	}
 
@@ -48,7 +60,8 @@ public class RecruitmentPostController {
 
 	@PostMapping("/add")
 	public String createPost(@ModelAttribute RecruitmentPostEntity post, Principal user) { // Principal 로 사용자 식별 정보 가져오기
-		RecruitmentPostEntity savePost = recruitmentPostService.createPost(post, user.getName());
+		String employeeName = employeeService.getEmployeeName(user.getName());
+		RecruitmentPostEntity savePost = recruitmentPostService.createPost(post, employeeName);
 		return "redirect:/recruitments/" + savePost.getId();
 	}
 

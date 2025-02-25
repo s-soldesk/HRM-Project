@@ -6,6 +6,8 @@
     <link rel="stylesheet" href="/css/attendance.css">
     <link rel="stylesheet" href="/css/dashboard.css">
     <link rel="stylesheet" href="/css/sidebar.css">
+    <link rel="stylesheet" href="/css/bootstrap.min.css">
+    <link rel="stylesheet" href="/css/footer.css">
     
     <script>
         function openModal(type) {
@@ -96,7 +98,7 @@
 <body>
 
 	<!-- 사이드바 -->
-    <div th:replace="~{layout/sidebar :: sidebar}"></div>
+    <div class="sidebar no-print" th:replace="~{layout/sidebar :: sidebar}"></div>
 
     <div class="content">
         <p id="message" th:if="${message}" th:text="${message}" class="text-success text-center"></p>
@@ -110,10 +112,10 @@
             <a href="/attendance/leave/list" class="btn btn-secondary no-print">휴가 신청 목록</a>
             <button onclick="printAttendanceRecords()" class="btn btn-primary no-print">출력하기</button>
         </div>
-
+        
         <form method="get" action="/attendance/records">
             <input type="text" name="employeeId" placeholder="사원 ID">
-            <input type="text" name="name" placeholder="사원 이름">
+    		<input type="text" name="name" placeholder="사원 이름">
             <input type="date" name="startDate">
             <input type="date" name="endDate">
             <select name="status">
@@ -134,7 +136,7 @@
                     <th>출근 시간</th>
                     <th>퇴근 시간</th>
                     <th>근태 유형</th>
-                    <th sec:authorize="hasAnyRole('HR', 'ADMIN')">수정</th>
+                    <th sec:authorize="hasAnyRole('HR', 'ADMIN')" class="no-print">수정</th>
                 </tr>
             </thead>
             <tbody>
@@ -144,8 +146,15 @@
                     <td th:text="${record.date}"></td>
                     <td th:text="${record.checkInTime}"></td>
                     <td th:text="${record.checkOutTime}"></td>
-                    <td th:text="${record.status}"></td>
-                    <td sec:authorize="hasAnyRole('HR', 'ADMIN')" class="border border-gray-300 py-3 px-4">
+                    <td>
+    					<span th:switch="${record.status}">
+       						<span th:case="'OnTime'">정시</span>
+        					<span th:case="'Late'">지각</span>
+        					<span th:case="'OverTime'">야근</span>
+        					<span th:case="'LeaveEarly'">조퇴</span>
+    					</span>
+					</td>
+                    <td sec:authorize="hasAnyRole('HR', 'ADMIN')" class="border border-gray-300 py-3 px-4 no-print">
                     	<a th:href="@{/attendance/update/{attendanceId}(attendanceId=${record.attendanceId})}" 
                         	class="text-blue-500 hover:underline">수정</a>
                 	</td>
@@ -159,6 +168,6 @@
             <button onclick="nextPage()">다음</button>
         </div>
     </div>
-
 </body>
+<div th:replace="~{layout/footer :: footer}"></div>
 </html>

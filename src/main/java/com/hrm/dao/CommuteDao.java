@@ -22,6 +22,10 @@ public interface CommuteDao {
     // 출근 시간 가져오기
     @Select("SELECT CheckInTime FROM Attendance WHERE EmployeeID = #{employeeId} AND Date = #{date}")
     LocalTime getCheckInTime(@Param("employeeId") int employeeId, @Param("date") LocalDate date);
+    
+    // 출근 상태 가져오기
+    @Select("SELECT Status FROM attendance WHERE EmployeeID = #{employeeId} AND Date = #{date}")
+    String getAttendanceStatus(@Param("employeeId") int employeeId, @Param("date") LocalDate date);
 
     // 퇴근 시간, 근무 시간, 초과 근무 시간 및 근태 상태 업데이트
     @Update("UPDATE Attendance " +

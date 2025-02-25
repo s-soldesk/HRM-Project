@@ -8,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,8 +34,29 @@ public class AttendanceController {
     
     // 근태 관리 메인 페이지
     @GetMapping
-    public String showAttendanceMainPage() {
-        return "attendance/attendance";
+    public String showAttendanceMainPage(Model model, @AuthenticationPrincipal UserDetails userDetails) {
+    	// 로그인한 사용자의 이메일 가져오기
+        String employeeEmail = userDetails.getUsername();
+
+        // 로그인한 사용자의 권한 확인
+        boolean isAdmin = userDetails.getAuthorities().stream()
+                .anyMatch(auth -> auth.getAuthority().equals("ROLE_ADMIN"));
+
+        // Admin 계정은 employeeId 조회를 하지 않음
+        if (!isAdmin) {
+            Integer employeeId = userAccountDao.findEmployeeIdByEmail(employeeEmail);
+
+            if (employeeId == null) {
+                model.addAttribute("message", "사원 정보를 찾을 수 없습니다.");
+            } else {
+                model.addAttribute("employeeId", employeeId);
+            }
+        } else {
+            // Admin 계정은 employeeId가 필요 없음
+            model.addAttribute("employeeId", "");  // 빈 값으로 설정
+        }
+    	
+    	return "attendance/attendance";
     }
     
     // 근태 기록 조회 페이지

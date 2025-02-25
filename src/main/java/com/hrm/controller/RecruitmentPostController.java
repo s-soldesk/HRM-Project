@@ -40,7 +40,7 @@ public class RecruitmentPostController {
 		}
 
 		m.addAttribute("posts", posts);
-		m.addAttribute("status", status);
+		m.addAttribute("selectedStatus", status);
 		return "recruitments/list";
 	}
 

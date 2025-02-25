@@ -150,7 +150,8 @@
     					<span th:switch="${record.status}">
        						<span th:case="'OnTime'">정시</span>
         					<span th:case="'Late'">지각</span>
-        					<span th:case="'Overtime'">야근</span>
+        					<span th:case="'OverTime'">야근</span>
+        					<span th:case="'LeaveEarly'">조퇴</span>
     					</span>
 					</td>
                     <td sec:authorize="hasAnyRole('HR', 'ADMIN')" class="border border-gray-300 py-3 px-4 no-print">

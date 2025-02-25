@@ -175,8 +175,11 @@ public class NoticeController {
            Model model) {
        try {
            List<NoticeDto> notices;
-           if (keyword != null && !keyword.trim().isEmpty()) {
-               notices = noticeService.searchNotices(searchType, keyword);
+           if (searchType != null && keyword != null && !keyword.trim().isEmpty()) {
+               notices = noticeService.searchNotices(searchType, keyword.trim());
+               // 검색 파라미터 유지
+               model.addAttribute("searchType", searchType);
+               model.addAttribute("keyword", keyword);
            } else {
                notices = noticeService.getAllNotices();
            }

@@ -6,7 +6,6 @@
     --danger-color: #E74C3C;     /* 부드러운 레드 */
     --text-color: #2C3E50;       /* 기본 텍스트 */
     --border-color: #ECF0F1;     /* 은은한 회색 */
-    --bg-light: #f8f9fa;
 }
 
 .content {
@@ -15,6 +14,7 @@
     width: calc(100% - 270px);
     background-color: var(--bg-light);
     min-height: 100vh;
+    padding-bottom: 80px; /* 푸터와의 간격 추가 */
 }
 
 .salary-container {

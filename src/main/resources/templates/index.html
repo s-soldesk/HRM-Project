@@ -76,6 +76,11 @@
 													id="checkOutTime">--:--</span>
 											</div>
 										</div>
+										<!-- 출퇴근 버튼 추가 -->
+										<div class="attendance-buttons mt-2">
+											<button id="checkInBtn" class="btn btn-sm btn-primary">출근하기</button>
+											<button id="checkOutBtn" class="btn btn-sm btn-danger">퇴근하기</button>
+										</div>
 									</div>
 									<div class="current-time animate-fade-in">
 										<div id="currentDate" class="date"></div>
@@ -165,7 +170,7 @@
 		</div>
 	</div>
 	<!-- Footer Include -->
-    <div th:replace="~{layout/footer :: footer}"></div>
+	<div th:replace="~{layout/footer :: footer}"></div>
 
 	<!-- Scripts -->
 	<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>

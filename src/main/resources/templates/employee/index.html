@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-    <title>인사 관리 페이지</title>
-    <link rel="stylesheet" href="/css/employee.css">
-    <link rel="stylesheet" href="/css/sidebar.css">
-    <link rel="stylesheet" href="/css/bootstrap.min.css">
-    <link rel="stylesheet" href="/css/footer.css">
+<title>인사 관리 페이지</title>
+<link rel="stylesheet" href="/css/employee.css">
+<link rel="stylesheet" href="/css/sidebar.css">
+<link rel="stylesheet" href="/css/bootstrap.min.css">
+<link rel="stylesheet" href="/css/footer.css">
 </head>
 <body>
 	<!-- 사이드바 -->
@@ -19,13 +19,15 @@
 			</div>
 
 			<div class="filter-section">
-				<select id="searchType" name="searchType">
-					<option value="id">사원 ID</option>
-					<option value="name">이름</option>
-					<option value="department">부서</option>
-				</select> <input type="text" id="searchKeyword" name="searchKeyword"
-					placeholder="검색어를 입력하세요">
-				<button type="submit" id="searchBtn">검색</button>
+				<form id="searchForm">
+					<select id="searchType" name="searchType">
+						<option value="id">사원 ID</option>
+						<option value="name">이름</option>
+						<option value="department">부서</option>
+					</select> <input type="text" id="searchKeyword" name="searchKeyword"
+						placeholder="검색어를 입력하세요">
+					<button type="submit" id="searchBtn">검색</button>
+				</form>
 			</div>
 		</div>
 

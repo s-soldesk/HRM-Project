@@ -39,7 +39,8 @@
                 <select name="status" id="status">
                     <option value="OnTime" th:selected="${attendance.status == 'OnTime'}">정시</option>
                     <option value="Late" th:selected="${attendance.status == 'Late'}">지각</option>
-                    <option value="Overtime" th:selected="${attendance.status == 'Overtime'}">야근</option>
+                    <option value="LeaveEarly" th:selected="${attendance.status == 'LeaveEarly'}">조퇴</option>
+                    <option value="OverTime" th:selected="${attendance.status == 'OverTime'}">야근</option>     
                 </select>
             </div>
 

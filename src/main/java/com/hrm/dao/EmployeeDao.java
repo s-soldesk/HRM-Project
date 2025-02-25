@@ -173,4 +173,10 @@ public interface EmployeeDao {
 			"""})
 	int countSearchEmployees(@Param("searchType") String searchType, @Param("keyword") String keyword);
 	/*-----------------------------사원 검색--------------------------------- */ 
+	
+	/*
+	 * 사원의 아이디로 이름을 추출
+	 */
+	@Select({"SELECT Name FROM Employee WHERE email = #{email}"})
+	String getEmployeeName(String email);
 }

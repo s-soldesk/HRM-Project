@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.hrm.entity.RecruitmentPostEntity;
 import com.hrm.enums.PostStatus;
+import com.hrm.service.EmployeeService;
 import com.hrm.service.RecruitmentPostService;
 
 import lombok.RequiredArgsConstructor;
@@ -26,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 public class RecruitmentPostController {
 
 	private final RecruitmentPostService recruitmentPostService;
+	private final EmployeeService employeeService;
 
 	@GetMapping("")
 	public String getList(@RequestParam(name = "status", required = false) PostStatus status, Model m) {
@@ -58,7 +60,8 @@ public class RecruitmentPostController {
 
 	@PostMapping("/add")
 	public String createPost(@ModelAttribute RecruitmentPostEntity post, Principal user) { // Principal 로 사용자 식별 정보 가져오기
-		RecruitmentPostEntity savePost = recruitmentPostService.createPost(post, user.getName());
+		String employeeName = employeeService.getEmployeeName(user.getName());
+		RecruitmentPostEntity savePost = recruitmentPostService.createPost(post, employeeName);
 		return "redirect:/recruitments/" + savePost.getId();
 	}
 

@@ -111,7 +111,7 @@
                             </thead>
                             <tbody>
                                 <tr th:each="salary : ${salaries}">
-                                    <td th:text="${#temporals.format(salary.paymentDate, 'yyyy-MM-dd')}"></td>
+                                    <td th:text="${#temporals.format(salary.paymentDate, 'yyyy-MM')}"></td>
                                     <td th:text="${salary.employeeId}"></td>
                                     <td th:text="${salary.employee.name}"></td>
                                     <td class="text-end" 

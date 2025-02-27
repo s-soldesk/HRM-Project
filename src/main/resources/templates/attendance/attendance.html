@@ -4,36 +4,13 @@
     <title>근태 관리</title>
     <meta charset="UTF-8">
     <!-- salary.css 사용 -->
-    <link rel="stylesheet" href="/css/salary.css">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/dashboard.css}">
+    <link rel="stylesheet" type="text/css" th:href="@{/css/salary.css}">
     <link rel="stylesheet" href="/css/sidebar.css">
     <link rel="stylesheet" href="/css/bootstrap.min.css">
     <link rel="stylesheet" href="/css/footer.css">
 
-    <!-- 추가 인라인 스타일: 모달 등 attendance 전용 스타일 및 인쇄 전용 스타일 -->
     <style>
-        /* 모달 스타일 (attendance.css 에 있던 정의 복원) */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0,0,0,0.5);
-            justify-content: center; 
-            align-items: center;    
-        }
-        .modal-content {
-            background-color: #fff;
-            padding: 15px;
-            margin: 15% auto;
-            width: 30%;
-            max-width: 350px;
-            border-radius: 8px;
-            text-align: center;
-            font-size: 14px;
-        }
         /* 테이블 스타일 (salary.css 에 없는 부분 추가) */
         .table {
             width: 100%;
@@ -84,36 +61,20 @@
         }
         /* 인쇄 스타일 */
         @media print {
-    		.no-print, .sidebar {
-        		display: none !important;  /* ✅ 출력 시 사이드바 숨김 */
-   		 	}
-   		 	
-   		 	.no-print, .footer{
-   		 		display: none !important;
-   		 	}
-
-    		.content {
-        		margin-left: 0 !important;  /* ✅ 콘텐츠가 왼쪽으로 정렬되도록 수정 */
-        		width: 100%;  /* ✅ 전체 페이지 너비 사용 */
-    		}
-		}
+            .no-print, .sidebar {
+                display: none !important;
+            }
+            .no-print, .footer {
+                display: none !important;
+            }
+            .content {
+                margin-left: 0 !important;
+                width: 100%;
+            }
+        }
     </style>
-
+    
     <script>
-        function openModal(type) {
-            document.getElementById('modalTitle').innerText = type === 'checkIn' ? '출근 등록' : '퇴근 등록';
-            document.getElementById('modalForm').action = type === 'checkIn' ? '/attendance/commute/check_in' : '/attendance/commute/check_out';
-            document.getElementById('modalSubmitButton').innerText = type === 'checkIn' ? '출근하기' : '퇴근하기';
-
-            let loggedInEmployeeId = document.getElementById('loggedInEmployeeId').value;
-            let employeeIdField = document.getElementById('employeeId');
-            employeeIdField.value = loggedInEmployeeId; 
-            employeeIdField.readOnly = true; 
-            document.getElementById('modal').style.display = 'block';
-        }
-        function closeModal() {
-            document.getElementById('modal').style.display = 'none';
-        }
         function printAttendanceRecords() {
             window.print();
         }
@@ -160,11 +121,8 @@
         <!-- salary.css 레이아웃 컨테이너 -->
         <div class="salary-container">
             <div>
-                <th:block th:if="${#authorization.expression('hasAnyRole(''EMPLOYEE'', ''HR'')')}">
-                    <button onclick="openModal('checkIn')" class="btn btn-primary no-print">출근</button>
-                    <button onclick="openModal('checkOut')" class="btn btn-primary no-print">퇴근</button>
-                    <a href="/attendance/leave/add" class="btn btn-danger no-print">휴가 신청</a>
-                </th:block>
+                <!-- 출퇴근 버튼은 메인 페이지로 이동되었으므로 근태 관리 페이지에서는 휴가 관련 버튼만 남김 -->
+                <a href="/attendance/leave/add" class="btn btn-danger no-print">휴가 신청</a>
                 <a href="/attendance/leave/list" class="btn btn-secondary no-print">휴가 신청 목록</a>
                 <button onclick="printAttendanceRecords()" class="btn btn-primary no-print">출력하기</button>
             </div>
@@ -225,21 +183,6 @@
                 <span id="pageNumber"></span>
                 <button onclick="nextPage()">다음</button>
             </div>
-        </div>
-    </div>
-
-    <!-- hidden 필드와 모달 -->
-    <input type="hidden" id="loggedInEmployeeId" th:value="${employeeId}">
-    <div id="modal" class="modal">
-        <div class="modal-content">
-            <h2 id="modalTitle"></h2>
-            <form id="modalForm" method="post">
-                <label for="employeeId">사원 ID</label>
-                <input type="text" id="employeeId" name="employeeId" readonly>
-                <br><br>
-                <button type="button" class="btn btn-secondary" onclick="closeModal()">취소</button>
-                <button id="modalSubmitButton" type="submit" class="btn btn-primary"></button>
-            </form>
         </div>
     </div>
     

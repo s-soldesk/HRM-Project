@@ -59,6 +59,10 @@
 ~
 ~
 
+## 🏄🏻‍♂️ ER다이어그램
+<img width="571" alt="스크린샷 2025-03-08 오후 3 43 55" src="https://github.com/user-attachments/assets/e71295f9-e8fc-40b1-891d-9a952937c046" />
+
+
 ## 🔍 주요 API 엔드포인트
 ```
 GET /employee/ - 사원관리 페이지

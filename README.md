@@ -1,7 +1,7 @@
 # Spring Boot 기반 인사관리 프로젝트
 
 ## 📝 프로젝트 소개
-'관리자', '인사부원', '일반사원' 권한별 로그인을 통한 차별화된 인사관리 웹페이지입니다. 사원 정보 관리부터 근태, 급여, 메시지, 일정, 공지사항까지 기업 운영에 필요한 모든 기능을 제공합니다.
+'관리자', '인사부원', '일반사원' 권한별 로그인을 통한 차별화된 인사관리 웹페이지입니다. 사원 정보 관리부터 근태, 급여, 메시지, 일정, 공지사항까지 기업 운영에 필요한 기능을 제공합니다.
 
 ## ⚡️ 주요 기능
 ### 1. 일정관리
@@ -65,13 +65,13 @@
 - 부서 정보 (부서번호, 부서명, 위치)
 
 ### Recruitment_post
-- 채용 게시판 게시글 정보 (공고ID, 제목, 내용, 작성자, 마감일, 상태 등)
+- 채용 게시판 게시글 정보 (공고ID, 제목, 내용, 작성자, 마감일, 상태 등)
 
 ### Salary
-- 사원 및 날자별 급여 정보 (급여ID, 사원번호, 지급일, 기본급, 수당, 총액 등)
+- 사원 및 날자별 급여 정보 (급여ID, 사원번호, 지급일, 기본급, 수당, 총액 등)
 
 ### Attendance
-- 사원의 출/퇴근 기록 정보 (출근시간, 퇴근시간, 근무시간, 상태 등)
+- 사원의 출/퇴근 기록 정보 (출근시간, 퇴근시간, 근무시간, 상태 등)
 
 ### UserAccount 
 - 사용자 계정 정보 (이메일, 비밀번호, 권한 등)
@@ -93,18 +93,18 @@
 
 ## 🔍 주요 API 엔드포인트
 ```
-## 근태 관리
+근태 관리
 GET /attendance - 근태 관리 메인 페이지
 GET /attendance/records - 근태 기록 조회 페이지
 GET /attendance/update/{attendanceId} - 근태 기록 수정 페이지
 POST /attendance/update - 근태 기록 수정 처리
 GET /attendance/today/status - 오늘의 출퇴근 상태 조회 
 
-### 출퇴근 관리
+출퇴근 관리
 POST /attendance/commute/check_in - 출근 기록
 POST /attendance/commute/check_out - 퇴근 기록
 
-### 휴가 관리
+휴가 관리
 GET /attendance/leave/add - 휴가 신청 페이지
 POST /attendance/leave/add - 휴가 신청 처리
 GET /attendance/leave/list - 휴가 신청 목록 페이지
@@ -112,7 +112,7 @@ POST /attendance/leave/approve - 휴가 승인 처리 (HR 관리자용)
 POST /attendance/leave/reject - 휴가 거절 처리 (HR 관리자용)
 POST /attendance/leave/delete/{leaveId} - 휴가 삭제
 
-## 사원 관리
+사원 관리
 GET /employees - 사원 관리 페이지
 GET /employees/list - 사원 리스트 조회 API
 GET /employees/{employeeId} - 사원 세부정보 조회 API
@@ -121,13 +121,13 @@ POST /employees/add - 사원 추가 API
 PUT /employees/{employeeId} - 사원 정보 수정 API
 GET /employees/search - 사원 검색 API
 
-## 급여 관리
+급여 관리
 GET /salary - 급여 메인 페이지 (권한에 따른 리다이렉션)
 GET /salary/manage - 전체 사원 급여 조회 (인사팀 전용)
 GET /salary/employee - 개인 급여 조회 (일반 사원)
 GET /salary/detail/{salaryId} - 급여 명세서 상세 조회
 
-### 급여 계산
+급여 계산
 GET /salary/calculate - 급여 계산 페이지
 GET /salary/calculate/status/{yearMonth} - 특정 월 급여 계산 현황 조회
 GET /salary/calculate/detail/{employeeId}/{yearMonth} - 사원별 월간 상세 페이지
@@ -137,14 +137,14 @@ POST /salary/calculate/initialize/{employeeId}/{yearMonth} - 급여데이터 임
 GET /salary/manual-edit/{employeeId}/{yearMonth} - 급여 수동 편집 폼
 POST /salary/manual-edit/save - 급여 수동 편집 저장
 
-## 일정 관리
+일정 관리
 GET /schedule - 일정 페이지
 GET /api/schedules - 모든 직원의 일정 조회 API
 POST /api/schedules/add - 일정 추가 API
 DELETE /api/schedules/delete/{scheduleId} - 일정 삭제 API
 PUT /api/schedules/update/{scheduleId} - 일정 수정 API
 
-## 공지사항
+공지사항
 GET /notices - 공지사항 목록 페이지
 GET /notices/{id} - 공지사항 상세 조회
 GET /notices/new - 공지사항 작성 폼
@@ -154,12 +154,12 @@ POST /notices/{id} - 공지사항 수정 처리
 POST /notices/{id}/delete - 공지사항 삭제
 GET /notices/search - 공지사항 검색
 
-## 메시지
+메시지
 GET /messages - 메시지 목록 페이지
 GET /messages/chat/{userId} - 특정 사용자와의 채팅방
 POST /messages/send - 메시지 전송
 
-## 채용 공고
+채용 공고
 GET /recruitments - 채용 공고 목록
 GET /recruitments/{id} - 채용 공고 상세
 GET /recruitments/add - 채용 공고 작성 폼
@@ -168,7 +168,7 @@ GET /recruitments/edit/{id} - 채용 공고 수정 폼
 PUT /recruitments/edit/{id} - 채용 공고 수정
 DELETE /recruitments/{id} - 채용 공고 삭제
 
-## 프로필 관리
+프로필 관리
 GET /profile - 프로필 조회
 POST /profile/update - 프로필 업데이트
 POST /profile/password - 비밀번호 변경
